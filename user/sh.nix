@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 # Set aliases as variable to be used in multiple shell configs
 let
@@ -7,7 +7,11 @@ let
 		ls = "ls -lah --color=auto";
 		lt = "ls -laht --color=auto";
 		".." = "cd ..";
-	};
+  };
+
+  cfg = config.programs.kitty;
+  inherit (lib) mkAfter;
+
 in
 {
 
@@ -36,6 +40,12 @@ in
 				src = ./p10k-config;
 				file = "p10k.zsh";
 			}
-		];	
+    ];
+    initExtra = mkAfter ''
+      # Alias ssh command if using kitty
+      [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
+      # Alias diff command if using kitty
+      [ "$TERM" = "xterm-kitty" ] && alias diff="kitty +kitten diff"
+    '';
 	};
 }
