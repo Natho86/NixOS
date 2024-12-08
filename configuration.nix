@@ -28,17 +28,18 @@
   # Enable networking
   networking = {
     networkmanager.enable = true;
-    interfaces.enp0s20f0u2 = {
-      ipv4.addresses = [{
-        address = "192.168.50.120";
-        prefixLength = 24;
-      }];
-    };
-    defaultGateway = {
-      address = "192.168.50.1";
-      interface = "enp0s20f0u2";
-    };
-    nameservers = [ "1.1.1.1" "8.8.8.8" ];
+    #useDHCP = true;
+    #interfaces.enp0s20f0u2 = {
+    #  ipv4.addresses = [{
+    #    address = "192.168.50.120";
+    #    prefixLength = 24;
+    #  }];
+   # };
+    #defaultGateway = {
+    #  address = "192.168.50.1";
+    #  interface = "enp0s20f0u2";
+    #};
+    #nameservers = [ "1.1.1.1" "8.8.8.8" ];
   };
 
   # Swap file

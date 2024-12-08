@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+#{ config, pkgs, ... }:
 
 {
   
@@ -10,9 +10,9 @@
       splash_offset = 2.0;
 
       preload =
-        [ "~/.dotfiles/user/wallpaper/trees.png" ];
+        [ "~/.dotfiles/user/wallpaper/wallpaper.jpg" ];
 
-      wallpaper = [ ",~/.dotfiles/user/wallpaper/trees.png" ];
+      wallpaper = [ ",~/.dotfiles/user/wallpaper/wallpaper.jpg" ];
     };
   };
 }
