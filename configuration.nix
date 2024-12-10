@@ -204,7 +204,8 @@
 	kitty	# Hyprland default terminal
 	libnotify
 	networkmanagerapplet
-	swww
+  nmap
+  swww
 	waybar	
   # override for Hyperland
 	(pkgs.waybar.overrideAttrs (oldAttrs: {
