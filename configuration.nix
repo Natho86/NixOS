@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./vim.nix
-      #./wireguard.nix
+      ./wireguard.nix
       #./rtl88xx.nix
     ];
 
