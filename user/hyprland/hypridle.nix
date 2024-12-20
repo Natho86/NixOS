@@ -9,11 +9,11 @@
       };
 
       listener = [
-        {
-          timeout = 60; 
-          on-timeout = "brightnessctl -s; brightnessctl s 10%";
-          on-resume = "brightnessctl -r";
-        }
+        #{
+        #  timeout = 60; 
+        #  on-timeout = "brightnessctl -s; brightnessctl s 10%";
+        #  on-resume = "brightnessctl -r";
+        #}
         {
           timeout = 300;  # 5 minutes
           on-timeout = "brightnessctl -s; brightnessctl s 10%";   # set brightness to 10%
