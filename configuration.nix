@@ -193,7 +193,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-	
+
+  burpsuite
+
 	# hyprland
 	#rofi	# hyprland app launcher		moved to home.nix
   dunst
