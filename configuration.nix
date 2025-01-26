@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./vim.nix
-      ./wireguard.nix
+      #./wireguard.nix
       #./rtl88xx.nix
     ];
 
@@ -86,7 +86,14 @@
 
 
 	# WINDOW MANAGER STUFF
-	
+  
+  # KDE Plasma
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
+  services.displayManager.defaultSession = "plasma";
+  services.displayManager.sddm.wayland.enable = true;
+
+
 	# OLD CONFIG - GNOME -----------------------------------
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
@@ -98,37 +105,37 @@
   
 	# HYPRLAND ---------------------------------------------
 	# Greeter
-	services.greetd = {
-		enable = true;
-		settings = {
-			default_session.command = ''
-				${pkgs.greetd.tuigreet}/bin/tuigreet \
-					--time \
-					--asterisks \
-					--cmd Hyprland
-					--remember
-				'';
-			};
-	};
+  #services.greetd = {
+  #	enable = true;
+##		settings = {
+  #		default_session.command = ''
+#				${pkgs.greetd.tuigreet}/bin/tuigreet \
+#					--time \
+#					--asterisks \
+#					--cmd Hyprland
+#					--remember
+#				'';
+#			};
+#	};
 
 
-	programs.hyprland = {
-		enable = true;
-		xwayland.enable = true;	# For X applications
-	};
+  #programs.hyprland = {
+#		enable = true;
+#		xwayland.enable = true;	# For X applications
+#	};
 
-	environment.sessionVariables = {
-		# If your cursor becomes invisible
-		# WLR_NO_HARDWARE_CURSORS = "1";
-		# Hint Electron apps to use Wayland
-		NIXOS_OZONE_WL = "1";
-	};
+#	environment.sessionVariables = {
+#		# If your cursor becomes invisible
+#		# WLR_NO_HARDWARE_CURSORS = "1";
+#		# Hint Electron apps to use Wayland
+#		NIXOS_OZONE_WL = "1";
+#	};
 
-	xdg.portal.enable = true;
-	xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+  #xdg.portal.enable = true;
+  #xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
 
 
-	# HYPRLAND ---------------------------------------------
+	# --------------------------------------------HYPRLAND 
 
 	# Configure keymap in X11
   services.xserver.xkb = {
@@ -176,8 +183,8 @@
   ];
   };
 
-  programs.hyprlock.enable = true;
-  services.hypridle.enable = true;
+  #programs.hyprlock.enable = true;
+  #services.hypridle.enable = true;
 
   # Install browsers
   programs.firefox.enable = true;
@@ -194,26 +201,26 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
 
-  burpsuite
+  #burpsuite
 
 	# hyprland
 	#rofi	# hyprland app launcher		moved to home.nix
-  dunst
+  #dunst
   #hypridle
   #hyprlock
-  hyprutils
-  hyprpaper
-	kitty	# Hyprland default terminal
+  #hyprutils
+  #hyprpaper
+  #kitty	# Hyprland default terminal
 	libnotify
 	networkmanagerapplet
   nmap
-  swww
-	waybar	
+  #swww
+  #waybar	
   # override for Hyperland
-	(pkgs.waybar.overrideAttrs (oldAttrs: {
-		mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
- 		})
-	)
+  #(pkgs.waybar.overrideAttrs (oldAttrs: {
+#		mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+  #	})
+  #)
 
   # browsers
   brave
