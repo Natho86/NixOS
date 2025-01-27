@@ -239,7 +239,8 @@
 	dnsutils	# dig and nslookup
 	file
 	ffmpeg
-	gnupg
+  gnupg
+  htop
 	iotop
 	iperf3
 	jq
