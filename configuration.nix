@@ -85,6 +85,22 @@
   nix.settings.auto-optimise-store = true;
 
 
+  # Laptop power 
+  services.power-profiles-daemon.enable = false; # conflicting option set by Plasma
+  services.thermald.enable = true;
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+    battery = {
+      governor = "powersave";
+      turbo = "never";
+    };
+    charger = {
+      governor = "performance";
+      turbo = "auto";
+    };
+  };
+
+
 	# WINDOW MANAGER STUFF
   
   # KDE Plasma
@@ -147,7 +163,7 @@
   console.keyMap = "uk";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  #services.printing.enable = true;
 
 	fonts.packages = with pkgs; [
 		(nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "Meslo" "Hack" "Terminus" ]; })
@@ -266,7 +282,7 @@
 	zip
 	
 	# other
-  	appimage-run
+ 	appimage-run
 	whatsapp-for-linux
   ];
 
