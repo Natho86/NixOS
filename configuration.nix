@@ -283,7 +283,13 @@
 	
 	# other
  	appimage-run
-	whatsapp-for-linux
+  whatsapp-for-linux
+
+  # 1password
+  #1password-gui
+  #1password
+
+
   ];
 
   environment.variables.EDITOR = "vim";
@@ -291,6 +297,26 @@
 	environment.shells = with pkgs; [ zsh ];
 	users.defaultUserShell = pkgs.zsh;
 	programs.zsh.enable = true;
+
+
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    # Certain features, including CLI integration and system authentication support,
+    # require enabling PolKit integration on some desktop environments (e.g. Plasma).
+    polkitPolicyOwners = [ "yourUsernameHere" ];
+  };
+
+      environment.etc = {
+      "1password/custom_allowed_browsers" = {
+        text = ''
+          firefox
+          chromium
+        '';
+        mode = "0755";
+      };
+    };
+
 
 
   # Some programs need SUID wrappers, can be configured further or are
