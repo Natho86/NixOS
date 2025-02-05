@@ -193,7 +193,7 @@
   users.users.nath = {
     isNormalUser = true;
     description = "Nath";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
     packages = with pkgs; [
     #  thunderbird
   ];
@@ -212,6 +212,13 @@
 	# AppImage
 	programs.appimage.binfmt = true;
 	programs.appimage.enable = true;
+
+  # virtualisation
+  programs.virt-manager.enable = true;
+  users.groups.libvirtd.members = ["nath"];
+  virtualisation.libvirtd.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -288,7 +295,6 @@
   # 1password
   #1password-gui
   #1password
-
 
   ];
 
