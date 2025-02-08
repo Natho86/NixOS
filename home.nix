@@ -14,6 +14,15 @@
     ./user/waybar/waybar.nix
   ];
 
+
+  nixpkgs.config.allowUnfree = true;
+  home.file.".config/nixpkgs/config.nix".text = ''
+    { allowUnfree = true; }
+    '';
+
+
+
+
   # git
   programs.git = {
     enable = true;
@@ -24,6 +33,11 @@
       safe.directory = "/home/nath/.dotfiles";
     };
   };
+
+
+  # Dropbox
+  services.dropbox.enable = true;
+
 
 	# utilities
 
@@ -45,7 +59,8 @@
   # environment.
   home.packages = with pkgs; [
 
-	rofi
+
+  rofi
 
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
