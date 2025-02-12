@@ -270,6 +270,8 @@
 	ldns		# alternative to dig, provides command "drill"
 	lm_sensors
   mtr		# network diagnostic
+  ntfs3g
+  ntfsprogs
   pavucontrol
 	p7zip
 	pciutils	# lspci	
@@ -291,6 +293,8 @@
 	# other
  	appimage-run
   whatsapp-for-linux
+  discord
+  signal-desktop
 
   # 1password
   #1password-gui
