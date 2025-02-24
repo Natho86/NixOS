@@ -295,6 +295,7 @@
   whatsapp-for-linux
   discord
   signal-desktop
+  obsidian
 
   # 1password
   #1password-gui
