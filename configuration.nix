@@ -39,7 +39,7 @@
     #  address = "192.168.50.1";
     #  interface = "enp0s20f0u2";
     #};
-    #nameservers = [ "1.1.1.1" "8.8.8.8" ];
+    nameservers = [ "192.168.50.2" ];
   };
 
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -300,6 +300,7 @@
   discord
   signal-desktop
   obsidian
+  hashcat
 
   # 1password
   #1password-gui
