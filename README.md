@@ -15,6 +15,7 @@ Modern NixOS configuration with Plasma 6, Qtile, full disk encryption, and Home 
 
 **Features:**
 - Full disk encryption (LUKS) with auto-login after unlock
+- Btrfs filesystem with compression and subvolumes
 - Secrets management with sops-nix
 - TLP power management for laptops
 - Automatic garbage collection
@@ -40,13 +41,24 @@ parted $DISK -- mkpart primary 512MiB 100%
 cryptsetup luksFormat ${DISK}p2
 cryptsetup open ${DISK}p2 cryptroot
 
-# Format
+# Format boot partition
 mkfs.fat -F 32 ${DISK}p1
-mkfs.ext4 /dev/mapper/cryptroot
 
-# Mount
+# Format root with btrfs
+mkfs.btrfs /dev/mapper/cryptroot
+
+# Create btrfs subvolumes
 mount /dev/mapper/cryptroot /mnt
-mkdir -p /mnt/boot
+btrfs subvolume create /mnt/root
+btrfs subvolume create /mnt/home
+btrfs subvolume create /mnt/nix
+umount /mnt
+
+# Mount subvolumes with compression
+mount -o subvol=root,compress=zstd,noatime /dev/mapper/cryptroot /mnt
+mkdir -p /mnt/{home,nix,boot}
+mount -o subvol=home,compress=zstd,noatime /dev/mapper/cryptroot /mnt/home
+mount -o subvol=nix,compress=zstd,noatime /dev/mapper/cryptroot /mnt/nix
 mount ${DISK}p1 /mnt/boot
 ```
 
@@ -296,6 +308,26 @@ sudo systemctl restart NetworkManager
 ```bash
 sudo nixos-rebuild switch --rollback
 ```
+
+## Btrfs Snapshots (Optional)
+
+Take snapshots before major changes:
+
+```bash
+# Create a snapshot
+sudo btrfs subvolume snapshot /home /home/.snapshots/home-$(date +%Y%m%d)
+
+# List snapshots
+sudo btrfs subvolume list /
+
+# Restore from snapshot (boot into live USB if needed)
+sudo btrfs subvolume delete /home
+sudo btrfs subvolume snapshot /home/.snapshots/home-20241121 /home
+```
+
+For automatic snapshots, consider tools like:
+- `snapper` - Automatic snapshot management
+- `btrbk` - Backup tool for btrfs
 
 ## Resources
 
