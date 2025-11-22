@@ -6,39 +6,45 @@
     ./hardware-configuration.nix
   ];
 
+  # Enable GPU
+  hardware.graphics.enable = true;
+
   # Bootloader with LUKS support
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   
   # LUKS encryption setup
   boot.initrd.luks.devices."cryptroot" = {
-    device = "/dev/disk/by-uuid/YOUR-LUKS-UUID-HERE"; # Replace with your LUKS UUID
+    device = "/dev/disk/by-uuid/1fe239ed-81f2-4c97-80cc-30c24ffe8e2f"; # Replace with your LUKS UUID
     preLVM = true;
     allowDiscards = true; # Improves SSD performance
   };
 
   # Networking
-  networking.hostName = "laptop";
+  networking.hostName = "redpill-x1-yoga";
   networking.networkmanager.enable = true;
 
   # Time zone and locale
-  time.timeZone = "America/New_York"; # Change to your timezone
-  i18n.defaultLocale = "en_US.UTF-8";
+  time.timeZone = "Europe/London"; # Change to your timezone
+  i18n.defaultLocale = "en_GB.UTF-8";
   
   i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+    LC_ADDRESS = "en_GB.UTF-8";
+    LC_IDENTIFICATION = "en_GB.UTF-8";
+    LC_MEASUREMENT = "en_GB.UTF-8";
+    LC_MONETARY = "en_GB.UTF-8";
+    LC_NAME = "en_GB.UTF-8";
+    LC_NUMERIC = "en_GB.UTF-8";
+    LC_PAPER = "en_GB.UTF-8";
+    LC_TELEPHONE = "en_GB.UTF-8";
+    LC_TIME = "en_GB.UTF-8";
   };
+
+  console.keyMap = "uk";
 
   # Enable the X11 windowing system
   services.xserver.enable = true;
+  services.xserver.xkb.layout = "gb";
   
   # Enable Plasma 6
   services.displayManager.sddm.enable = true;
@@ -51,7 +57,7 @@
   # Auto-login after disk unlock
   services.displayManager.autoLogin = {
     enable = true;
-    user = "yourusername"; # Replace with your username
+    user = "nath"; # Replace with your username
   };
   
   # Workaround for auto-login with SDDM
@@ -70,18 +76,15 @@
 
   # Enable Docker
   virtualisation.docker.enable = true;
-  
-  # Add user to docker group
-  users.users.yourusername.extraGroups = [ "docker" ];
 
   # Enable touchpad support
   services.libinput.enable = true;
 
   # Define a user account
-  users.users.yourusername = {
+  users.users.nath = {
     isNormalUser = true;
-    description = "Your Name";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    description = "Nath";
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "docker" ];
     shell = pkgs.zsh;
   };
 
@@ -103,6 +106,9 @@
     fzf
     eza
     bat
+
+    # System utilities
+    pciutils
     
     # Archive tools
     unzip
@@ -117,14 +123,14 @@
   programs._1password.enable = true;
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = [ "yourusername" ];
+    polkitPolicyOwners = [ "nath" ];
   };
 
   # Secrets management with sops-nix
   sops = {
     defaultSopsFile = ./secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
-    age.keyFile = "/home/yourusername/.config/sops/age/keys.txt";
+    age.keyFile = "/home/nath/.config/sops/age/keys.txt";
   };
 
   # Enable firmware updates

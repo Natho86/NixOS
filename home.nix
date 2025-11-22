@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 
 {
-  home.username = "yourusername";
-  home.homeDirectory = "/home/yourusername";
+  home.username = "nath";
+  home.homeDirectory = "/home/nath";
 
   # This value determines the Home Manager release
   home.stateVersion = "24.05";
@@ -17,7 +17,7 @@
     
     # Communication
     signal-desktop
-    whatsapp-for-linux
+    #whatsapp-for-linux
     
     # Media
     audacity
@@ -34,6 +34,15 @@
     neofetch
     tmux
     tree
+
+    # Fonts
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    nerd-fonts.hack
+    noto-fonts
+    noto-fonts-color-emoji
+    font-awesome
+
   ];
 
   # Alacritty - Modern terminal emulator
@@ -337,12 +346,6 @@
 
   # Fonts
   fonts.fontconfig.enable = true;
-  home.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "Hack" ]; })
-    noto-fonts
-    noto-fonts-emoji
-    font-awesome
-  ];
 
   # Qtile configuration
   xdg.configFile."qtile/config.py".source = ./qtile-config.py;
@@ -372,12 +375,12 @@
   # Qt theme
   qt = {
     enable = true;
-    platformTheme.name = "qtct";
-    style.name = "kvantum";
+    platformTheme.name = "kde";
+    #style.name = "kvantum";
   };
 
-  home.file.".config/Kvantum/kvantum.kvconfig".text = ''
-    [General]
-    theme=Catppuccin-Mocha-Blue
-  '';
+  #home.file.".config/Kvantum/kvantum.kvconfig".text = ''
+  #  [General]
+  #  theme=Catppuccin-Mocha-Blue
+  #'';
 }

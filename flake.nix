@@ -27,7 +27,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.yourusername = import ./home.nix;
+          home-manager.users.nath = import ./home.nix;
           home-manager.extraSpecialArgs = { inherit inputs; };
         }
       ];
