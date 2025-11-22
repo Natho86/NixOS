@@ -20,7 +20,7 @@
     #whatsapp-for-linux
     
     # Media
-    audacity
+    #audacity.override { ffmpeg = pkgs.ffmpeg_6-full; }
     spotify
     
     # Productivity
