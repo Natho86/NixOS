@@ -29,11 +29,36 @@
     # Development
     docker-compose
     github-desktop
+    vscode
+    nmap
     
     # Terminal utilities
     neofetch
     tmux
     tree
+
+    # System utilities
+    jq              # JSON processor
+    yq-go           # YAML processor
+    tldr            # Simplified man pages
+    ncdu            # Disk usage analyzer (ncurses)
+    duf             # Modern df alternative
+    procs           # Modern ps alternative
+    dust            # Modern du alternative
+    bottom          # System monitor (btop alternative)
+    bandwhich       # Network utilization monitor
+
+    # Network utilities
+    httpie          # User-friendly HTTP client
+    rsync           # File sync utility
+    mtr             # Network diagnostic tool
+    iperf3          # Network performance testing
+    tcpdump         # Packet analyzer
+
+    # System debugging
+    strace          # System call tracer
+    lsof            # List open files
+    pciutils        # PCI utilities (already in system packages, but useful here too)
 
     # Fonts
     nerd-fonts.jetbrains-mono
