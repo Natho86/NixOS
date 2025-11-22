@@ -24,6 +24,9 @@
   #networking.hostName = "redpill-x1-yoga";
   networking.networkmanager.enable = true;
 
+  # Tailscale VPN
+  services.tailscale.enable = true;
+
   # Time zone and locale
   time.timeZone = "Europe/London"; # Change to your timezone
   i18n.defaultLocale = "en_GB.UTF-8";
@@ -182,6 +185,9 @@
 
   # Enable firewall
   networking.firewall.enable = true;
+  # Allow Tailscale traffic
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  networking.firewall.allowedUDPPorts = [ 41641 ]; # Tailscale default port
 
   # This value determines the NixOS release
   system.stateVersion = "24.05";
