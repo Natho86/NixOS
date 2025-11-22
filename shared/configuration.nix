@@ -122,9 +122,10 @@
     (audacity.override {
       ffmpeg = ffmpeg_6;  # Match the version from ldd output
     })
-    nixpkgs.config.audacity.ffmpeg = pkgs.ffmpeg;
   ];
-
+  # https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
+  nixpkgs.config.audacity.ffmpeg = pkgs.ffmpeg;
+  
   # Enable programs
   programs.zsh.enable = true;
   programs.git.enable = true;
