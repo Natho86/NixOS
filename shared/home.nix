@@ -31,6 +31,7 @@
     github-desktop
     vscode
     nmap
+    nodejs_22  # Node.js LTS for npm packages (e.g., Claude Code)
     
     # Terminal utilities
     neofetch
