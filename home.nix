@@ -252,23 +252,23 @@
   # Git configuration
   programs.git = {
     enable = true;
-    userName = "Your Name";
-    userEmail = "your.email@example.com";
-    
-    extraConfig = {
+    settings = {
+      user.name = "Natho86";
+      user.email = "oakes.nathan@gmail.com";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
       credential.helper = "libsecret";
     };
-    
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        line-numbers = true;
-        syntax-theme = "Catppuccin-mocha";
-      };
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      line-numbers = true;
+      syntax-theme = "Catppuccin-mocha";
     };
   };
 
@@ -311,7 +311,7 @@
       ];
     };
     
-    initExtra = ''
+    initContent = ''
       # Starship prompt
       eval "$(starship init zsh)"
       
