@@ -288,6 +288,16 @@
     };
   };
 
+  # npm configuration for global packages
+  home.file.".npmrc".text = ''
+    prefix=''${HOME}/.npm-global
+  '';
+
+  # Add npm global bin to PATH
+  home.sessionPath = [
+    "$HOME/.npm-global/bin"
+  ];
+
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
