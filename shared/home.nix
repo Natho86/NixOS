@@ -268,7 +268,7 @@
     options = {
       navigate = true;
       line-numbers = true;
-      syntax-theme = "Catppuccin-mocha";
+      syntax-theme = "base16";
     };
   };
 
@@ -341,6 +341,14 @@
       color_theme = "Default";
       theme_background = false;
       vim_keys = true;
+    };
+  };
+
+  # bat config
+  programs.bat = {
+    enable = true;
+    config = {
+      theme = "base16";
     };
   };
 
