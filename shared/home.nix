@@ -31,7 +31,8 @@
     github-desktop
     vscode
     nmap
-    nodejs_22  # Node.js LTS for npm packages (e.g., Claude Code)
+    claude-code
+    nodejs_22  # Node.js LTS for npm-based tools
     
     # Terminal utilities
     neofetch
@@ -287,6 +288,16 @@
       credential.helper = "libsecret";
     };
   };
+
+  # npm configuration for global packages
+  home.file.".npmrc".text = ''
+    prefix=''${HOME}/.npm-global
+  '';
+
+  # Add npm global bin to PATH
+  home.sessionPath = [
+    "$HOME/.npm-global/bin"
+  ];
 
   programs.delta = {
     enable = true;
