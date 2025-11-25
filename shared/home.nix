@@ -17,7 +17,8 @@
     
     # Communication
     signal-desktop
-    #whatsapp-for-linux
+    whatsapp-electron
+    discord
     
     # Media
     #audacity.override { ffmpeg = pkgs.ffmpeg_6-full; }
@@ -30,7 +31,6 @@
     docker-compose
     github-desktop
     vscode
-    nmap
     claude-code
     nodejs_22  # Node.js LTS for npm-based tools
     
@@ -51,6 +51,7 @@
     bandwhich       # Network utilization monitor
 
     # Network utilities
+    nmap
     httpie          # User-friendly HTTP client
     rsync           # File sync utility
     mtr             # Network diagnostic tool

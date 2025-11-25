@@ -117,9 +117,6 @@
     unzip
     p7zip
 
-    # Audio tools
-    #ffmpeg
-
     # audacity + ffmpeg https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
     ffmpeg_6  # or ffmpeg_7, depending on what audacity needs
     (audacity.override {
