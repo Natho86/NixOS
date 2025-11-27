@@ -28,7 +28,7 @@
     obsidian
     
     # Development
-    devenv
+    # devenv
     docker-compose
     github-desktop
     vscode

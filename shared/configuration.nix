@@ -94,6 +94,17 @@
   # Allow unfree packages (needed for Chrome, 1Password, Obsidian, Spotify)
   nixpkgs.config.allowUnfree = true;
 
+  # Flox 
+  nix.settings.trusted-substituters = [ "https://cache.flox.dev" ];
+  nix.settings.trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
+  
+  # https://flox.dev/docs/install-flox/install/#__codelineno-23-1
+  # Install to user profile with:
+  #  nix profile install \
+  #    --experimental-features "nix-command flakes" \
+  #    --accept-flake-config \
+  #    'github:flox/flox/latest'
+
   # System packages
   environment.systemPackages = with pkgs; [
     vim
