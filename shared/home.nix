@@ -291,6 +291,20 @@
     };
   };
 
+  # GitHub CLI
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper.enable = true;
+    settings = {
+      git_protocol = "ssh";
+      editor = "nvim";
+      aliases = {
+        co = "pr checkout";
+        pv = "pr view";
+      };
+    };
+  };
+
   # npm configuration for global packages
   home.file.".npmrc".text = ''
     prefix=''${HOME}/.npm-global
