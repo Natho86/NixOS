@@ -55,6 +55,7 @@
     nmap
     httpie          # User-friendly HTTP client
     rsync           # File sync utility
+    rclone          # Cloud storage sync and mount utility
     mtr             # Network diagnostic tool
     iperf3          # Network performance testing
     tcpdump         # Packet analyzer
