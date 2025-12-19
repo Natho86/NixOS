@@ -415,6 +415,10 @@
   # GTK theme
   gtk = {
     enable = true;
+
+    # Force overwrite of .gtkrc-2.0 to prevent conflicts with KDE/Plasma
+    gtk2.force = true;
+
     theme = {
       name = "Catppuccin-Mocha-Standard-Blue-Dark";
       package = pkgs.catppuccin-gtk.override {
@@ -422,12 +426,12 @@
         variant = "mocha";
       };
     };
-    
+
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-    
+
     cursorTheme = {
       name = "Catppuccin-Mocha-Dark-Cursors";
       package = pkgs.catppuccin-cursors.mochaDark;
