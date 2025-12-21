@@ -52,23 +52,32 @@ When setting up this configuration on your desktop for the first time:
 
 1. **Boot from NixOS installation media**
 
-2. **Generate hardware configuration**:
+2. **Clone this repository** (if not already done):
    ```bash
-   # After partitioning and mounting your drives
+   cd /mnt/home
+   git clone https://github.com/Natho86/NixOS.git
+   cd NixOS
+   ```
+
+3. **Generate hardware configuration**:
+   ```bash
    nixos-generate-config --root /mnt
-
-   # Copy the generated hardware-configuration.nix to this repo
-   cp /mnt/etc/nixos/hardware-configuration.nix /path/to/NixOS/hosts/redpill-desktop/
+   cp /mnt/etc/nixos/hardware-configuration.nix ./hosts/redpill-desktop/
    ```
 
-3. **Clone this repository** (if not already done):
+4. **Get your LUKS UUID and update configuration**:
    ```bash
-   git clone <your-repo-url> /mnt/home/nath/NixOS
+   # Get the UUID of your encrypted partition
+   blkid /dev/sdb2  # Replace with your actual encrypted partition
+
+   # Edit the desktop configuration and replace YOUR-DESKTOP-LUKS-UUID-HERE
+   nano hosts/redpill-desktop/configuration.nix
+   # Update line 18 with your actual LUKS UUID
    ```
 
-4. **Install the system**:
+5. **Install the system**:
    ```bash
-   nixos-install --flake /mnt/home/nath/NixOS#desktop
+   nixos-install --flake .#desktop
    ```
 
 5. **Reboot and verify GPU**:

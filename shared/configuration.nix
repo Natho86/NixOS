@@ -12,13 +12,9 @@
   # Bootloader with LUKS support
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
-  # LUKS encryption setup
-  boot.initrd.luks.devices."cryptroot" = {
-    device = "/dev/disk/by-uuid/1fe239ed-81f2-4c97-80cc-30c24ffe8e2f"; # Replace with your LUKS UUID
-    preLVM = true;
-    allowDiscards = true; # Improves SSD performance
-  };
+
+  # LUKS encryption setup moved to host-specific configuration
+  # See hosts/redpill-x1-yoga/configuration.nix or hosts/redpill-desktop/configuration.nix
 
   # Networking
   #networking.hostName = "redpill-x1-yoga";

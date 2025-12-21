@@ -11,6 +11,15 @@
   # Hostname
   networking.hostName = "redpill-desktop";
 
+  # LUKS encryption setup for this machine
+  # IMPORTANT: Replace the UUID below with your actual LUKS UUID
+  # Get it with: blkid /dev/sdb2 (or your encrypted partition)
+  boot.initrd.luks.devices."cryptroot" = {
+    device = "/dev/disk/by-uuid/YOUR-DESKTOP-LUKS-UUID-HERE";
+    preLVM = true;
+    allowDiscards = true; # Improves SSD performance
+  };
+
   # Nvidia GPU Configuration
   services.xserver.videoDrivers = [ "nvidia" ];
 
