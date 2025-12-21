@@ -65,45 +65,48 @@ mount ${DISK}p1 /mnt/boot
 **3. Clone this configuration:**
 ```bash
 nix-shell -p git
-cd /mnt
-mkdir -p home
-cd home
-git clone https://github.com/yourusername/nixos-config.git
-cd nixos-config
+cd /mnt/home
+git clone https://github.com/Natho86/NixOS.git
+cd NixOS
 ```
 
 **4. Generate hardware config:**
 ```bash
 nixos-generate-config --root /mnt
-cp /mnt/etc/nixos/hardware-configuration.nix ./
+
+# For laptop installation:
+cp /mnt/etc/nixos/hardware-configuration.nix ./hosts/redpill-x1-yoga/
+
+# For desktop installation:
+cp /mnt/etc/nixos/hardware-configuration.nix ./hosts/redpill-desktop/
 ```
 
 **5. Customize configuration:**
 ```bash
 # Get your LUKS UUID
-blkid ${DISK}p2
+blkid ${DISK}p2  # For NVMe: ${DISK}p2, for SATA/SSD: ${DISK}2
 
-# Edit configuration.nix and update:
-# - YOUR-LUKS-UUID-HERE (line ~25)
-# - yourusername (multiple locations)
-# - timezone (line ~36)
+# For laptop - edit hosts/redpill-x1-yoga/configuration.nix
+# For desktop - edit hosts/redpill-desktop/configuration.nix
+# Update the LUKS UUID on line ~18
 
-# Quick replace username:
-USERNAME="yourname"
-sed -i "s/yourusername/$USERNAME/g" *.nix
-
-# Edit home.nix and update:
-# - Git name and email
-nano home.nix
+# Edit shared/home.nix and update:
+# - Git name and email (lines ~282-292)
+nano shared/home.nix
 ```
 
 **6. Install:**
 ```bash
+# For laptop:
 nixos-install --flake .#laptop
+
+# For desktop:
+nixos-install --flake .#desktop
+
 # Set root password when prompted
 
-# Set user password
-nixos-enter --root /mnt -c "passwd $USERNAME"
+# Set user password (username is 'nath')
+nixos-enter --root /mnt -c "passwd nath"
 
 # Reboot
 reboot
@@ -113,41 +116,43 @@ reboot
 
 **1. Clone this repository:**
 ```bash
-git clone https://github.com/yourusername/nixos-config.git ~/nixos-config
-cd ~/nixos-config
+git clone https://github.com/Natho86/NixOS.git ~/NixOS
+cd ~/NixOS
 ```
 
 **2. Generate your hardware config:**
 ```bash
-sudo nixos-generate-config --show-hardware-config > hardware-configuration.nix
+# For laptop:
+sudo nixos-generate-config --show-hardware-config > hosts/redpill-x1-yoga/hardware-configuration.nix
+
+# For desktop:
+sudo nixos-generate-config --show-hardware-config > hosts/redpill-desktop/hardware-configuration.nix
 ```
 
 **3. Customize configuration:**
 ```bash
 # Get your LUKS UUID (if using encryption)
-sudo blkid /dev/nvme0n1p2  # or your encrypted partition
+sudo blkid /dev/nvme0n1p2  # or your encrypted partition (sdb2 for SATA)
 
-# Update configuration.nix:
-# - YOUR-LUKS-UUID-HERE with your actual UUID
-# - yourusername with your actual username
-# - timezone to your location
+# For laptop - edit hosts/redpill-x1-yoga/configuration.nix
+# For desktop - edit hosts/redpill-desktop/configuration.nix
+# Update the LUKS UUID on line ~18
 
-# Quick replace:
-USERNAME="yourname"
-sed -i "s/yourusername/$USERNAME/g" *.nix
-
-# Update home.nix:
-# - Git name and email
-nano home.nix
+# Update shared/home.nix:
+# - Git name and email (lines ~282-292)
+nano shared/home.nix
 ```
 
 **4. Test and apply:**
 ```bash
-# Test the configuration
+# For laptop - test the configuration
 sudo nixos-rebuild test --flake .#laptop
 
+# For desktop - test the configuration
+sudo nixos-rebuild test --flake .#desktop
+
 # If everything works, apply it
-sudo nixos-rebuild switch --flake .#laptop
+sudo nixos-rebuild switch --flake .#laptop  # or .#desktop
 ```
 
 ## Post-Installation
@@ -155,12 +160,12 @@ sudo nixos-rebuild switch --flake .#laptop
 ### Essential Commands
 ```bash
 # Rebuild system after changes
-sudo nixos-rebuild switch --flake ~/nixos-config#laptop
+sudo nixos-rebuild switch --flake ~/NixOS#laptop  # or #desktop
 
 # Update all packages
-cd ~/nixos-config
+cd ~/NixOS
 nix flake update
-sudo nixos-rebuild switch --flake .#laptop
+sudo nixos-rebuild switch --flake .#laptop  # or #desktop
 
 # Clean old generations
 sudo nix-collect-garbage --delete-older-than 7d
@@ -181,7 +186,7 @@ At the SDDM login screen, click the session selector and choose:
 
 ## Adding Applications
 
-Edit `home.nix` and add to `home.packages`:
+Edit `shared/home.nix` and add to `home.packages`:
 ```nix
 home.packages = with pkgs; [
   google-chrome
@@ -193,22 +198,32 @@ home.packages = with pkgs; [
 
 Then rebuild:
 ```bash
-sudo nixos-rebuild switch --flake ~/nixos-config#laptop
+sudo nixos-rebuild switch --flake ~/NixOS#laptop  # or #desktop
 ```
 
 ## File Structure
 
 ```
-nixos-config/
-├── flake.nix                    # Flake definition
-├── configuration.nix            # System configuration
-├── home.nix                     # User environment
-├── qtile-config.py             # Qtile config
-├── hardware-configuration.nix   # Auto-generated (not in git)
-├── .gitignore                  # Protects secrets
-├── Makefile                    # Shortcuts
+NixOS/
+├── flake.nix                              # Flake definition with all host configurations
+├── hosts/                                 # Host-specific configurations
+│   ├── redpill-x1-yoga/                  # Laptop
+│   │   ├── configuration.nix             # Laptop-specific settings + LUKS UUID
+│   │   └── hardware-configuration.nix    # Auto-generated (not in git)
+│   └── redpill-desktop/                  # Desktop
+│       ├── configuration.nix             # Desktop-specific settings + LUKS UUID + Nvidia
+│       ├── gpu-packages.nix              # GPU-specific packages (CUDA, Ollama, etc.)
+│       ├── hardware-configuration.nix    # Auto-generated (not in git)
+│       └── README.md                     # Desktop setup guide
+├── shared/                                # Shared configuration across all hosts
+│   ├── configuration.nix                 # System-level config (services, users, etc.)
+│   ├── home.nix                          # User environment (packages, dotfiles)
+│   └── qtile-config.py                   # Qtile window manager config
+├── .gitignore                            # Protects secrets and hardware configs
+├── Makefile                              # Shortcuts for common commands
+├── README.md                             # This file
 └── secrets/
-    └── secrets.yaml            # Encrypted secrets
+    └── secrets.yaml                      # Encrypted secrets (not in git)
 ```
 
 ## Secrets Management (Optional)
@@ -222,7 +237,7 @@ age-keygen -o ~/.config/sops/age/keys.txt
 age-keygen -y ~/.config/sops/age/keys.txt  # Get public key
 
 # Create .sops.yaml with your public key
-cat > ~/nixos-config/.sops.yaml << 'EOF'
+cat > ~/NixOS/.sops.yaml << 'EOF'
 keys:
   - &admin YOUR_PUBLIC_KEY_HERE
 creation_rules:
@@ -233,7 +248,7 @@ creation_rules:
 EOF
 
 # Edit secrets (auto-encrypted on save)
-cd ~/nixos-config
+cd ~/NixOS
 sops secrets/secrets.yaml
 ```
 
@@ -255,29 +270,44 @@ Safe to commit:
 
 **Change timezone:**
 ```nix
-# In configuration.nix
+# In shared/configuration.nix
 time.timeZone = "America/Los_Angeles";
 ```
 
 **Adjust power management:**
 ```nix
-# In configuration.nix
+# In shared/configuration.nix
 services.tlp.settings = {
   START_CHARGE_THRESH_BAT0 = 40;
   STOP_CHARGE_THRESH_BAT0 = 80;
 };
 ```
 
-**Change theme:** Edit colors in `home.nix` and `qtile-config.py`
+**Change theme:** Edit colors in `shared/home.nix` and `shared/qtile-config.py`
 
 ## Multiple Machines
 
-Since `hardware-configuration.nix` is machine-specific:
+This repository supports multiple hosts (laptop and desktop). Each host has its own directory under `hosts/`:
 
+**Setup process:**
 1. Clone the repo on each machine
-2. Generate `hardware-configuration.nix` locally
-3. It's automatically ignored by git
-4. Each machine keeps its own hardware config
+2. Generate hardware config for that specific host:
+   ```bash
+   # On laptop:
+   sudo nixos-generate-config --show-hardware-config > hosts/redpill-x1-yoga/hardware-configuration.nix
+
+   # On desktop:
+   sudo nixos-generate-config --show-hardware-config > hosts/redpill-desktop/hardware-configuration.nix
+   ```
+3. Update the LUKS UUID in the host's `configuration.nix`
+4. Hardware configs are automatically ignored by git (each machine keeps its own)
+5. Rebuild with the appropriate flake target:
+   - Laptop: `sudo nixos-rebuild switch --flake .#laptop`
+   - Desktop: `sudo nixos-rebuild switch --flake .#desktop`
+
+**Shared configuration:**
+- All hosts share the same packages, dotfiles, and services (defined in `shared/`)
+- Only hardware-specific settings and LUKS UUIDs differ between hosts
 
 ## Makefile Shortcuts
 

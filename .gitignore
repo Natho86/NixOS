@@ -1,6 +1,6 @@
 # Hardware configuration (contains UUIDs specific to your machine)
-# Uncomment if you don't want to share your hardware config
-# hardware-configuration.nix
+# Keep placeholders in git, but ignore real hardware configs on each host
+hosts/*/hardware-configuration.nix
 
 # Secrets
 secrets/secrets.yaml
