@@ -15,10 +15,32 @@
     allowDiscards = true; # Improves SSD performance
   };
 
-  # Any other machine-specific settings can go here
-  # For example, if this laptop has specific power management needs:
-  # services.tlp.settings = {
-  #   CPU_SCALING_GOVERNOR_ON_AC = "performance";
-  #   CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-  # };
+  # sops-nix age key location for this host
+  sops.age.keyFile = "/home/nath/.config/sops/age/keys.txt";
+
+  # Auto-login after disk unlock (laptop-specific for convenience)
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "nath";
+  };
+
+  # Workaround for auto-login with SDDM
+  systemd.services."getty@tty1".enable = false;
+  systemd.services."autovt@tty1".enable = false;
+
+  # Power management for laptop (TLP)
+  services.power-profiles-daemon.enable = false; # Conflicts with TLP
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+    };
+  };
 }

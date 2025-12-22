@@ -52,16 +52,8 @@
   
   # Enable Qtile
   services.xserver.windowManager.qtile.enable = true;
-  
-  # Auto-login after disk unlock
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "nath"; # Replace with your username
-  };
-  
-  # Workaround for auto-login with SDDM
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
+
+  # Auto-login configuration is set per-host (see laptop config)
 
   # Audio
   security.rtkit.enable = true;
@@ -148,30 +140,16 @@
   };
 
   # Secrets management with sops-nix
+  # Host-specific key paths are set in each host configuration
   sops = {
     defaultSopsFile = ./secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
-    age.keyFile = "/home/nath/.config/sops/age/keys.txt";
   };
 
   # Enable firmware updates
   services.fwupd.enable = true;
 
-  # Power management for laptop
-  services.power-profiles-daemon.enable = false; # Conflicts with TLP
-  services.tlp = {
-    enable = true;
-    settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-      
-      START_CHARGE_THRESH_BAT0 = 40;
-      STOP_CHARGE_THRESH_BAT0 = 80;
-    };
-  };
+  # Power management (TLP is configured per-host for laptops)
 
   # Enable bluetooth
   hardware.bluetooth.enable = true;

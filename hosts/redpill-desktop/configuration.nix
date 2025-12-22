@@ -1,5 +1,5 @@
 # Host-specific configuration for redpill-desktop
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Import hardware configuration
@@ -11,14 +11,17 @@
   # Hostname
   networking.hostName = "redpill-desktop";
 
-  # LUKS encryption setup for this machine
-  # IMPORTANT: Replace the UUID below with your actual LUKS UUID
-  # Get it with: blkid /dev/sdb2 (or your encrypted partition)
-  #boot.initrd.luks.devices."cryptroot" = {
-  #  device = "/dev/disk/by-uuid/YOUR-DESKTOP-LUKS-UUID-HERE";
-  #  preLVM = true;
-  #  allowDiscards = true; # Improves SSD performance
-  #};
+  # No disk encryption on desktop
+
+  # sops-nix age key location for this host
+  sops.age.keyFile = "/home/nath/.config/sops/age/keys.txt";
+
+  # Disable auto-login on desktop (require login for security)
+  services.displayManager.autoLogin.enable = lib.mkForce false;
+
+  # Enable getty services (disabled on laptop for auto-login workaround)
+  systemd.services."getty@tty1".enable = lib.mkForce true;
+  systemd.services."autovt@tty1".enable = lib.mkForce true;
 
   # Nvidia GPU Configuration
   services.xserver.videoDrivers = [ "nvidia" ];
