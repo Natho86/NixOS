@@ -168,6 +168,16 @@
   # Optimize store automatically
   nix.optimise.automatic = true;
 
+  # Automatic system updates
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = false;  # Don't automatically reboot (manual reboot required)
+    dates = "weekly";     # Check for updates weekly
+    flake = "github:Natho86/NixOS#${config.networking.hostName}";  # Update from GitHub repo
+    # Alternatively, use local flake for testing before deploying:
+    # flake = "/home/nath/NixOS#${config.networking.hostName}";
+  };
+
   # Enable firewall
   networking.firewall.enable = true;
   # Allow Tailscale traffic

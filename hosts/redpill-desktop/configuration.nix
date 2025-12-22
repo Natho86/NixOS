@@ -23,6 +23,24 @@
   systemd.services."getty@tty1".enable = lib.mkForce true;
   systemd.services."autovt@tty1".enable = lib.mkForce true;
 
+  # Default to X11 session for better Nvidia compatibility
+  # Wayland + Nvidia can be unstable, especially for GPU-intensive workloads
+  services.displayManager.defaultSession = lib.mkForce "plasmax11";
+
+  # Desktop performance tuning
+  boot.kernel.sysctl = {
+    # Reduce swappiness (desktop has plenty of RAM, prefer to keep things in memory)
+    "vm.swappiness" = 10;
+    # Improve responsiveness for interactive workloads
+    "vm.vfs_cache_pressure" = 50;
+  };
+
+  # CPU Governor - Maximum performance for desktop
+  powerManagement.cpuFreqGovernor = "performance";
+
+  # Disable Bluetooth (uncomment if your desktop doesn't have/need Bluetooth)
+  # hardware.bluetooth.enable = lib.mkForce false;
+
   # Nvidia GPU Configuration
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -61,7 +79,13 @@
   # Enable Docker with Nvidia GPU support (useful for containerized GPU workloads)
   hardware.nvidia-container-toolkit.enable = true;
 
+  # SSH server configuration
   services.openssh = {
     enable = true;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = true;  # Set to false after setting up SSH keys
+      X11Forwarding = false;
+    };
   };
 }

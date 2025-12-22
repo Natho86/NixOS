@@ -16,6 +16,8 @@
 
     # Ollama - Local LLM inference with GPU acceleration
     # Ollama in NixOS automatically detects and uses CUDA when available
+    # NOTE: Currently commented out due to build issues during initial install
+    # Uncomment after successful system installation and rebuild
     #ollama
 
     # NVTOP - GPU monitoring tool (like htop for Nvidia GPUs)
@@ -41,12 +43,13 @@
 
   # Ollama service configuration
   # This runs Ollama as a system service with GPU acceleration
+  # NOTE: Uncomment along with the ollama package above after successful installation
   #services.ollama = {
-  #enable = true;
-    #acceleration = "cuda";  # Enable CUDA acceleration for Ollama
-    # Uncomment and modify if you want to specify GPU devices:
-    # environmentVariables = {
-    #   CUDA_VISIBLE_DEVICES = "0";
-    # };
-    #};
+  #  enable = true;
+  #  acceleration = "cuda";  # Enable CUDA acceleration for Ollama
+  #  # Uncomment and modify if you want to specify GPU devices:
+  #  # environmentVariables = {
+  #  #   CUDA_VISIBLE_DEVICES = "0";
+  #  # };
+  #};
 }
