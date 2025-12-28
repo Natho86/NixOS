@@ -62,7 +62,7 @@
 
     # Use the open source kernel module (for newer GPUs)
     # Set to false if you have an older GPU or experience issues
-    open = false;
+    open = true;
 
     # Enable the Nvidia settings menu
     nvidiaSettings = true;
