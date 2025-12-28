@@ -92,6 +92,9 @@
   #    --experimental-features "nix-command flakes" \
   #    --accept-flake-config \
   #    'github:flox/flox/latest'
+  
+  # Mullvad-vpn https://nixos.wiki/wiki/Mullvad_VPN
+  services.mullvad-vpn.enable = true;
 
   # System packages
   environment.systemPackages = with pkgs; [
@@ -127,7 +130,10 @@
   ];
   # https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
   nixpkgs.config.audacity.ffmpeg = pkgs.ffmpeg;
-  
+
+  # Mullvad-vpn https://nixos.wiki/wiki/Mullvad_VPN
+  services.mullvad-vpn.package = pkgs.mullvad-vpn;
+
   # Enable programs
   programs.zsh.enable = true;
   programs.git.enable = true;
