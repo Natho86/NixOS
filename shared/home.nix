@@ -438,6 +438,12 @@
     };
   };
 
+  # Force overwrite config files (prevents conflicts with existing configs)
+  xdg.configFile."gtk-3.0/settings.ini".force = true;
+  xdg.configFile."gtk-4.0/settings.ini".force = true;
+  home.file.".gtkrc-2.0".force = true;
+  home.file.".zshrc".force = true;
+
   # Qt theme
   qt = {
     enable = true;
