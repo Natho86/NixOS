@@ -419,11 +419,6 @@
   gtk = {
     enable = true;
 
-    # Force overwrite of GTK config files to prevent conflicts with KDE/Plasma
-    gtk2.force = true;
-    gtk3.force = true;
-    gtk4.force = true;
-
     theme = {
       name = "Catppuccin-Mocha-Standard-Blue-Dark";
       package = pkgs.catppuccin-gtk.override {
