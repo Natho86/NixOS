@@ -419,8 +419,10 @@
   gtk = {
     enable = true;
 
-    # Force overwrite of .gtkrc-2.0 to prevent conflicts with KDE/Plasma
+    # Force overwrite of GTK config files to prevent conflicts with KDE/Plasma
     gtk2.force = true;
+    gtk3.force = true;
+    gtk4.force = true;
 
     theme = {
       name = "Catppuccin-Mocha-Standard-Blue-Dark";
