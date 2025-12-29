@@ -4,11 +4,12 @@
 {
   # System packages that require or benefit from GPU acceleration
   environment.systemPackages = with pkgs; [
-    # CUDA Toolkit - Essential for GPU development and acceleration
-    cudaPackages.cudatoolkit
+    # CUDA Toolkit 12.x - Essential for GPU development and acceleration
+    # Using CUDA 12 specifically as required by faster-whisper and ctranslate2
+    cudaPackages_12.cudatoolkit
 
     # cuDNN - CUDA Deep Neural Network library (useful for ML workloads)
-    cudaPackages.cudnn
+    cudaPackages_12.cudnn
 
     # Hashcat - Password cracking tool with CUDA support
     # Note: NixOS hashcat is built with CUDA support by default when cudaSupport is enabled
