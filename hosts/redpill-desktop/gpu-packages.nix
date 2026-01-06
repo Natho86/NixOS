@@ -2,6 +2,7 @@
 { config, pkgs, ... }:
 
 let
+  python = pkgs.python311;
   # Helper to bootstrap a GPU-enabled virtualenv for faster-whisper.
   # Pins ctranslate2 to 4.4.0 to stay on CUDA 12 + cuDNN 8 per upstream guidance:
   # https://github.com/SYSTRAN/faster-whisper?tab=readme-ov-file#gpu
@@ -11,12 +12,21 @@ let
     VENV_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/venvs/faster-whisper"
     echo "Creating/refreshing virtualenv at $VENV_PATH"
 
-    python3 -m venv "$VENV_PATH"
+    ${python}/bin/python -m venv "$VENV_PATH"
     # shellcheck source=/dev/null
     source "$VENV_PATH/bin/activate"
 
+    export CUDA_HOME="${pkgs.cudaPackages.cudatoolkit}"
+    export LD_LIBRARY_PATH="${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.cudaPackages.cudnn}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
     pip install --upgrade pip
-    pip install --force-reinstall "ctranslate2==4.4.0" faster-whisper
+    pip install --upgrade "ctranslate2==4.4.0" faster-whisper
+
+    mkdir -p "$VENV_PATH/bin/activate.d"
+    cat >"$VENV_PATH/bin/activate.d/cuda-env.sh" <<'EOF'
+export CUDA_HOME="${pkgs.cudaPackages.cudatoolkit}"
+export LD_LIBRARY_PATH="${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.cudaPackages.cudnn}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+EOF
 
     echo "GPU-ready faster-whisper environment is set up."
     echo "Activate with: source $VENV_PATH/bin/activate"
