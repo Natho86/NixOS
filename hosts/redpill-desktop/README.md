@@ -33,6 +33,15 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
 - **NVTOP** - GPU monitoring (like htop for GPUs)
   - Command: `nvtop`
 
+### Faster-Whisper (GPU transcription)
+- CUDA toolkit + cuDNN are installed for GPU inference
+- Use the helper to create a GPU-ready venv pinned to ctranslate2 4.4.0 (CUDA 12 + cuDNN 8 compatible):
+  ```bash
+  setup-faster-whisper
+  source ~/.local/share/venvs/faster-whisper/bin/activate
+  ```
+- Run `faster-whisper` commands inside that virtualenv
+
 ## Initial Setup on Desktop
 
 When setting up this configuration on your desktop for the first time:
