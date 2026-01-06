@@ -40,6 +40,7 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
   setup-faster-whisper
   source ~/.local/share/venvs/faster-whisper/bin/activate
   ```
+- For development inside a Nix shell (with virtualenvs), run `nix develop` to expose CUDA toolkit libraries, cuDNN, and cuBLAS via `LD_LIBRARY_PATH`. This ensures CUDA-enabled `ctranslate2` wheels detect the GPU when you activate your venv.
 - Run `faster-whisper` commands inside that virtualenv
 - Note: the helper pins versions but downloads wheels from PyPI at runtime; rerun it when you want to refresh dependencies. This is an imperative workflow and not fully reproducible under Nix.
 
