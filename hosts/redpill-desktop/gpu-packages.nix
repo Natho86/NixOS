@@ -12,7 +12,7 @@ let
   fasterWhisperVenv = pkgs.writeShellScriptBin "setup-faster-whisper" ''
     set -euo pipefail
 
-    VENV_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/venvs/faster-whisper"
+    VENV_PATH="''${XDG_DATA_HOME:-$HOME/.local/share}/venvs/faster-whisper"
     mkdir -p "$(dirname "$VENV_PATH")"
 
     # If anything fails, warn about a partially created venv so the user can clean it up.
@@ -24,8 +24,8 @@ let
     source "$VENV_PATH/bin/activate"
 
     export CUDA_HOME="${cudaRuntime}"
-    # Keep the backslash before ${LD_LIBRARY_PATH} so it is expanded after activation.
-    export LD_LIBRARY_PATH="${cudaRuntime}/lib:${cudaDnn}/lib:${cudaBlas}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    # Keep the backslash before the LD_LIBRARY_PATH expansion so it is expanded after activation.
+    export LD_LIBRARY_PATH="${cudaRuntime}/lib:${cudaDnn}/lib:${cudaBlas}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
     pip install --upgrade pip
     pip install --upgrade "ctranslate2==4.4.0" faster-whisper
@@ -36,7 +36,7 @@ let
       cat >>"$VENV_PATH/bin/activate" <<EOF
 # setup-faster-whisper CUDA env
 export CUDA_HOME="${cudaRuntime}"
-export LD_LIBRARY_PATH="${cudaRuntime}/lib:${cudaDnn}/lib:${cudaBlas}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${cudaRuntime}/lib:${cudaDnn}/lib:${cudaBlas}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 EOF
     fi
 
