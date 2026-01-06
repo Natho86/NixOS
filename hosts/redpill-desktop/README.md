@@ -34,14 +34,14 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
   - Command: `nvtop`
 
 ### Faster-Whisper (GPU transcription)
-- CUDA toolkit + cuDNN are installed for GPU inference
+- CUDA runtime redist (cudart + cublas) and cuDNN are installed for GPU inference
 - Use the helper to create a GPU-ready venv pinned to ctranslate2 4.4.0 (CUDA 12 + cuDNN 8 compatible). It sets CUDA-related environment variables each time you activate the venv:
   ```bash
   setup-faster-whisper
   source ~/.local/share/venvs/faster-whisper/bin/activate
   ```
 - Run `faster-whisper` commands inside that virtualenv
-- Note: the helper pins versions but downloads wheels from PyPI at runtime; rerun it when you want to refresh dependencies.
+- Note: the helper pins versions but downloads wheels from PyPI at runtime; rerun it when you want to refresh dependencies. This is an imperative workflow and not fully reproducible under Nix.
 
 ## Initial Setup on Desktop
 
