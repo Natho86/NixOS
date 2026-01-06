@@ -266,6 +266,19 @@ Safe to commit:
 - `qtile-config.py`
 - `.gitignore`, `Makefile`
 
+## Avoiding PR Conflicts
+
+Keep pull requests small and based on the latest `main` to avoid Codex‑generated PRs clashing with local changes:
+
+1. Sync before starting work:
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
+2. Create a fresh branch per change (`git switch -c feature/gpu-docs`) and delete it after merging.
+3. Avoid stacking multiple unmerged PRs that touch the same files; rebase each branch before asking Codex to propose updates.
+4. If a PR is closed without merging, reset your branch to `origin/main` before retrying so Codex starts from a clean state.
+
 ## Customization
 
 **Change timezone:**
