@@ -22,11 +22,15 @@ let
     pip install --upgrade pip
     pip install --upgrade "ctranslate2==4.4.0" faster-whisper
 
-    mkdir -p "$VENV_PATH/bin/activate.d"
-    cat >"$VENV_PATH/bin/activate.d/cuda-env.sh" <<'EOF'
+    # Ensure the virtualenv activation script exports CUDA paths (python's venv
+    # does not load activate.d hooks by default).
+    if ! grep -q "setup-faster-whisper CUDA env" "$VENV_PATH/bin/activate"; then
+      cat >>"$VENV_PATH/bin/activate" <<EOF
+# setup-faster-whisper CUDA env
 export CUDA_HOME="${pkgs.cudaPackages.cudatoolkit}"
-export LD_LIBRARY_PATH="${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.cudaPackages.cudnn}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.cudaPackages.cudnn}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 EOF
+    fi
 
     echo "GPU-ready faster-whisper environment is set up."
     echo "Activate with: source $VENV_PATH/bin/activate"
