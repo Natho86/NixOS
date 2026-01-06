@@ -102,7 +102,7 @@
 
             shellHook = ''
               export CUDA_HOME=${pkgs.cudaPackages.cuda_cudart}
-              export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath (cudaLibs ++ baseLibs)}:${"${LD_LIBRARY_PATH:-}"}
+              export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath (cudaLibs ++ baseLibs)}:''${LD_LIBRARY_PATH:-}
               export CT2_FORCE_CPU=0
 
               echo "CUDA-enabled dev shell ready."
