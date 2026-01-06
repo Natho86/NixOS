@@ -1,6 +1,6 @@
 # Desktop Configuration (redpill-desktop)
 
-This host configuration is for a desktop system with an Nvidia GPU, optimized for GPU-accelerated workloads including password cracking, AI inference, and transcription.
+This host configuration is for a desktop system with an Nvidia GPU, optimized for GPU-accelerated workloads including password cracking and AI inference.
 
 ## Hardware Requirements
 
@@ -33,12 +33,11 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
 - **NVTOP** - GPU monitoring (like htop for GPUs)
   - Command: `nvtop`
 
-### Faster-Whisper (GPU transcription)
-- CUDA runtime redist (cudart + cublas) and cuDNN are installed for GPU inference
-- Use the helper to create a GPU-ready venv pinned to ctranslate2 4.4.0 (CUDA 12 + cuDNN 8 compatible). It sets CUDA-related environment variables each time you activate the venv:
+### NVIDIA Container Toolkit for Docker
+- The NVIDIA Container Toolkit is enabled so Docker containers can access the GPU.
+- Rebuild, then restart Docker before running GPU-enabled containers:
   ```bash
-  setup-faster-whisper
-  source ~/.local/share/venvs/faster-whisper/bin/activate
+  sudo systemctl restart docker
   ```
 - For development inside a Nix shell (with virtualenvs), run `nix develop` to expose CUDA toolkit libraries, cuDNN, and cuBLAS via `LD_LIBRARY_PATH`. This ensures CUDA-enabled `ctranslate2` wheels detect the GPU when you activate your venv.
 - Run `faster-whisper` commands inside that virtualenv
