@@ -72,18 +72,6 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  # CUDA Support
-  # This makes CUDA toolkit available system-wide
-  nixpkgs.config.cudaSupport = true;
-
-  # Set CUDA environment variables for system-wide access
-  # This ensures Python and other applications can find CUDA libraries
-  environment.sessionVariables = {
-    CUDA_PATH = "${pkgs.cudaPackages_12.cudatoolkit}";
-    EXTRA_LDFLAGS = "-L${pkgs.cudaPackages_12.cudatoolkit}/lib";
-    EXTRA_CCFLAGS = "-I${pkgs.cudaPackages_12.cudatoolkit}/include";
-  };
-
   # Enable Docker with Nvidia GPU support (useful for containerized GPU workloads)
   hardware.nvidia-container-toolkit.enable = true;
 

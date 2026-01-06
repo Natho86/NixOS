@@ -5,7 +5,6 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
 ## Hardware Requirements
 
 - **GPU**: Nvidia GPU (configured for proprietary drivers)
-- **CUDA**: Requires CUDA-capable GPU
 - **RAM**: Recommended 16GB+ for LLM inference
 - **Storage**: Encrypted Btrfs with LUKS (like laptop configuration)
 
@@ -17,32 +16,20 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
 - Nvidia Settings menu available
 - Using stable driver version (can be changed to `beta` or specific version)
 
-### CUDA Support
-- CUDA Toolkit installed system-wide
-- `cudaSupport` enabled globally for package builds
-- Nvidia Container Toolkit enabled for Docker GPU workloads
-
 ### Installed GPU Applications
 
 1. **Hashcat** - Password recovery and cracking tool
-   - Built with CUDA support
+   - Built with GPU support
    - Command: `hashcat`
 
 2. **Ollama** - Local LLM inference
-   - Running as systemd service with CUDA acceleration
+   - Running as systemd service with GPU acceleration
    - Service managed by NixOS: `systemctl status ollama`
    - Access at `http://localhost:11434`
    - Pull models: `ollama pull llama2`
    - Run models: `ollama run llama2`
 
-3. **Faster-Whisper** - Optimized Whisper transcription with CTranslate2
-   - Uses CTranslate2 inference engine (much faster than PyTorch)
-   - Python environment provided for installation
-   - Install faster-whisper: `pip install --user faster-whisper`
-   - CTranslate2 with CUDA support is automatically downloaded from PyPI
-
 ### Additional Tools
-- **cuDNN** - Deep learning library for neural networks
 - **NVTOP** - GPU monitoring (like htop for GPUs)
   - Command: `nvtop`
 
@@ -87,9 +74,6 @@ When setting up this configuration on your desktop for the first time:
 
    # Monitor GPU in real-time
    nvtop
-
-   # Verify CUDA is working
-   nvidia-smi --query-gpu=compute_cap --format=csv
    ```
 
 ## Building from Laptop
@@ -138,24 +122,6 @@ ollama list
 ollama rm llama2
 ```
 
-### Using Faster-Whisper
-
-```bash
-# Install in user environment (one-time)
-pip install --user faster-whisper
-
-# Example usage in Python
-python3 << EOF
-from faster_whisper import WhisperModel
-
-model = WhisperModel("base", device="cuda", compute_type="float16")
-segments, info = model.transcribe("audio.mp3")
-
-for segment in segments:
-    print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
-EOF
-```
-
 ### Using Hashcat
 
 ```bash
@@ -165,7 +131,7 @@ hashcat -b
 # Example: Crack MD5 hashes
 hashcat -m 0 -a 0 hashes.txt wordlist.txt
 
-# Enable optimized kernel (CUDA)
+# Enable optimized kernel
 hashcat -O -m 0 -a 0 hashes.txt wordlist.txt
 ```
 
@@ -181,15 +147,6 @@ nvidia-smi
 
 # Rebuild with verbose output
 sudo nixos-rebuild switch --flake .#desktop --show-trace
-```
-
-### CUDA Not Working
-```bash
-# Verify CUDA installation
-nvcc --version
-
-# Check CUDA device
-nvidia-smi --query-gpu=compute_cap --format=csv
 ```
 
 ### Ollama Not Starting
@@ -213,7 +170,7 @@ If you experience display problems, try adjusting the Nvidia settings in `config
 ## Configuration Files
 
 - `configuration.nix` - Nvidia drivers, hardware acceleration, hostname
-- `gpu-packages.nix` - CUDA toolkit and GPU-accelerated applications
+- `gpu-packages.nix` - GPU-accelerated applications
 - `hardware-configuration.nix` - Auto-generated, machine-specific (not in git)
 
 ## Notes

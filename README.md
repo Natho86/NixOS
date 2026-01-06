@@ -212,7 +212,7 @@ NixOS/
 │   │   └── hardware-configuration.nix    # Auto-generated (not in git)
 │   └── redpill-desktop/                  # Desktop
 │       ├── configuration.nix             # Desktop-specific settings + LUKS UUID + Nvidia
-│       ├── gpu-packages.nix              # GPU-specific packages (CUDA, Ollama, etc.)
+│       ├── gpu-packages.nix              # GPU-specific packages (Ollama, etc.)
 │       ├── hardware-configuration.nix    # Auto-generated (not in git)
 │       └── README.md                     # Desktop setup guide
 ├── shared/                                # Shared configuration across all hosts
