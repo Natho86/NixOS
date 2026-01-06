@@ -1,6 +1,6 @@
 # Desktop Configuration (redpill-desktop)
 
-This host configuration is for a desktop system with an Nvidia GPU, optimized for GPU-accelerated workloads including password cracking, AI inference, and transcription.
+This host configuration is for a desktop system with an Nvidia GPU, optimized for GPU-accelerated workloads including password cracking and containerized AI inference.
 
 ## Hardware Requirements
 
@@ -22,26 +22,19 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
    - Built with GPU support
    - Command: `hashcat`
 
-2. **Ollama** - Local LLM inference
-   - Running as systemd service with GPU acceleration
-   - Service managed by NixOS: `systemctl status ollama`
-   - Access at `http://localhost:11434`
-   - Pull models: `ollama pull llama2`
-   - Run models: `ollama run llama2`
+2. **NVTOP** - GPU monitoring (like htop for GPUs)
+   - Command: `nvtop`
 
-### Additional Tools
-- **NVTOP** - GPU monitoring (like htop for GPUs)
-  - Command: `nvtop`
-
-### Faster-Whisper (GPU transcription)
-- CUDA runtime redist (cudart + cublas) and cuDNN are installed for GPU inference
-- Use the helper to create a GPU-ready venv pinned to ctranslate2 4.4.0 (CUDA 12 + cuDNN 8 compatible). It sets CUDA-related environment variables each time you activate the venv:
+### NVIDIA Container Toolkit for Docker
+- The NVIDIA Container Toolkit is enabled so Docker containers can access the GPU.
+- Rebuild, then restart Docker before running GPU-enabled containers:
   ```bash
-  setup-faster-whisper
-  source ~/.local/share/venvs/faster-whisper/bin/activate
+  sudo systemctl restart docker
   ```
-- Run `faster-whisper` commands inside that virtualenv
-- Note: the helper pins versions but downloads wheels from PyPI at runtime; rerun it when you want to refresh dependencies. This is an imperative workflow and not fully reproducible under Nix.
+- Test GPU access in containers after restarting Docker:
+  ```bash
+  docker run --rm --gpus all nvidia/cuda:12.5.0-base-ubuntu22.04 nvidia-smi
+  ```
 
 ## Initial Setup on Desktop
 
@@ -113,25 +106,6 @@ sudo nixos-rebuild switch --flake .#desktop
 sudo nixos-rebuild test --flake .#desktop
 ```
 
-### Using Ollama
-
-```bash
-# Check service status
-systemctl status ollama
-
-# Pull a model
-ollama pull llama2
-
-# Run a model
-ollama run llama2
-
-# List installed models
-ollama list
-
-# Remove a model
-ollama rm llama2
-```
-
 ### Using Hashcat
 
 ```bash
@@ -159,18 +133,6 @@ nvidia-smi
 sudo nixos-rebuild switch --flake .#desktop --show-trace
 ```
 
-### Ollama Not Starting
-```bash
-# Check logs
-journalctl -u ollama -f
-
-# Restart service
-sudo systemctl restart ollama
-
-# Check if port is in use
-ss -tlnp | grep 11434
-```
-
 ### Display Issues
 If you experience display problems, try adjusting the Nvidia settings in `configuration.nix:31-43`:
 - Set `open = true` for open-source drivers (newer GPUs)
@@ -182,6 +144,10 @@ If you experience display problems, try adjusting the Nvidia settings in `config
 - `configuration.nix` - Nvidia drivers, hardware acceleration, hostname
 - `gpu-packages.nix` - GPU-accelerated applications
 - `hardware-configuration.nix` - Auto-generated, machine-specific (not in git)
+
+## Migration Notes
+
+- The previous CUDA development shell and faster-whisper virtualenv helper have been removed. GPU workloads should now run inside Docker containers using the NVIDIA Container Toolkit.
 
 ## Notes
 
