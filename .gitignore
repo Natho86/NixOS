@@ -22,5 +22,8 @@ result-*
 *~
 .DS_Store
 
+# Claude Code personal commands
+.claude/commands/
+
 # Local testing
 test-vm/
