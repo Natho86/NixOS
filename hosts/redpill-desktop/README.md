@@ -26,15 +26,17 @@ This host configuration is for a desktop system with an Nvidia GPU, optimized fo
    - Command: `nvtop`
 
 ### NVIDIA Container Toolkit for Docker
-- The NVIDIA Container Toolkit is enabled so Docker containers can access the GPU.
+- The NVIDIA Container Toolkit is enabled using CDI (Container Device Interface) mode for reliable GPU access.
 - Rebuild, then restart Docker before running GPU-enabled containers:
   ```bash
   sudo systemctl restart docker
   ```
-- Test GPU access in containers after restarting Docker:
+- Test GPU access in containers using CDI mode:
   ```bash
-  docker run --rm --gpus all nvidia/cuda:12.5.0-base-ubuntu22.04 nvidia-smi
+  docker run --rm --device nvidia.com/gpu=all nvidia/cuda:12.5.0-base-ubuntu22.04 nvidia-smi
   ```
+- **Note**: Use `--device nvidia.com/gpu=all` instead of `--gpus all` for GPU access
+- For specific GPU: `--device nvidia.com/gpu=0` (for GPU 0)
 
 ## Initial Setup on Desktop
 
