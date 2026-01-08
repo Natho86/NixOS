@@ -74,6 +74,7 @@
 
   # Enable Docker with Nvidia GPU support (useful for containerized GPU workloads)
   hardware.nvidia-container-toolkit.enable = true;
+  virtualisation.docker.enableNvidia = true;
 
   # SSH server configuration
   services.openssh = {
