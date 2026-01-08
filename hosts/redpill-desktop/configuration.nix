@@ -73,8 +73,8 @@
   };
 
   # Enable Docker with Nvidia GPU support (useful for containerized GPU workloads)
+  # Using CDI (Container Device Interface) mode which is more reliable on NixOS
   hardware.nvidia-container-toolkit.enable = true;
-  virtualisation.docker.enableNvidia = true;
 
   # SSH server configuration
   services.openssh = {
