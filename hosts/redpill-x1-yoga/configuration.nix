@@ -43,4 +43,17 @@
       STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
+  # SSH server configuration
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = true;  # Set to false after setting up SSH keys
+      X11Forwarding = false;
+    };
+  };
+
+
+
+
 }
