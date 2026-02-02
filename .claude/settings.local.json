@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__nixos__nixos_search",
+      "mcp__nixos__home_manager_options_by_prefix",
+      "mcp__nixos__home_manager_info",
+      "WebFetch(domain:github.com)",
+      "Bash(node --version:*)",
+      "Bash(npx:*)",
+      "Bash(claude --version)",
+      "Bash(claude mcp add --help:*)",
+      "mcp__nixos__nixos_info",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "WebSearch",
+      "WebFetch(domain:docs.linuxserver.io)",
+      "Bash(mkdir:*)",
+      "Bash(nix flake check:*)",
+      "Bash(tree:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(nvcc:*)",
+      "Bash(nvidia-smi:*)",
+      "mcp__nixos__nix",
+      "Bash(git fetch:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

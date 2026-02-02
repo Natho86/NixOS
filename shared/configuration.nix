@@ -106,6 +106,10 @@
     btop
     fd
     ripgrep
+    code-cursor
+
+    # ctfs/labs/courses
+    openvpn
     
     # CLI utilities
     fzf
