@@ -76,6 +76,14 @@
     noto-fonts-color-emoji
     font-awesome
 
+    # GTK/Qt themes (managed by KDE, but packages installed declaratively)
+    (catppuccin-gtk.override {
+      accents = [ "blue" ];
+      variant = "mocha";
+    })
+    papirus-icon-theme
+    catppuccin-cursors.mochaDark
+
   ];
 
   # Alacritty - Modern terminal emulator
@@ -421,28 +429,13 @@
   # Qtile configuration
   xdg.configFile."qtile/config.py".source = ./qtile-config.py;
 
-  # GTK theme
-  gtk = {
-    enable = true;
-
-    theme = {
-      name = "Catppuccin-Mocha-Standard-Blue-Dark";
-      package = pkgs.catppuccin-gtk.override {
-        accents = [ "blue" ];
-        variant = "mocha";
-      };
-    };
-
-    iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
-    };
-
-    cursorTheme = {
-      name = "Catppuccin-Mocha-Dark-Cursors";
-      package = pkgs.catppuccin-cursors.mochaDark;
-    };
-  };
+  # GTK theme - managed by KDE System Settings
+  # Theme packages are installed in home.packages above
+  # Configure via: System Settings → Appearance → Application Style → Configure GNOME/GTK Application Style
+  # Recommended themes:
+  #   - GTK Theme: Catppuccin-Mocha-Standard-Blue-Dark
+  #   - Icon Theme: Papirus-Dark
+  #   - Cursor Theme: Catppuccin-Mocha-Dark-Cursors
 
   # Qt theme
   qt = {
