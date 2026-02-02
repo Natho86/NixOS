@@ -137,6 +137,19 @@
   # Enable programs
   programs.zsh.enable = true;
   programs.git.enable = true;
+
+  # Set environment variables system-wide for proper terminal color support
+  # Using sessionVariables ensures these are set early by PAM during login
+  environment.sessionVariables = {
+    TERM = "xterm-256color";
+    COLORTERM = "truecolor";
+  };
+
+  # Also set in shell profile to override terminal emulator settings
+  programs.zsh.interactiveShellInit = ''
+    export TERM=xterm-256color
+    export COLORTERM=truecolor
+  '';
   
   # Enable 1Password
   programs._1password.enable = true;

@@ -319,6 +319,12 @@
     "$HOME/.npm-global/bin"
   ];
 
+  # Environment variables for proper terminal color support in SSH sessions
+  home.sessionVariables = {
+    TERM = "xterm-256color";
+    COLORTERM = "truecolor";
+  };
+
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
