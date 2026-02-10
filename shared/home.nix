@@ -53,6 +53,7 @@
     dust            # Modern du alternative
     bottom          # System monitor (btop alternative)
     bandwhich       # Network utilization monitor
+    remmina
 
     # Network utilities
     nmap
@@ -351,9 +352,9 @@
     syntaxHighlighting.enable = true;
     
     shellAliases = {
-      ll = "eza -l --icons";
-      la = "eza -la --icons";
-      ls = "eza --icons";
+      ll = "eza -l --icons=always";
+      la = "eza -la --icons=always";
+      ls = "eza --icons=always -l";
       cat = "bat";
       
       # NixOS specific

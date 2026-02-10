@@ -110,11 +110,13 @@
 
     # ctfs/labs/courses
     openvpn
+    remmina
     
     # CLI utilities
     fzf
     eza
     bat
+    net-tools
 
     # System utilities
     pciutils
