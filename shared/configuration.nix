@@ -117,6 +117,8 @@
     eza
     bat
     net-tools
+    awscli2
+    ssm-session-manager-plugin
 
     # System utilities
     pciutils
