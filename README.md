@@ -41,6 +41,8 @@ parted $DISK -- mkpart primary 512MiB 100%
 cryptsetup luksFormat ${DISK}p2
 cryptsetup open ${DISK}p2 cryptroot
 
+The actual LUKS UUID will be automatically captured by `nixos-generate-config`. 
+
 # Format boot partition
 mkfs.fat -F 32 ${DISK}p1
 
@@ -81,19 +83,28 @@ cp /mnt/etc/nixos/hardware-configuration.nix ./hosts/redpill-x1-yoga/
 cp /mnt/etc/nixos/hardware-configuration.nix ./hosts/redpill-desktop/
 ```
 
-**5. Customize configuration:**
-```bash
-# Get your LUKS UUID
-blkid ${DISK}p2  # For NVMe: ${DISK}p2, for SATA/SSD: ${DISK}2
+**5. Hardware configuration (LUKS UUID handled automatically):**
 
-# For laptop - edit hosts/redpill-x1-yoga/configuration.nix
-# For desktop - edit hosts/redpill-desktop/configuration.nix
-# Update the LUKS UUID on line ~18
+The `nixos-generate-config` step automatically detects:
 
-# Edit shared/home.nix and update:
-# - Git name and email (lines ~282-292)
-nano shared/home.nix
-```
+- LUKS UUID
+- Filesystem UUIDs
+- Boot device
+
+These values are written into:
+
+`hosts/<hostname>/hardware-configuration.nix`
+
+⚠️ Do NOT manually copy LUKS UUIDs or hardcode `/dev/sdX` paths.
+Always rely on the generated hardware configuration to reference
+devices by UUID.
+
+You only need to edit:
+
+- `shared/home.nix` (Git name/email)
+- Any host-specific settings unrelated to disk layout
+
+
 
 **6. Install:**
 ```bash
@@ -131,12 +142,6 @@ sudo nixos-generate-config --show-hardware-config > hosts/redpill-desktop/hardwa
 
 **3. Customize configuration:**
 ```bash
-# Get your LUKS UUID (if using encryption)
-sudo blkid /dev/nvme0n1p2  # or your encrypted partition (sdb2 for SATA)
-
-# For laptop - edit hosts/redpill-x1-yoga/configuration.nix
-# For desktop - edit hosts/redpill-desktop/configuration.nix
-# Update the LUKS UUID on line ~18
 
 # Update shared/home.nix:
 # - Git name and email (lines ~282-292)
