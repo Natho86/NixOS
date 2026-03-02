@@ -134,9 +134,9 @@
     vlc
 
     # audacity + ffmpeg https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
-    ffmpeg_6  # or ffmpeg_7, depending on what audacity needs
+    ffmpeg_7  # or ffmpeg_7, depending on what audacity needs
     (audacity.override {
-      ffmpeg = ffmpeg_6;  # Match the version from ldd output
+      ffmpeg = ffmpeg_7;  # Match the version from ldd output
     })
   ];
   # https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206

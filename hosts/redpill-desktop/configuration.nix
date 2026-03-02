@@ -45,7 +45,7 @@
     modesetting.enable = true;
 
     # Persistenced helps keep device nodes/driver state stable across session startups
-    persistenced = true;
+    nvidiaPersistenced = true;
 
     powerManagement.enable = false;
     powerManagement.finegrained = false;
