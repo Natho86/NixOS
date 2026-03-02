@@ -8,14 +8,29 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/745a0fa8-6464-47f2-9e5c-0a237e5d150d";
+    { device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
+      options = [ "subvol=root" ];
+    };
+
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/0f35f00c-3054-4e75-ae16-7656df895872";
+
+  fileSystems."/nix" =
+    { device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=nix" ];
+    };
+
+  fileSystems."/home" =
+    { device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=home" ];
     };
 
   swapDevices = [ ];

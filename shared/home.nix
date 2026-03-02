@@ -54,6 +54,7 @@
     bottom          # System monitor (btop alternative)
     bandwhich       # Network utilization monitor
     remmina
+    samba
 
     # Network utilities
     nmap
@@ -197,7 +198,7 @@
       which-key-nvim
     ];
     
-    extraLuaConfig = ''
+    initLua = ''
       -- Basic settings
       vim.opt.number = true
       vim.opt.relativenumber = true

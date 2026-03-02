@@ -82,6 +82,12 @@
     };
   };
 
+  # Packages for the desktop only
+  environment.systemPackages = lib.mkAfter (with pkgs; [
+    digikam
+  ]);
+
+
   # SSH server configuration
   services.openssh = {
     enable = true;
