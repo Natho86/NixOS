@@ -108,6 +108,9 @@
     ripgrep
     code-cursor
 
+    # Development
+    codex
+
     # ctfs/labs/courses
     openvpn
     remmina

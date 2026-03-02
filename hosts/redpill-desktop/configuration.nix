@@ -11,8 +11,6 @@
   # Hostname
   networking.hostName = "redpill-desktop";
 
-  # No disk encryption on desktop
-
   # sops-nix age key location for this host
   sops.age.keyFile = "/home/nath/.config/sops/age/keys.txt";
 
@@ -24,64 +22,72 @@
   systemd.services."autovt@tty1".enable = lib.mkForce true;
 
   # Default to X11 session for better Nvidia compatibility
-  # Wayland + Nvidia can be unstable, especially for GPU-intensive workloads
   services.displayManager.defaultSession = lib.mkForce "plasmax11";
 
   # Desktop performance tuning
   boot.kernel.sysctl = {
-    # Reduce swappiness (desktop has plenty of RAM, prefer to keep things in memory)
     "vm.swappiness" = 10;
-    # Improve responsiveness for interactive workloads
     "vm.vfs_cache_pressure" = 50;
   };
 
   # CPU Governor - Maximum performance for desktop
   powerManagement.cpuFreqGovernor = "performance";
 
-  # Disable Bluetooth (uncomment if your desktop doesn't have/need Bluetooth)
-  # hardware.bluetooth.enable = lib.mkForce false;
-
   # Nvidia GPU Configuration
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.graphics = {
     enable = true;
-    enable32Bit = true;  # Enable 32-bit support for compatibility
+    enable32Bit = true;
   };
 
   hardware.nvidia = {
-    # Modesetting is required for most Wayland compositors
     modesetting.enable = true;
 
-    # Enable power management (can cause issues with some GPUs, disable if problems occur)
-    powerManagement.enable = false;
+    # Persistenced helps keep device nodes/driver state stable across session startups
+    persistenced = true;
 
-    # Fine-grained power management (turns off GPU when not in use)
-    # Experimental, may cause issues
+    powerManagement.enable = false;
     powerManagement.finegrained = false;
 
-    # Use the open source kernel module (for newer GPUs)
-    # Set to false if you have an older GPU or experience issues
-    open = true;
+    # IMPORTANT:
+    # The "open" kernel module can be finicky depending on GPU generation + driver combo.
+    # For stability (especially with display manager login/session start), default to proprietary.
+    open = lib.mkDefault false;
 
-    # Enable the Nvidia settings menu
     nvidiaSettings = true;
 
-    # Select the appropriate driver version
-    # Use 'latest' for most recent stable, 'beta' for beta drivers, or 'legacy_470' etc. for older GPUs
+    # Stable driver
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  # Enable Docker with Nvidia GPU support (useful for containerized GPU workloads)
-  # Using CDI (Container Device Interface) mode which is more reliable on NixOS
+  # Enable Nvidia container toolkit (CDI)
   hardware.nvidia-container-toolkit.enable = true;
+
+  # Fix: CDI generator sometimes races udev/NVIDIA device nodes at boot/login.
+  # Make it wait briefly for /dev/nvidiactl and run after nvidia-persistenced.
+  systemd.services.nvidia-container-toolkit-cdi-generator = {
+    after = [
+      "nvidia-persistenced.service"
+      "systemd-udev-settle.service"
+    ];
+    requires = [ "nvidia-persistenced.service" ];
+
+    serviceConfig = {
+      ExecStartPre = [
+        "/bin/sh -lc 'for i in $(seq 1 50); do [ -e /dev/nvidiactl ] && exit 0; sleep 0.1; done; echo /dev/nvidiactl not found; exit 1'"
+      ];
+      Restart = "on-failure";
+      RestartSec = "1s";
+    };
+  };
 
   # SSH server configuration
   services.openssh = {
     enable = true;
     settings = {
       PermitRootLogin = "no";
-      PasswordAuthentication = true;  # Set to false after setting up SSH keys
+      PasswordAuthentication = true; # Set to false after setting up SSH keys
       X11Forwarding = false;
     };
   };
