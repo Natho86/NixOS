@@ -55,6 +55,7 @@
     bandwhich       # Network utilization monitor
     remmina
     samba
+    cifs-utils
 
     # Network utilities
     nmap
