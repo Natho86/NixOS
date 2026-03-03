@@ -87,6 +87,44 @@
     digikam
   ]);
 
+  # Digikam database credentials managed with sops
+  sops.secrets."digikam-db-password" = {
+    key = "digikam/db_password";
+    owner = "mysql";
+    group = "mysql";
+    mode = "0400";
+  };
+
+  # MariaDB server for Digikam
+  services.mysql = {
+    enable = true;
+    package = pkgs.mariadb;
+    ensureDatabases = [ "digikam" ];
+    ensureUsers = [
+      {
+        name = "digikam";
+        ensurePermissions = {
+          "digikam.*" = "ALL PRIVILEGES";
+        };
+      }
+    ];
+  };
+
+  # Keep digikam DB user password in sync with the sops-managed secret
+  systemd.services.mysql.postStart = let
+    mysqlClient = lib.getExe' pkgs.mariadb "mysql";
+  in ''
+    db_password="$(tr -d '\n' < ${config.sops.secrets."digikam-db-password".path})"
+    escaped_db_password="$(printf '%s' "$db_password" | sed "s/'/''/g")"
+
+    ${mysqlClient} --protocol=socket -u root <<SQL
+    CREATE USER IF NOT EXISTS 'digikam'@'localhost';
+    ALTER USER 'digikam'@'localhost' IDENTIFIED BY '$escaped_db_password';
+    GRANT ALL PRIVILEGES ON digikam.* TO 'digikam'@'localhost';
+    FLUSH PRIVILEGES;
+    SQL
+  '';
+
 
   # SSH server configuration
   services.openssh = {
