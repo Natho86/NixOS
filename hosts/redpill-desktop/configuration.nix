@@ -52,6 +52,10 @@
   };
 
   hardware.nvidia-container-toolkit.enable = true;
+  # Pragmatic compatibility for Docker Compose GPU reservations (Immich hwaccel.ml.yml uses this style)
+  # NOTE: This is deprecated in favor of hardware.nvidia-container-toolkit.enable,
+  # but can still be useful because many compose files rely on the legacy NVIDIA runtime integration.
+  virtualisation.docker.enableNvidia = true;
 
   systemd.services.nvidia-container-toolkit-cdi-generator = {
     after = [
