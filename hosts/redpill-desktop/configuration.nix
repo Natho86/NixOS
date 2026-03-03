@@ -110,6 +110,9 @@
     ];
   };
 
+  # Stable path for DigiKam's "MySQL server binaries" setting
+  environment.etc."digikam/mysql-bin".source = "${pkgs.mariadb}/bin";
+
   # Keep digikam DB user password in sync with the sops-managed secret
   systemd.services.mysql.postStart = let
     mysqlClient = lib.getExe' pkgs.mariadb "mysql";
