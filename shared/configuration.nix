@@ -186,8 +186,9 @@
   # Secrets management with sops-nix
   # Host-specific key paths are set in each host configuration
   sops = {
-    defaultSopsFile = ./secrets/secrets.yaml;
+    defaultSopsFile = ../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
+    age.keyFile = "/home/nath/.config/sops/age/keys.txt";
   };
 
   # Enable firmware updates
