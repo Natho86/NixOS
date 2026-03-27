@@ -20,6 +20,12 @@
   ];
 
 
+  nixpkgs.config = {
+    allowUnfree = true;
+    cudaSupport = true;
+  };
+
+
   services.displayManager.autoLogin.enable = lib.mkForce false;
 
   systemd.services."getty@tty1".enable = lib.mkForce true;
