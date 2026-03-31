@@ -10,6 +10,9 @@
 
   # Hostname
   networking.hostName = "redpill-desktop";
+  # Keep WireGuard available but disabled by default; toggle to true when needed.
+  my.wireguard.enable = lib.mkDefault false;
+
 
   # sops-nix age key location for this host
   sops.age.keyFile = "/home/nath/.config/sops/age/keys.txt";
