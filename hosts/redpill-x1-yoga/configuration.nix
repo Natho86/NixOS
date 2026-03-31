@@ -1,5 +1,5 @@
 # Host-specific configuration for redpill-x1-yoga
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   # Import hardware configuration
@@ -7,6 +7,9 @@
 
   # Hostname
   networking.hostName = "redpill-x1-yoga";
+  # Keep WireGuard available but disabled by default; toggle to true when needed.
+  my.wireguard.enable = lib.mkDefault false;
+
 
   # LUKS encryption setup for this machine
   boot.initrd.luks.devices."cryptroot" = {

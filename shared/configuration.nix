@@ -3,8 +3,7 @@
 
 {
    imports = [
-    #./wireguard.nix
-  #  ./hardware-configuration.nix
+    ./wireguard.nix
   ];
 
   # Enable GPU
@@ -192,11 +191,6 @@
     age.keyFile = "/home/nath/.config/sops/age/keys.txt";
   };
 
-  sops.secrets."wireguard/privateKey" = {
-    owner = "root";
-    group = "root";
-    mode = "0400";
-  };
 
   # Enable firmware updates
   services.fwupd.enable = true;
