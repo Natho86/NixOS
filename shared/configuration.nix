@@ -3,7 +3,7 @@
 
 {
    imports = [
-    ./wireguard.nix
+    #./wireguard.nix
   #  ./hardware-configuration.nix
   ];
 
@@ -190,6 +190,12 @@
     defaultSopsFile = ../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/home/nath/.config/sops/age/keys.txt";
+  };
+
+  sops.secrets."wireguard/privateKey" = {
+    owner = "root";
+    group = "root";
+    mode = "0400";
   };
 
   # Enable firmware updates
