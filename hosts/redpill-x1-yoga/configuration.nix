@@ -15,9 +15,6 @@
     allowDiscards = true; # Improves SSD performance
   };
 
-  # sops-nix age key location for this host
-  sops.age.keyFile = "/home/nath/.config/sops/age/keys.txt";
-
   # Auto-login after disk unlock (laptop-specific for convenience)
   services.displayManager.autoLogin = {
     enable = true;

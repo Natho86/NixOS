@@ -2,9 +2,10 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-  # imports = [
+   imports = [
+    ./wireguard.nix
   #  ./hardware-configuration.nix
-  #];
+  ];
 
   # Enable GPU
   hardware.graphics.enable = true;

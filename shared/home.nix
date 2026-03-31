@@ -37,7 +37,11 @@
     python3  # Python interpreter (includes venv by default)
     python3Packages.pip  # Pip package manager
     pipx       # Install Python apps in isolated environments
-    
+
+    # secrets
+    sops
+    age
+
     # Terminal utilities
     neofetch
     tmux
