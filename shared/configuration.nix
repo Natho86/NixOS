@@ -127,6 +127,7 @@
 
     # ctfs/labs/courses
     openvpn
+    wireguard-tools
     remmina
     
     # CLI utilities
