@@ -25,7 +25,7 @@
 
   time.timeZone = "Europe/London";
 
-  users.users.nathan = {
+  users.users.nath = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
@@ -73,6 +73,10 @@
     # Allow Tailscale itself.
     allowedUDPPorts = [ config.services.tailscale.port ];
 
+    allowedTCPPorts = [
+      11434 # Ollama API
+    ];
+
     # Services bound to 0.0.0.0 are reachable only via tailscale0,
     # not your normal LAN interface.
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
@@ -100,7 +104,7 @@
     enable = true;
     host = "0.0.0.0";
     port = 8080;
-    openFirewall = false;
+    openFirewall = true;
 
     environment = {
       OLLAMA_BASE_URL = "http://127.0.0.1:11434";
@@ -113,9 +117,9 @@
 
   services.openssh = {
     enable = true;
-    openFirewall = false;
+    openFirewall = true;
     settings = {
-      PasswordAuthentication = false;
+      PasswordAuthentication = true;
       PermitRootLogin = "no";
     };
   };
