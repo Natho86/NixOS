@@ -76,7 +76,7 @@
   # Local model server.
   services.ollama = {
     enable = true;
-    acceleration = "cuda";
+    package = pkgs.ollama-cuda;
 
     # Needed so VS Code / Continue on another Tailscale device can use it.
     host = "0.0.0.0";
