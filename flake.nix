@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration with Plasma 6 and Qtile";
+  description = "NixOS configurations with Plasma 6, Qtile, and AI server";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -66,9 +66,20 @@
         ];
       };
 
+      # AI server configuration with NVIDIA GPU acceleration
+      nixosConfigurations.ai-server = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          # Host-specific server configuration
+          ./hosts/ai-server/configuration.nix
+        ];
+      };
+
       # Easy aliases for your machines
       nixosConfigurations.laptop = self.nixosConfigurations.redpill-x1-yoga;
       nixosConfigurations.desktop = self.nixosConfigurations.redpill-desktop;
+      nixosConfigurations.server = self.nixosConfigurations.ai-server;
 
     };
 }

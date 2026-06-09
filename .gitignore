@@ -27,3 +27,6 @@ result-*
 
 # Local testing
 test-vm/
+
+# Machine-specific NixOS hardware configs
+hosts/*/hardware-configuration.nix

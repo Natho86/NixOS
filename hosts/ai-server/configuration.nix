@@ -15,6 +15,9 @@
     "flakes"
   ];
 
+  # Required for the proprietary NVIDIA driver and other unfree GPU tooling.
+  nixpkgs.config.allowUnfree = true;
+
   time.timeZone = "Europe/London";
 
   users.users.nathan = {
