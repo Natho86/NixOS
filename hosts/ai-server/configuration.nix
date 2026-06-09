@@ -7,6 +7,11 @@
 
   system.stateVersion = "25.11";
 
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
+
   networking.hostName = "ai-server";
   networking.networkmanager.enable = true;
 
