@@ -36,14 +36,14 @@
     nodejs_22  # Node.js LTS for npm-based tools
     python3  # Python interpreter (includes venv by default)
     python3Packages.pip  # Pip package manager
-    pipx       # Install Python apps in isolated environments
+    #pipx       # Install Python apps in isolated environments
 
     # secrets
     sops
     age
 
     # Terminal utilities
-    neofetch
+    fastfetch
     tmux
     tree
 
@@ -177,7 +177,7 @@
       
       # Essential plugins
       telescope-nvim
-      nvim-treesitter.withAllGrammars
+      nvim-treesitter
       nvim-lspconfig
       nvim-cmp
       cmp-nvim-lsp
