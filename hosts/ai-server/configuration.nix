@@ -23,11 +23,11 @@
     "flakes"
   ];
 
-  # Required for the proprietary NVIDIA driver and other unfree GPU tooling.
-  # Do not enable global cudaSupport here: that forces unrelated Python AI
-  # packages such as open-webui/torch/triton to build CUDA variants locally.
-  # Ollama gets CUDA support explicitly through pkgs.ollama-cuda below.
-  nixpkgs.config.allowUnfree = true;
+  # Required for the proprietary NVIDIA driver and CUDA-enabled packages.
+  nixpkgs.config = {
+    allowUnfree = true;
+    cudaSupport = true;
+  };
 
   time.timeZone = "Europe/London";
 
@@ -51,6 +51,7 @@
     pciutils
     usbutils
     nvtopPackages.nvidia
+    ollama-cuda
   ];
 
   # NVIDIA RTX 3080 support.
