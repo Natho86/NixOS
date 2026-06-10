@@ -12,16 +12,41 @@
     efi.canTouchEfiVariables = true;
   };
 
-  # Preload NVIDIA's Unified Virtual Memory module for CUDA workloads.
-  boot.kernelModules = [ "nvidia_uvm" ];
+  # Preload NVIDIA's Unified Virtual Memory module for CUDA workloads and
+  # AMD/Nuvoton temperature sensor modules commonly needed by this server.
+  boot.kernelModules = [
+    "nvidia_uvm"
+    "k10temp"
+    "nct6775"
+  ];
+
+  # Expose I2C/SMBus devices for lm_sensors and liquidctl so CPU,
+  # motherboard, pump, and fan telemetry is available from SSH sessions.
+  hardware.i2c.enable = true;
 
   networking.hostName = "ai-server";
   networking.networkmanager.enable = true;
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+
+    # Keep remote rebuilds responsive by avoiding full CPU saturation.
+    # One build at a time, with up to four compile threads for build systems
+    # that honor NIX_BUILD_CORES.
+    max-jobs = 1;
+    cores = 4;
+  };
+
+  # Put memory pressure from nix-daemon and its build children under a cgroup
+  # ceiling so rebuilds cannot consume all RAM and make SSH recovery impossible.
+  systemd.services.nix-daemon.serviceConfig = {
+    MemoryHigh = "75%";
+    MemoryMax = "85%";
+    OOMPolicy = "continue";
+  };
 
   # Required for the proprietary NVIDIA driver and CUDA-enabled packages.
   nixpkgs.config = {
@@ -36,11 +61,16 @@
     extraGroups = [
       "wheel"
       "networkmanager"
+      "i2c"
     ];
     shell = pkgs.zsh;
   };
 
   programs.zsh.enable = true;
+
+  # Install udev rules from liquidctl so supported AIO coolers expose status
+  # and pump/fan telemetry without needing root for every read.
+  services.udev.packages = [ pkgs.liquidctl ];
 
   environment.systemPackages = with pkgs; [
     git
@@ -48,8 +78,17 @@
     wget
     curl
     htop
+    btop
     pciutils
     usbutils
+
+    # Temperature, fan, pump, and stress/thermal monitoring tools.
+    lm_sensors
+    liquidctl
+    s-tui
+    stress-ng
+    smartmontools
+
     nvtopPackages.nvidia
     ollama-cuda
   ];
