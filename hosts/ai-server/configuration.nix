@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./paperless-ai.nix
   ];
 
   system.stateVersion = "25.11";
@@ -95,6 +96,7 @@
     pciutils
     usbutils
     tmux
+    sops
     
     # for running osintdb dev project /home/nath/dev
     nodejs

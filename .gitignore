@@ -1,6 +1,12 @@
-# Secrets
-secrets/secrets.yaml
-!secrets/.sops.yaml
+# Plaintext or local-only secret material
+secrets/*.plain.yaml
+secrets/*.decrypted.yaml
+secrets/*.env
+secrets/age-key.txt
+
+# Encrypted SOPS files are intended to be committed
+!secrets/secrets.yaml
+!.sops.yaml
 
 # Age keys (never commit these!)
 *.txt
