@@ -27,18 +27,30 @@
   networking.hostName = "ai-server";
   networking.networkmanager.enable = true;
 
-  nix.settings = {
+ nix.settings = {
     experimental-features = [
       "nix-command"
       "flakes"
     ];
 
-    # Keep remote rebuilds responsive by avoiding full CPU saturation.
-    # One build at a time, with up to four compile threads for build systems
-    # that honor NIX_BUILD_CORES.
     max-jobs = 1;
     cores = 4;
   };
+
+  # Persistent swap for large local builds.
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 32 * 1024; # 32 GiB, size is in MiB
+      priority = 10;
+    }
+  ];
+
+  # Prefer RAM where possible, but allow swap as a safety net during builds.
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+  };
+
 
   # Put memory pressure from nix-daemon and its build children under a cgroup
   # ceiling so rebuilds cannot consume all RAM and make SSH recovery impossible.
@@ -51,7 +63,7 @@
   # Required for the proprietary NVIDIA driver and CUDA-enabled packages.
   nixpkgs.config = {
     allowUnfree = true;
-    cudaSupport = true;
+    #cudaSupport = true;
   };
 
   time.timeZone = "Europe/London";
@@ -62,6 +74,7 @@
       "wheel"
       "networkmanager"
       "i2c"
+      "docker"
     ];
     shell = pkgs.zsh;
   };
@@ -81,6 +94,13 @@
     btop
     pciutils
     usbutils
+    tmux
+    
+    # for running osintdb dev project /home/nath/dev
+    nodejs
+    docker-compose
+    codex
+    
 
     # Temperature, fan, pump, and stress/thermal monitoring tools.
     lm_sensors
@@ -88,10 +108,15 @@
     s-tui
     stress-ng
     smartmontools
-
     nvtopPackages.nvidia
-    ollama-cuda
   ];
+
+  virtualisation.docker = {
+    enable = true;
+    daemon.settings = {
+      log-driver = "journald";
+    };
+  };
 
   # NVIDIA RTX 3080 support.
   hardware.graphics = {
@@ -125,7 +150,7 @@
     allowedUDPPorts = [ config.services.tailscale.port ];
 
     allowedTCPPorts = [
-      11434 # Ollama API
+      #11434 # Ollama API
     ];
 
     # Services bound to 0.0.0.0 are reachable only via tailscale0,
@@ -149,7 +174,7 @@
     # Needed so VS Code / Continue on another Tailscale device can use it.
     host = "0.0.0.0";
     port = 11434;
-    openFirewall = false;
+    openFirewall = true;
 
     loadModels = [
       "qwen2.5-coder:7b"
