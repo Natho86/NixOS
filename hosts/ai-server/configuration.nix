@@ -3,7 +3,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./paperless-ai.nix
   ];
 
   system.stateVersion = "25.11";
@@ -101,8 +100,11 @@
     # for running osintdb dev project /home/nath/dev
     nodejs
     docker-compose
+
+    # Coding agents
     codex
-    
+    claude-code
+    claude-monitor
 
     # Temperature, fan, pump, and stress/thermal monitoring tools.
     lm_sensors
