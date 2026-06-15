@@ -96,6 +96,8 @@
     sops
     jq
     tree
+    eza
+    bat
         
     # for running osintdb dev project /home/nath/dev
     nodejs
