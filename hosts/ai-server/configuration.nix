@@ -79,8 +79,6 @@
     shell = pkgs.zsh;
   };
 
-  programs.zsh.enable = true;
-
   # Install udev rules from liquidctl so supported AIO coolers expose status
   # and pump/fan telemetry without needing root for every read.
   services.udev.packages = [ pkgs.liquidctl ];
@@ -96,7 +94,9 @@
     usbutils
     tmux
     sops
-    
+    jq
+    tree
+        
     # for running osintdb dev project /home/nath/dev
     nodejs
     docker-compose
@@ -105,6 +105,14 @@
     codex
     claude-code
     claude-monitor
+
+    # fonts
+    nerd-fonts.fira-code
+    nerd-fonts.hack
+    nerd-fonts.jetbrains-mono
+    #nerd-fonts-color-emoji
+    font-awesome
+
 
     # Temperature, fan, pump, and stress/thermal monitoring tools.
     lm_sensors
@@ -128,6 +136,7 @@
     enable32Bit = true;
   };
 
+  hardware.nvidia-container-toolkit.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
@@ -144,6 +153,8 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
+
+
   # Tailscale-only remote access.
   services.tailscale.enable = true;
 
@@ -155,6 +166,7 @@
 
     allowedTCPPorts = [
       #11434 # Ollama API
+      3003 # immich ML
     ];
 
     # Services bound to 0.0.0.0 are reachable only via tailscale0,
@@ -220,4 +232,71 @@
       PermitRootLogin = "no";
     };
   };
+
+  # Zsh configuration
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    
+    shellAliases = {
+      ll = "eza -l --icons=always";
+      la = "eza -la --icons=always";
+      ls = "eza --icons=always -l";
+      cat = "bat";
+      
+      # NixOS specific
+      rebuild = "sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
+      update = "nix flake update ~/nixos-config && sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
+      clean = "sudo nix-collect-garbage -d";
+      
+      # Git shortcuts
+      gs = "git status";
+      ga = "git add";
+      gc = "git commit";
+      gp = "git push";
+      gl = "git log --oneline --graph";
+    };
+    
+    ohMyZsh = {
+      enable = true;
+      theme = "robbyrussell";
+      plugins = [
+        "git"
+        "docker"
+        "docker-compose"
+        "sudo"
+        "history"
+        "colored-man-pages"
+      ];
+    };
+    
+    #initContent = ''
+    #  # Starship prompt
+    #  eval "$(starship init zsh)"
+    #  
+    #  # FZF keybindings
+    #  source ${pkgs.fzf}/share/fzf/key-bindings.zsh
+    #  source ${pkgs.fzf}/share/fzf/completion.zsh
+    #'';
+  };
+
+  # Starship prompt
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = true;
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[➜](bold red)";
+      };
+      package.disabled = true;
+    };
+  };
+
+ # Fonts
+  fonts.fontconfig.enable = true;
+
+
 }
