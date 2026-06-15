@@ -98,6 +98,7 @@
     tree
     eza
     bat
+    ripgrep
         
     # for running osintdb dev project /home/nath/dev
     nodejs
