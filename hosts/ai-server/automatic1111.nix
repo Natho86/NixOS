@@ -4,7 +4,6 @@ let
   dataDir = "/var/lib/automatic1111";
   composeFile = "${dataDir}/docker-compose.yml";
 
-  hostAddress = "192.168.50.143";
   port = 7860;
 
   dockerComposeYaml = pkgs.writeText "automatic1111-docker-compose.yml" ''
@@ -15,11 +14,18 @@ let
         restart: unless-stopped
 
         ports:
-          - "${hostAddress}:${toString port}:${toString port}"
+          # Publish on every host interface so the WebUI is reachable from both
+          # the LAN address and the Tailscale address.
+          - "${toString port}:${toString port}"
 
         environment:
           WEBUI_PORT_HOST: "${toString port}"
           WEBUI_ARGS: "--listen --port ${toString port} --xformers --medvram --api"
+          # The AI-Dock image protects web services with its Service Portal by
+          # default. That portal builds login URLs from DIRECT_ADDRESS, which
+          # defaults to localhost and breaks access via LAN/Tailscale IPs. Keep
+          # this private service directly reachable on trusted networks instead.
+          WEB_ENABLE_AUTH: "false"
           PUID: "1001"
           PGID: "100"
 
@@ -45,6 +51,8 @@ in
       dates = "weekly";
     };
   };
+
+  networking.firewall.allowedTCPPorts = [ port ];
 
   environment.systemPackages = with pkgs; [
     docker-compose
