@@ -179,7 +179,7 @@
       
       # Essential plugins
       telescope-nvim
-      nvim-treesitter
+      nvim-treesitter.withAllGrammars
       nvim-lspconfig
       nvim-cmp
       cmp-nvim-lsp
@@ -254,11 +254,23 @@
       vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
       
       -- Treesitter
-      require('nvim-treesitter.configs').setup {
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
-      
+      -- nvim-treesitter was rewritten and no longer provides
+      -- require('nvim-treesitter.configs').  Highlighting is now provided
+      -- directly by Neovim, while indentation is provided by nvim-treesitter.
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = '*',
+        callback = function(args)
+          -- Start Treesitter highlighting when a parser exists for the filetype.
+          local ok = pcall(vim.treesitter.start, args.buf)
+
+          -- Enable Treesitter indentation only when Treesitter started successfully.
+          if ok then
+            vim.bo[args.buf].indentexpr =
+              "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+
       -- LSP
       local lspconfig = require('lspconfig')
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
