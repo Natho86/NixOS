@@ -107,9 +107,6 @@
   #    --accept-flake-config \
   #    'github:flox/flox/latest'
   
-  # Mullvad-vpn https://nixos.wiki/wiki/Mullvad_VPN
-  services.mullvad-vpn.enable = true;
-
   # System packages
   environment.systemPackages = with pkgs; [
     budgie-desktop
@@ -150,16 +147,12 @@
     vlc
 
     # audacity + ffmpeg https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
-    ffmpeg_7  # or ffmpeg_7, depending on what audacity needs
-    (audacity.override {
-      ffmpeg_7 = ffmpeg_7;  # Match the version from ldd output
-    })
+    ffmpeg_8 
+    audacity
+  
   ];
   # https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
   nixpkgs.config.audacity.ffmpeg = pkgs.ffmpeg;
-
-  # Mullvad-vpn https://nixos.wiki/wiki/Mullvad_VPN
-  services.mullvad-vpn.package = pkgs.mullvad-vpn;
 
   # Enable programs
   programs.zsh.enable = true;
