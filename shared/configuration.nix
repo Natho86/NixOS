@@ -49,6 +49,9 @@
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
   services.desktopManager.plasma6.enable = true;
+
+  # Enable Budgie
+  services.desktopManager.budgie.enable = true;
   
   # Enable Qtile
   services.xserver.windowManager.qtile.enable = true;
@@ -109,7 +112,6 @@
   
   # System packages
   environment.systemPackages = with pkgs; [
-    budgie-desktop
     vim
     wget
     git
