@@ -82,17 +82,35 @@
     shell = pkgs.zsh;
   };
 
-  # NAS SMB Share
-  # For mount.cifs, required unless domain name resolution is not needed.
-  #environment.systemPackages = [ pkgs.cifs-utils ];
-  fileSystems."/mnt/share" = {
-    device = "//192.168.50.4/media/";
+  # Unraid Documents share
+  sops.secrets."unraid/smb_password" = {
+    owner = "root";
+    group = "root";
+    mode = "0400";
+  };
+
+  sops.templates."unraid-smb-credentials" = {
+    path = "/run/secrets/rendered/unraid-smb-credentials";
+    owner = "root";
+    group = "root";
+    mode = "0400";
+    content = ''
+      username=nath
+      password=${config.sops.placeholder."unraid/smb_password"}
+    '';
+  };
+
+  fileSystems."/home/nath/Documents" = {
+    device = "//unraid.taildbe21.ts.net/Documents/nath";
     fsType = "cifs";
     options = let
-      # this line prevents hanging on network split
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,user,users";
+      # Avoid blocking boot/login when Tailscale or Unraid is unavailable.
+      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,x-systemd.requires=tailscaled.service,x-systemd.after=tailscaled.service,vers=3.1.1";
 
-    in ["${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=100" "nofail"];
+    in [
+      "${automount_opts},credentials=/run/secrets/rendered/unraid-smb-credentials,uid=1000,gid=100,dir_mode=0700,file_mode=0600"
+      "nofail"
+    ];
   };
 
 
