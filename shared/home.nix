@@ -16,7 +16,7 @@
     google-chrome
     
     # Communication
-    signal-desktop
+    #signal-desktop
     whatsapp-electron
     discord
     
