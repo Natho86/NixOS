@@ -10,6 +10,13 @@
   # Let Home Manager install and manage itself
   programs.home-manager.enable = true;
 
+  # Load per-project environment variables and Nix development shells
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   # Packages to install
   home.packages = with pkgs; [
     # Browsers
