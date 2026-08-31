@@ -357,6 +357,7 @@
   # Add npm global bin to PATH
   home.sessionPath = [
     "$HOME/.npm-global/bin"
+    "$HOME/.local/bin"
   ];
 
   # Environment variables for proper terminal color support in SSH sessions
