@@ -2,7 +2,7 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-   imports = [
+  imports = [
     ./wireguard.nix
   ];
 
@@ -54,7 +54,16 @@
   services.desktopManager.budgie.enable = true;
   
   # Enable Qtile
-  services.xserver.windowManager.qtile.enable = true;
+  services.xserver.windowManager.qtile = {
+    enable = true;
+    # Qtile currently installs qtile-generic.desktop, while its package
+    # metadata still advertises a session named qtile.
+    package = pkgs.python3Packages.qtile.overrideAttrs (old: {
+      passthru = old.passthru // {
+        providedSessions = [ "qtile-generic" ];
+      };
+    });
+  };
 
   # Auto-login configuration is set per-host (see laptop config)
 
@@ -129,6 +138,7 @@
   #    'github:flox/flox/latest'
   
   # System packages
+  environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     vim
     wget
@@ -158,7 +168,9 @@
 
     # System utilities
     pciutils
-    
+    powertop
+    lm_sensors
+
     # Archive tools
     unzip
     p7zip

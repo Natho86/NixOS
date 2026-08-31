@@ -24,7 +24,10 @@
       "Bash(nvcc:*)",
       "Bash(nvidia-smi:*)",
       "mcp__nixos__nix",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(ps -eo pid,ppid,%cpu,%mem,comm --sort=-%cpu)",
+      "Bash(ps -eo pid,%cpu,%mem,etimes,cmd --sort=-%cpu)",
+      "Bash(sensors)"
     ],
     "deny": [],
     "ask": []
