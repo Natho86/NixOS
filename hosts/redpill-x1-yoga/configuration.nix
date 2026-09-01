@@ -55,6 +55,24 @@
       STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
+  # Passwordless sudo for nixos-rebuild only (not blanket sudo). Scoped to
+  # the stable /run/current-system/sw/bin symlink, not a content-addressed
+  # /nix/store path, so it keeps working across rebuilds. Anything run as
+  # user nath can now switch/rollback the system without a password prompt
+  # to notice or stop it -- accepted trade-off for rebuild convenience on
+  # this personal laptop.
+  security.sudo.extraRules = [
+    {
+      users = [ "nath" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   # SSH server configuration
   services.openssh = {
     enable = true;
