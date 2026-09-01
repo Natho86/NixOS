@@ -45,6 +45,7 @@
                 ./shared/home.nix
                 ./shared/desktop/omarchy/home.nix
                 ./shared/desktop/omarchy/lock-idle.nix
+                ./shared/desktop/omarchy/screenshot.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };

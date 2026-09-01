@@ -145,6 +145,15 @@
       hl.bind("XF86AudioMute", hl.dsp.exec_cmd("pactl set-sink-mute @DEFAULT_SINK@ toggle"), { locked = true })
       hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set +10%"), { locked = true, repeating = true })
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 10%-"), { locked = true, repeating = true })
+
+      -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
+      -- Key name "Print" confirmed via xmodmap -pke against this keyboard
+      -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
+      -- for media/brightness keys above).
+      hl.bind("Print", hl.dsp.exec_cmd("omarchy-screenshot-region"))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd("omarchy-screenshot-full"))
+      hl.bind(mod .. " + Print", hl.dsp.exec_cmd("omarchy-screenshot-window"))
+      hl.bind(mod .. " + SHIFT + Print", hl.dsp.exec_cmd("omarchy-screenshot-output"))
     '';
   };
 
