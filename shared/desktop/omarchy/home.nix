@@ -9,6 +9,22 @@ let
   # derivation -- see theme.nix for why this can't be two separate
   # Home Manager sources under the same ~/.config/quickshell/omarchy path.
   omarchyShell = import ./theme.nix { inherit pkgs lib; };
+
+  omarchyTheme = (import ./themes/default.nix).theme;
+
+  # Hyprland's config wants "rgba(RRGGBBAA)" (hex, no leading #, alpha as a
+  # two-digit hex byte). themes/*.nix stores colours as "#RRGGBB" and
+  # opacity as a 0-1 float, matching QML's `color`/Qt.rgba conventions
+  # instead -- this converts between the two so both consumers can read
+  # the same theme source.
+  hexNoHash = color: lib.removePrefix "#" color;
+  # lib.toHexString does not zero-pad (e.g. 12 -> "C", not "0C") and
+  # returns uppercase -- confirmed live via `nix eval`. Both would produce
+  # a malformed rgba() string or an inconsistent case versus the rest of
+  # the hex literals already in this file, so pad and lowercase explicitly.
+  toAlphaHex = opacity:
+    lib.toLower (lib.fixedWidthString 2 "0" (lib.toHexString (builtins.floor (opacity * 255))));
+  hyprlandRgba = color: opacity: "rgba(${hexNoHash color}${toAlphaHex opacity})";
 in
 {
   # Milestone 2: Quickshell bar. Config directory structure and
@@ -52,14 +68,14 @@ in
         };
 
         general = {
-          gaps_in = 4;
-          gaps_out = 8;
-          border_size = 2;
+          gaps_in = omarchyTheme.layout.gapsIn;
+          gaps_out = omarchyTheme.layout.gapsOut;
+          border_size = omarchyTheme.layout.borderSize;
           layout = "dwindle";
         };
 
         decoration = {
-          rounding = 8;
+          rounding = omarchyTheme.layout.rounding;
           blur = {
             enabled = true;
             size = 4;
@@ -96,11 +112,14 @@ in
       hl.animation({ leaf = "fade", enabled = true, speed = 3, bezier = "easeOutQuint" })
       hl.animation({ leaf = "workspaces", enabled = true, speed = 4, bezier = "easeOutQuint" })
 
-      -- Tokyo Night accent, matched to the Milestone 0 theme decision.
+      -- Border colours from the Nix theme source (themes/${omarchyTheme.name}.nix),
+      -- not hardcoded -- Milestone 4 retrofit. Verified via `nix eval` to
+      -- produce byte-identical rgba() values to the original hardcoded
+      -- Milestone 1 config before this change.
       hl.config({
         general = {
-          ["col.active_border"] = "rgba(7aa2f7ee)",
-          ["col.inactive_border"] = "rgba(414868aa)",
+          ["col.active_border"] = "${hyprlandRgba omarchyTheme.colors.borderActive omarchyTheme.opacity.borderActive}",
+          ["col.inactive_border"] = "${hyprlandRgba omarchyTheme.colors.border omarchyTheme.opacity.borderInactive}",
         },
       })
 

@@ -25,8 +25,12 @@
   # rgba() syntax as needed (Hyprland wants hex alpha appended to hex RGB,
   # QML wants Qt.rgba() or an "#AARRGGBB" string).
   opacity = {
-    borderActive = 0.93; # ee/255
-    borderInactive = 0.67; # aa/255
+    # Exact fractions of the original hand-picked hex alpha bytes
+    # (0xee/0xaa), not rounded approximations -- verified via
+    # `nix eval` that floor(opacity * 255) reproduces the original
+    # hyprland.lua border colours byte-for-byte before this retrofit.
+    borderActive = 0.9333333333333333; # 0xee / 255
+    borderInactive = 0.6666666666666666; # 0xaa / 255
     surface = 0.8;
   };
 
