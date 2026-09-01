@@ -146,6 +146,18 @@
       hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set +10%"), { locked = true, repeating = true })
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 10%-"), { locked = true, repeating = true })
 
+      -- Media keys (playerctl, MPRIS)
+      hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+      hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
+      hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+
+      -- Clipboard history picker (cliphist + rofi -dmenu; cliphist store is
+      -- run continuously in the background by shared/desktop/omarchy/clipboard.nix)
+      hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
+
+      -- Audio mixer
+      hl.bind(mod .. " + A", hl.dsp.exec_cmd("pavucontrol"))
+
       -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard
       -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
@@ -161,5 +173,7 @@
     rofi # temporary placeholder launcher, replaced by Quickshell in Milestone 2
     brightnessctl
     kdePackages.dolphin
+    playerctl
+    pavucontrol
   ];
 }

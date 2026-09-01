@@ -46,6 +46,9 @@
                 ./shared/desktop/omarchy/home.nix
                 ./shared/desktop/omarchy/lock-idle.nix
                 ./shared/desktop/omarchy/screenshot.nix
+                ./shared/desktop/omarchy/wallpaper.nix
+                ./shared/desktop/omarchy/clipboard.nix
+                ./shared/desktop/omarchy/night-light.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };
