@@ -67,6 +67,13 @@
     };
   };
 
+  # Milestone 3: enabling this NixOS-level module (not just Home Manager's
+  # programs.hyprlock, which only writes the config file) auto-configures
+  # security.pam.services.hyprlock and services.hypridle.enable -- confirmed
+  # by reading nixos/modules/programs/wayland/hyprlock.nix. No manual PAM
+  # setup needed, resolving the gap flagged in Milestone 0.
+  programs.hyprlock.enable = true;
+
   # Per-desktop XDG portal routing. Without this, xdg-desktop-portal-hyprland
   # and Plasma's own KDE portal can contend for the same request when both
   # are installed system-wide. Keyed by XDG_CURRENT_DESKTOP, which Hyprland

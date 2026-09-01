@@ -31,13 +31,22 @@
           # Shared configuration
           ./shared/configuration.nix
 
+          # Omarchy-inspired Hyprland desktop (additive; see omarchy-inspired-nixos-plan.md)
+          ./shared/desktop/omarchy
+
           # Modules
           sops-nix.nixosModules.sops
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.nath = import ./shared/home.nix;
+            home-manager.users.nath = {
+              imports = [
+                ./shared/home.nix
+                ./shared/desktop/omarchy/home.nix
+                ./shared/desktop/omarchy/lock-idle.nix
+              ];
+            };
             home-manager.extraSpecialArgs = { inherit inputs; };
           }
         ];
