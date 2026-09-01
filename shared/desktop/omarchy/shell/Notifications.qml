@@ -30,11 +30,16 @@ Scope {
     Component {
         id: popupTimer
         Timer {
+            // `notification` is set via createObject's initial-properties
+            // argument, but QML does not guarantee that assignment
+            // completes before this binding's first evaluation -- guard
+            // against the resulting transient null (observed live:
+            // "TypeError: Cannot read property 'expireTimeout' of null").
             required property Notification notification
-            interval: notification.expireTimeout > 0 ? notification.expireTimeout : 5000
+            interval: notification && notification.expireTimeout > 0 ? notification.expireTimeout : 5000
             running: true
             onTriggered: {
-                notification.expire();
+                if (notification) notification.expire();
                 destroy();
             }
         }
