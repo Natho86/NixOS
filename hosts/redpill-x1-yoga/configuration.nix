@@ -11,6 +11,18 @@
   my.wireguard.enable = lib.mkDefault false;
 
 
+  # sops-nix age key location for this host. Overrides shared/configuration.nix's
+  # default of /home/nath/.config/sops/age/keys.txt: sops-nix's activation script
+  # (system.activationScripts.setupSecrets) runs during early boot, before /home
+  # is mounted, so a key under /home can never be read there and secrets silently
+  # fail to render (see: /run/secrets/rendered/* never created, breaking the
+  # Documents CIFS mount). /etc is on the root filesystem and available at that
+  # point in boot.
+  #
+  # ACTION REQUIRED before rebuilding: copy the existing key to the new path,
+  # e.g. `sudo install -D -m 0400 /home/nath/.config/sops/age/keys.txt /etc/sops/age/keys.txt`
+  sops.age.keyFile = lib.mkForce "/etc/sops/age/keys.txt";
+
   # LUKS encryption setup for this machine
   boot.initrd.luks.devices."cryptroot" = {
     device = "/dev/disk/by-uuid/1fe239ed-81f2-4c97-80cc-30c24ffe8e2f"; # Laptop LUKS UUID
