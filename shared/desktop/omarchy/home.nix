@@ -140,11 +140,13 @@
         hl.bind(mod .. " + SHIFT + " .. ws, hl.dsp.window.move({ workspace = ws, follow = true }))
       end
 
-      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pactl set-sink-volume @DEFAULT_SINK@ +5%"), { locked = true })
-      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pactl set-sink-volume @DEFAULT_SINK@ -5%"), { locked = true })
-      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("pactl set-sink-mute @DEFAULT_SINK@ toggle"), { locked = true })
-      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set +10%"), { locked = true, repeating = true })
-      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 10%-"), { locked = true, repeating = true })
+      -- omarchy-volume-*/omarchy-brightness-* (osd-helpers.nix) adjust the
+      -- real value then trigger the Quickshell OSD via `qs ipc call`.
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("omarchy-volume-up"), { locked = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("omarchy-volume-down"), { locked = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("omarchy-volume-mute-toggle"), { locked = true })
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("omarchy-brightness-up"), { locked = true, repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("omarchy-brightness-down"), { locked = true, repeating = true })
 
       -- Media keys (playerctl, MPRIS)
       hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })

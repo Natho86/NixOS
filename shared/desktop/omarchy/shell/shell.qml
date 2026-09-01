@@ -7,4 +7,5 @@ import Quickshell
 ShellRoot {
     Bar {}
     Notifications {}
+    Osd {}
 }

@@ -49,6 +49,7 @@
                 ./shared/desktop/omarchy/wallpaper.nix
                 ./shared/desktop/omarchy/clipboard.nix
                 ./shared/desktop/omarchy/night-light.nix
+                ./shared/desktop/omarchy/osd-helpers.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };
