@@ -61,9 +61,9 @@ Scope {
 
         Rectangle {
             anchors.fill: parent
-            radius: 10
-            color: "#1a1b26"
-            border.color: "#414868"
+            radius: Theme.rounding
+            color: Theme.background
+            border.color: Theme.border
             border.width: 1
 
             Row {
@@ -72,7 +72,7 @@ Scope {
 
                 Text {
                     text: osdScope.currentIcon
-                    color: "#c0caf5"
+                    color: Theme.foreground
                     font.pixelSize: 20
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -81,20 +81,20 @@ Scope {
                     width: 130
                     height: 8
                     radius: 4
-                    color: "#414868"
+                    color: Theme.overlay
                     anchors.verticalCenter: parent.verticalCenter
 
                     Rectangle {
                         width: parent.width * Math.min(osdScope.currentValue, 100) / 100
                         height: parent.height
                         radius: 4
-                        color: "#7aa2f7"
+                        color: Theme.accent
                     }
                 }
 
                 Text {
                     text: osdScope.currentValue + "%"
-                    color: "#c0caf5"
+                    color: Theme.foreground
                     font.pixelSize: 13
                     anchors.verticalCenter: parent.verticalCenter
                 }

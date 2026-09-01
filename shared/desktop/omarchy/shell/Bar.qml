@@ -30,8 +30,8 @@ PanelWindow {
         right: true
     }
 
-    implicitHeight: 32
-    color: "#1a1b26" // Tokyo Night background
+    implicitHeight: Theme.barHeight
+    color: Theme.background
 
     // Keeps the default audio sink's PwNode alive/bound so its properties
     // (volume, muted) update reactively. Confirmed pattern: PwObjectTracker.
@@ -58,13 +58,13 @@ PanelWindow {
 
                     width: 22
                     height: 22
-                    radius: 4
-                    color: wsDelegate.modelData.focused ? "#7aa2f7" : "#414868"
+                    radius: 4 // independent of Theme.rounding -- a small pill radius, not derived from the general corner rounding
+                    color: wsDelegate.modelData.focused ? Theme.accent : Theme.overlay
 
                     Text {
                         anchors.centerIn: parent
                         text: wsDelegate.modelData.id
-                        color: wsDelegate.modelData.focused ? "#1a1b26" : "#c0caf5"
+                        color: wsDelegate.modelData.focused ? Theme.background : Theme.foreground
                         font.pixelSize: 12
                     }
 
@@ -88,7 +88,7 @@ PanelWindow {
         Text {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
-            color: "#c0caf5"
+            color: Theme.foreground
             elide: Text.ElideRight
             text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : ""
         }
@@ -97,7 +97,7 @@ PanelWindow {
         // property on Quickshell.Networking within this research pass)
         Text {
             id: networkText
-            color: "#c0caf5"
+            color: Theme.foreground
             font.pixelSize: 13
             text: "󰤨"
 
@@ -123,7 +123,7 @@ PanelWindow {
 
         // Audio
         Text {
-            color: "#c0caf5"
+            color: Theme.foreground
             font.pixelSize: 13
             text: {
                 const sink = Pipewire.defaultAudioSink;
@@ -135,7 +135,7 @@ PanelWindow {
 
         // Battery
         Text {
-            color: "#c0caf5"
+            color: Theme.foreground
             font.pixelSize: 13
             visible: UPower.displayDevice && UPower.displayDevice.isLaptopBattery
             text: {
@@ -150,7 +150,7 @@ PanelWindow {
         // Clock
         Text {
             id: clockText
-            color: "#c0caf5"
+            color: Theme.foreground
             font.pixelSize: 13
 
             SystemClock {

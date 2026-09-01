@@ -79,9 +79,9 @@ Scope {
 
                     Layout.fillWidth: true
                     implicitHeight: notifContent.implicitHeight + 20
-                    radius: 8
-                    color: "#1a1b26"
-                    border.color: "#414868"
+                    radius: Theme.rounding
+                    color: Theme.background
+                    border.color: Theme.border
                     border.width: 1
 
                     ColumnLayout {
@@ -93,7 +93,7 @@ Scope {
                         Text {
                             Layout.fillWidth: true
                             text: notifDelegate.modelData.summary
-                            color: "#c0caf5"
+                            color: Theme.foreground
                             font.bold: true
                             font.pixelSize: 13
                             elide: Text.ElideRight
