@@ -2,8 +2,14 @@
 # Keybindings, input, monitor and initial appearance. Package ownership
 # stays with NixOS (programs.hyprland.enable in system.nix), so package
 # is set to null here per the Home Manager module's own guidance.
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  # Milestone 4: shell/ + generated Theme.qml/qmldir combined into one
+  # derivation -- see theme.nix for why this can't be two separate
+  # Home Manager sources under the same ~/.config/quickshell/omarchy path.
+  omarchyShell = import ./theme.nix { inherit pkgs lib; };
+in
 {
   # Milestone 2: Quickshell bar. Config directory structure and
   # systemd.target default verified against the pinned Home Manager
@@ -16,7 +22,7 @@
   # is false here (UWSM, not Home Manager, owns that integration).
   programs.quickshell = {
     enable = true;
-    configs.omarchy = ./shell;
+    configs.omarchy = omarchyShell.quickshellConfigDir;
     activeConfig = "omarchy";
     systemd.enable = true;
   };
