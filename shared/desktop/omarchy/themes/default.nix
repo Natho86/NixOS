@@ -16,7 +16,7 @@ let
     hackerman = import ./hackerman.nix;
   };
 
-  selected = "tokyo-night";
+  selected = "hackerman";
 in
 {
   theme = themes.${selected};
