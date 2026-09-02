@@ -44,5 +44,15 @@
       float = true,
       center = true,
     })
+
+    -- btop quick-launch overlay (SUPER+M, home.nix): alacritty --class
+    -- alacritty-btop distinguishes this specific instance from regular
+    -- terminals so only it floats/centers/sizes this way.
+    hl.window_rule({
+      match = { class = "alacritty-btop" },
+      float = true,
+      center = true,
+      size = { 900, 600 },
+    })
   '';
 }

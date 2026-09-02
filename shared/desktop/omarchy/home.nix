@@ -194,6 +194,11 @@ in
       -- Audio mixer
       hl.bind(mod .. " + A", hl.dsp.exec_cmd("pavucontrol"))
 
+      -- btop quick-launch overlay. --class distinguishes this instance so
+      -- the float/center/size window rule (window-rules.nix) only applies
+      -- here, not to regular terminals.
+      hl.bind(mod .. " + M", hl.dsp.exec_cmd("alacritty --class alacritty-btop -e btop"))
+
       -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard
       -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
