@@ -391,6 +391,285 @@ PanelWindow {
             }
         }
 
+        // Clock -> calendar popup. Month-grid/ISO-week/year-progress date
+        // math ported near-verbatim from upstream Omarchy's own
+        // shell/plugins/panels/clock/Model.js (github.com/omacom/omarchy,
+        // MIT licensed, quattro branch) at the user's request. Trimmed
+        // from upstream: week-start toggle persistence, the memento-mori
+        // life-progress bar, the timezone picker, and format-cycling
+        // (kept the existing single yyyy-MM-dd HH:mm format) -- none of
+        // which the user asked for; only "date and time... opens a
+        // calendar popup" was requested. Placed right after weather and
+        // ahead of a second fillWidth spacer (below) so both sit as a
+        // center-ish cluster between the (also fillWidth) window title on
+        // the left and the status-icon cluster on the right -- the
+        // simple two-spacer 3-region bar pattern, per the user's request
+        // to move date/time and weather to the centre.
+        Text {
+            id: clockText
+            color: Theme.foreground
+            font.pixelSize: Theme.fontSize
+            font.family: Theme.fontMonoFamily
+
+            SystemClock {
+                id: clock
+                precision: SystemClock.Minutes
+            }
+
+            text: Qt.formatDateTime(clock.date, "yyyy-MM-dd HH:mm")
+
+            TapHandler {
+                onTapped: calendarPopup.visible = !calendarPopup.visible
+            }
+
+            BarPopup {
+                id: calendarPopup
+                anchorItem: clockText
+                popupWidth: 280
+                popupHeight: 320
+                visible: false
+
+                // viewYear/viewMonth track which month is displayed;
+                // reset to the real current month whenever the popup is
+                // reopened, matching upstream's own "always opens on
+                // today" behaviour.
+                property int viewYear: (new Date()).getFullYear()
+                property int viewMonth: (new Date()).getMonth()
+
+                onVisibleChanged: {
+                    if (visible) {
+                        const now = new Date();
+                        viewYear = now.getFullYear();
+                        viewMonth = now.getMonth();
+                    }
+                }
+
+                readonly property var today: new Date()
+                readonly property string todayKey: dateKey(today.getFullYear(), today.getMonth(), today.getDate())
+
+                function pad2(n: int): string {
+                    return (n < 10 ? "0" : "") + n;
+                }
+
+                function dateKey(year: int, month: int, day: int): string {
+                    return year + "-" + pad2(month + 1) + "-" + pad2(day);
+                }
+
+                // ISO-8601 week number (Thursday-anchored): shift to the
+                // Thursday of the same week, then count weeks from that
+                // Thursday's own year-start. Ported from Model.js's
+                // isoWeek(), which is itself the standard ISO week
+                // algorithm, not an Omarchy-specific invention.
+                function isoWeek(year: int, month: int, day: int): int {
+                    const date = new Date(Date.UTC(year, month, day));
+                    const weekday = date.getUTCDay() || 7;
+                    date.setUTCDate(date.getUTCDate() + 4 - weekday);
+                    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+                    return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+                }
+
+                function dayOfYear(year: int, month: int, day: int): int {
+                    return Math.round((Date.UTC(year, month, day) - Date.UTC(year, 0, 1)) / 86400000) + 1;
+                }
+
+                function daysInYear(year: int): int {
+                    return dayOfYear(year, 11, 31);
+                }
+
+                readonly property real yearProgress: {
+                    const total = daysInYear(today.getFullYear());
+                    if (total <= 0) return 0;
+                    return Math.max(0, Math.min(1, (dayOfYear(today.getFullYear(), today.getMonth(), today.getDate()) - 1) / total));
+                }
+
+                // 6x7 fixed grid (always 6 weeks) so the popup never
+                // resizes stepping between months -- ported from
+                // Model.js's monthGrid(), Monday-start fixed (upstream
+                // supports a user-toggleable week start; not built here,
+                // see the trimmed-scope note above).
+                property var weeks: {
+                    const weekStart = 1; // Monday
+                    const leading = (new Date(viewYear, viewMonth, 1).getDay() - weekStart + 7) % 7;
+                    let cursor = new Date(viewYear, viewMonth, 1 - leading);
+                    const result = [];
+                    for (let w = 0; w < 6; w++) {
+                        const days = [];
+                        // A real calendar week always contains a Thursday
+                        // (it's a 7-day loop starting from a fixed
+                        // weekStart), so this is always overwritten before
+                        // use below -- no fallback needed, unlike an
+                        // earlier draft of this function which reached for
+                        // days[0] "just in case" and then couldn't
+                        // reconstruct a year/month from it.
+                        let anchorYear = viewYear;
+                        let anchorMonth = viewMonth;
+                        let anchorDay = 1;
+                        for (let d = 0; d < 7; d++) {
+                            const cellYear = cursor.getFullYear();
+                            const cellMonth = cursor.getMonth();
+                            const cellDay = cursor.getDate();
+                            const weekday = cursor.getDay();
+                            const key = dateKey(cellYear, cellMonth, cellDay);
+                            if (weekday === 4) {
+                                anchorYear = cellYear;
+                                anchorMonth = cellMonth;
+                                anchorDay = cellDay;
+                            }
+                            days.push({
+                                key: key,
+                                day: cellDay,
+                                inMonth: cellMonth === viewMonth && cellYear === viewYear,
+                                weekend: weekday === 0 || weekday === 6,
+                                isToday: key === todayKey
+                            });
+                            cursor.setDate(cursor.getDate() + 1);
+                        }
+                        result.push({ week: isoWeek(anchorYear, anchorMonth, anchorDay), days: days });
+                    }
+                    return result;
+                }
+
+                readonly property var monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 8
+
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Text {
+                            text: "󰅁"
+                            color: Theme.foreground
+                            font.pixelSize: Theme.fontSize
+                            TapHandler {
+                                onTapped: {
+                                    if (calendarPopup.viewMonth === 0) {
+                                        calendarPopup.viewMonth = 11;
+                                        calendarPopup.viewYear -= 1;
+                                    } else {
+                                        calendarPopup.viewMonth -= 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        Text {
+                            text: calendarPopup.monthNames[calendarPopup.viewMonth] + " " + calendarPopup.viewYear
+                            color: Theme.foreground
+                            font.pixelSize: Theme.fontSize
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+
+                        Text {
+                            text: "󰅂"
+                            color: Theme.foreground
+                            font.pixelSize: Theme.fontSize
+                            TapHandler {
+                                onTapped: {
+                                    if (calendarPopup.viewMonth === 11) {
+                                        calendarPopup.viewMonth = 0;
+                                        calendarPopup.viewYear += 1;
+                                    } else {
+                                        calendarPopup.viewMonth += 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Year-progress meter -- pure date math, no external
+                    // dependency, cheap and visually nice per the plan.
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 4
+                        radius: 2
+                        color: Theme.overlay
+
+                        Rectangle {
+                            width: parent.width * calendarPopup.yearProgress
+                            height: parent.height
+                            radius: 2
+                            color: Theme.accent
+                        }
+                    }
+
+                    GridLayout {
+                        Layout.fillWidth: true
+                        columns: 8
+                        columnSpacing: 2
+                        rowSpacing: 4
+
+                        Text { text: "W"; color: Theme.muted; font.pixelSize: Theme.fontSize - 2; Layout.alignment: Qt.AlignHCenter }
+                        Repeater {
+                            model: ["M", "T", "W", "T", "F", "S", "S"]
+                            Text {
+                                required property string modelData
+                                text: modelData
+                                color: Theme.muted
+                                font.pixelSize: Theme.fontSize - 2
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
+
+                        Repeater {
+                            model: calendarPopup.weeks
+
+                            Text {
+                                required property var modelData
+                                text: modelData.week
+                                color: Theme.muted
+                                font.pixelSize: Theme.fontSize - 2
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
+
+                        Repeater {
+                            model: {
+                                const flat = [];
+                                for (let w = 0; w < calendarPopup.weeks.length; w++) {
+                                    for (let d = 0; d < 7; d++) flat.push(calendarPopup.weeks[w].days[d]);
+                                }
+                                return flat;
+                            }
+
+                            Rectangle {
+                                id: dayDelegate
+                                required property var modelData
+                                Layout.preferredWidth: 26
+                                Layout.preferredHeight: 26
+                                Layout.alignment: Qt.AlignHCenter
+                                radius: 4
+                                color: "transparent"
+                                border.color: dayDelegate.modelData.isToday ? Theme.accent : "transparent"
+                                border.width: 1
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: dayDelegate.modelData.day
+                                    font.pixelSize: Theme.fontSize
+                                    font.bold: dayDelegate.modelData.isToday
+                                    color: dayDelegate.modelData.weekend ? Theme.muted : Theme.foreground
+                                    opacity: dayDelegate.modelData.inMonth ? 1.0 : 0.4
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Second flexible spacer: with the window title (also
+        // Layout.fillWidth) on the left of weather+clock, this pushes
+        // the remaining status-icon cluster (tray onward) to the far
+        // right, leaving weather+clock sitting as a centre-ish group
+        // between the two fill regions -- the standard two-spacer
+        // 3-region bar layout.
+        Item {
+            Layout.fillWidth: true
+        }
+
         // System tray. StatusNotifierItem API (icon/title/activate/
         // secondaryActivate/hasMenu/menu/display) confirmed against
         // src/services/status_notifier/item.hpp.
@@ -415,6 +694,24 @@ PanelWindow {
                     source: trayDelegate.modelData.icon
                     sourceSize: Qt.size(16, 16)
 
+                    // display(parentWindow, relativeX, relativeY)'s
+                    // coordinates are relative to parentWindow's own
+                    // top-left corner (confirmed in platformmenu.cpp:
+                    // `window->mapToGlobal(QPoint(relativeX, relativeY))`),
+                    // not to trayDelegate's immediate parent -- the
+                    // original `trayDelegate.x, trayDelegate.y + bar.height`
+                    // was measuring from the wrong origin (the tray's own
+                    // RowLayout), which is why menus opened at the bar's
+                    // far left instead of under the icon. Fixed using
+                    // bar.contentItem.mapFromItem(), the same pattern
+                    // Quickshell's own src/ui/Tooltip.qml uses
+                    // (`anchorItem.QsWindow.contentItem.mapFromItem(...)`)
+                    // to convert an item's position into its window's
+                    // content-item coordinate space.
+                    function menuPosition(): point {
+                        return bar.contentItem.mapFromItem(trayDelegate, 0, trayDelegate.height);
+                    }
+
                     // Left-click activates (or opens the menu if that's all
                     // the item offers); right-click explicitly opens the
                     // context menu when one exists -- the common desktop
@@ -428,7 +725,8 @@ PanelWindow {
                         acceptedButtons: Qt.LeftButton
                         onTapped: {
                             if (trayDelegate.modelData.hasMenu) {
-                                trayDelegate.modelData.display(bar, trayDelegate.x, trayDelegate.y + bar.height);
+                                const pos = trayDelegate.menuPosition();
+                                trayDelegate.modelData.display(bar, pos.x, pos.y);
                             } else {
                                 trayDelegate.modelData.activate();
                             }
@@ -438,7 +736,8 @@ PanelWindow {
                         acceptedButtons: Qt.RightButton
                         onTapped: {
                             if (trayDelegate.modelData.hasMenu) {
-                                trayDelegate.modelData.display(bar, trayDelegate.x, trayDelegate.y + bar.height);
+                                const pos = trayDelegate.menuPosition();
+                                trayDelegate.modelData.display(bar, pos.x, pos.y);
                             }
                         }
                     }
@@ -500,10 +799,13 @@ PanelWindow {
                     Repeater {
                         model: Bluetooth.devices
 
-                        RowLayout {
+                        Rectangle {
                             id: btDelegate
                             required property BluetoothDevice modelData
                             Layout.fillWidth: true
+                            Layout.preferredHeight: btRow.implicitHeight + 8
+                            radius: Theme.rounding / 2
+                            color: btHover.hovered ? Theme.overlay : "transparent"
 
                             // BluetoothDeviceState (confirmed real:
                             // Disconnected=0, Connected=1, Disconnecting=2,
@@ -511,41 +813,76 @@ PanelWindow {
                             // a real in-progress state, unlike the plain
                             // `connected` boolean this used before -- fixes
                             // the reported "delay could be mistaken for
-                            // nothing happening" by showing a distinct
-                            // connecting/disconnecting icon and disabling
-                            // the click target while a transition is in
-                            // flight (so a second click can't fire a
-                            // redundant connect()/disconnect() mid-transition).
-                            readonly property bool isTransitioning: btDelegate.modelData.state === BluetoothDeviceState.Connecting || btDelegate.modelData.state === BluetoothDeviceState.Disconnecting
-
-                            Text {
-                                text: btDelegate.modelData.name
-                                color: Theme.foreground
-                                font.pixelSize: Theme.fontSize
-                                Layout.fillWidth: true
-                                elide: Text.ElideRight
+                            // nothing happening": the whole row now shows a
+                            // spinner-style icon and a "Connecting…"/
+                            // "Disconnecting…" status line, not just a
+                            // subtly-dimmed small glyph, while a transition
+                            // is in flight.
+                            readonly property bool isTransitioning: modelData.state === BluetoothDeviceState.Connecting || modelData.state === BluetoothDeviceState.Disconnecting
+                            readonly property string statusText: {
+                                switch (modelData.state) {
+                                case BluetoothDeviceState.Connecting: return "Connecting…";
+                                case BluetoothDeviceState.Disconnecting: return "Disconnecting…";
+                                case BluetoothDeviceState.Connected: return "Connected";
+                                default: return "";
+                                }
                             }
-                            Text {
-                                text: {
-                                    switch (btDelegate.modelData.state) {
-                                    case BluetoothDeviceState.Connecting: return "󰂰";
-                                    case BluetoothDeviceState.Disconnecting: return "󰂰";
-                                    case BluetoothDeviceState.Connected: return "󰂱";
-                                    default: return "󰂯";
+
+                            HoverHandler {
+                                id: btHover
+                            }
+
+                            // Whole row is now the click target (previously
+                            // only the small trailing icon was), matching
+                            // the user's request.
+                            TapHandler {
+                                enabled: !btDelegate.isTransitioning
+                                onTapped: {
+                                    if (btDelegate.modelData.connected) {
+                                        btDelegate.modelData.disconnect();
+                                    } else {
+                                        btDelegate.modelData.connect();
                                     }
                                 }
-                                color: btDelegate.modelData.connected ? Theme.accent : Theme.muted
-                                opacity: btDelegate.isTransitioning ? 0.6 : 1.0
-                                font.pixelSize: Theme.fontSize
+                            }
 
-                                TapHandler {
-                                    enabled: !btDelegate.isTransitioning
-                                    onTapped: {
-                                        if (btDelegate.modelData.connected) {
-                                            btDelegate.modelData.disconnect();
-                                        } else {
-                                            btDelegate.modelData.connect();
+                            RowLayout {
+                                id: btRow
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.margins: 4
+                                spacing: 8
+
+                                Text {
+                                    text: {
+                                        switch (btDelegate.modelData.state) {
+                                        case BluetoothDeviceState.Connecting: return "󰂰";
+                                        case BluetoothDeviceState.Disconnecting: return "󰂰";
+                                        case BluetoothDeviceState.Connected: return "󰂱";
+                                        default: return "󰂯";
                                         }
+                                    }
+                                    color: btDelegate.modelData.connected ? Theme.accent : Theme.muted
+                                    font.pixelSize: Theme.fontSizeLarge
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 0
+
+                                    Text {
+                                        text: btDelegate.modelData.name
+                                        color: Theme.foreground
+                                        font.pixelSize: Theme.fontSize
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+                                    Text {
+                                        text: btDelegate.statusText
+                                        visible: text.length > 0
+                                        color: btDelegate.isTransitioning ? Theme.accent : Theme.muted
+                                        font.pixelSize: Theme.fontSize - 2
                                     }
                                 }
                             }
@@ -1037,270 +1374,6 @@ PanelWindow {
                 const pct = Math.round(d.percentage * 100);
                 const charging = d.state === UPowerDeviceState.Charging;
                 return (charging ? "󰂄 " : "󰁹 ") + pct + "%";
-            }
-        }
-
-        // Clock -> calendar popup. Month-grid/ISO-week/year-progress date
-        // math ported near-verbatim from upstream Omarchy's own
-        // shell/plugins/panels/clock/Model.js (github.com/omacom/omarchy,
-        // MIT licensed, quattro branch) at the user's request. Trimmed
-        // from upstream: week-start toggle persistence, the memento-mori
-        // life-progress bar, the timezone picker, and format-cycling
-        // (kept the existing single yyyy-MM-dd HH:mm format) -- none of
-        // which the user asked for; only "date and time... opens a
-        // calendar popup" was requested.
-        Text {
-            id: clockText
-            color: Theme.foreground
-            font.pixelSize: Theme.fontSize
-            font.family: Theme.fontMonoFamily
-
-            SystemClock {
-                id: clock
-                precision: SystemClock.Minutes
-            }
-
-            text: Qt.formatDateTime(clock.date, "yyyy-MM-dd HH:mm")
-
-            TapHandler {
-                onTapped: calendarPopup.visible = !calendarPopup.visible
-            }
-
-            BarPopup {
-                id: calendarPopup
-                anchorItem: clockText
-                popupWidth: 280
-                popupHeight: 320
-                visible: false
-
-                // viewYear/viewMonth track which month is displayed;
-                // reset to the real current month whenever the popup is
-                // reopened, matching upstream's own "always opens on
-                // today" behaviour.
-                property int viewYear: (new Date()).getFullYear()
-                property int viewMonth: (new Date()).getMonth()
-
-                onVisibleChanged: {
-                    if (visible) {
-                        const now = new Date();
-                        viewYear = now.getFullYear();
-                        viewMonth = now.getMonth();
-                    }
-                }
-
-                readonly property var today: new Date()
-                readonly property string todayKey: dateKey(today.getFullYear(), today.getMonth(), today.getDate())
-
-                function pad2(n: int): string {
-                    return (n < 10 ? "0" : "") + n;
-                }
-
-                function dateKey(year: int, month: int, day: int): string {
-                    return year + "-" + pad2(month + 1) + "-" + pad2(day);
-                }
-
-                // ISO-8601 week number (Thursday-anchored): shift to the
-                // Thursday of the same week, then count weeks from that
-                // Thursday's own year-start. Ported from Model.js's
-                // isoWeek(), which is itself the standard ISO week
-                // algorithm, not an Omarchy-specific invention.
-                function isoWeek(year: int, month: int, day: int): int {
-                    const date = new Date(Date.UTC(year, month, day));
-                    const weekday = date.getUTCDay() || 7;
-                    date.setUTCDate(date.getUTCDate() + 4 - weekday);
-                    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-                    return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-                }
-
-                function dayOfYear(year: int, month: int, day: int): int {
-                    return Math.round((Date.UTC(year, month, day) - Date.UTC(year, 0, 1)) / 86400000) + 1;
-                }
-
-                function daysInYear(year: int): int {
-                    return dayOfYear(year, 11, 31);
-                }
-
-                readonly property real yearProgress: {
-                    const total = daysInYear(today.getFullYear());
-                    if (total <= 0) return 0;
-                    return Math.max(0, Math.min(1, (dayOfYear(today.getFullYear(), today.getMonth(), today.getDate()) - 1) / total));
-                }
-
-                // 6x7 fixed grid (always 6 weeks) so the popup never
-                // resizes stepping between months -- ported from
-                // Model.js's monthGrid(), Monday-start fixed (upstream
-                // supports a user-toggleable week start; not built here,
-                // see the trimmed-scope note above).
-                property var weeks: {
-                    const weekStart = 1; // Monday
-                    const leading = (new Date(viewYear, viewMonth, 1).getDay() - weekStart + 7) % 7;
-                    let cursor = new Date(viewYear, viewMonth, 1 - leading);
-                    const result = [];
-                    for (let w = 0; w < 6; w++) {
-                        const days = [];
-                        // A real calendar week always contains a Thursday
-                        // (it's a 7-day loop starting from a fixed
-                        // weekStart), so this is always overwritten before
-                        // use below -- no fallback needed, unlike an
-                        // earlier draft of this function which reached for
-                        // days[0] "just in case" and then couldn't
-                        // reconstruct a year/month from it.
-                        let anchorYear = viewYear;
-                        let anchorMonth = viewMonth;
-                        let anchorDay = 1;
-                        for (let d = 0; d < 7; d++) {
-                            const cellYear = cursor.getFullYear();
-                            const cellMonth = cursor.getMonth();
-                            const cellDay = cursor.getDate();
-                            const weekday = cursor.getDay();
-                            const key = dateKey(cellYear, cellMonth, cellDay);
-                            if (weekday === 4) {
-                                anchorYear = cellYear;
-                                anchorMonth = cellMonth;
-                                anchorDay = cellDay;
-                            }
-                            days.push({
-                                key: key,
-                                day: cellDay,
-                                inMonth: cellMonth === viewMonth && cellYear === viewYear,
-                                weekend: weekday === 0 || weekday === 6,
-                                isToday: key === todayKey
-                            });
-                            cursor.setDate(cursor.getDate() + 1);
-                        }
-                        result.push({ week: isoWeek(anchorYear, anchorMonth, anchorDay), days: days });
-                    }
-                    return result;
-                }
-
-                readonly property var monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 8
-
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Text {
-                            text: "󰅁"
-                            color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
-                            TapHandler {
-                                onTapped: {
-                                    if (calendarPopup.viewMonth === 0) {
-                                        calendarPopup.viewMonth = 11;
-                                        calendarPopup.viewYear -= 1;
-                                    } else {
-                                        calendarPopup.viewMonth -= 1;
-                                    }
-                                }
-                            }
-                        }
-
-                        Text {
-                            text: calendarPopup.monthNames[calendarPopup.viewMonth] + " " + calendarPopup.viewYear
-                            color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
-                        }
-
-                        Text {
-                            text: "󰅂"
-                            color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
-                            TapHandler {
-                                onTapped: {
-                                    if (calendarPopup.viewMonth === 11) {
-                                        calendarPopup.viewMonth = 0;
-                                        calendarPopup.viewYear += 1;
-                                    } else {
-                                        calendarPopup.viewMonth += 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Year-progress meter -- pure date math, no external
-                    // dependency, cheap and visually nice per the plan.
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 4
-                        radius: 2
-                        color: Theme.overlay
-
-                        Rectangle {
-                            width: parent.width * calendarPopup.yearProgress
-                            height: parent.height
-                            radius: 2
-                            color: Theme.accent
-                        }
-                    }
-
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: 8
-                        columnSpacing: 2
-                        rowSpacing: 4
-
-                        Text { text: "W"; color: Theme.muted; font.pixelSize: Theme.fontSize - 2; Layout.alignment: Qt.AlignHCenter }
-                        Repeater {
-                            model: ["M", "T", "W", "T", "F", "S", "S"]
-                            Text {
-                                required property string modelData
-                                text: modelData
-                                color: Theme.muted
-                                font.pixelSize: Theme.fontSize - 2
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                        }
-
-                        Repeater {
-                            model: calendarPopup.weeks
-
-                            Text {
-                                required property var modelData
-                                text: modelData.week
-                                color: Theme.muted
-                                font.pixelSize: Theme.fontSize - 2
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                        }
-
-                        Repeater {
-                            model: {
-                                const flat = [];
-                                for (let w = 0; w < calendarPopup.weeks.length; w++) {
-                                    for (let d = 0; d < 7; d++) flat.push(calendarPopup.weeks[w].days[d]);
-                                }
-                                return flat;
-                            }
-
-                            Rectangle {
-                                id: dayDelegate
-                                required property var modelData
-                                Layout.preferredWidth: 26
-                                Layout.preferredHeight: 26
-                                Layout.alignment: Qt.AlignHCenter
-                                radius: 4
-                                color: "transparent"
-                                border.color: dayDelegate.modelData.isToday ? Theme.accent : "transparent"
-                                border.width: 1
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: dayDelegate.modelData.day
-                                    font.pixelSize: Theme.fontSize
-                                    font.bold: dayDelegate.modelData.isToday
-                                    color: dayDelegate.modelData.weekend ? Theme.muted : Theme.foreground
-                                    opacity: dayDelegate.modelData.inMonth ? 1.0 : 0.4
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
