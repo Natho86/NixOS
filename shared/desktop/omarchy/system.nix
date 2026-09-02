@@ -96,4 +96,36 @@ lib.mkIf config.desktop.omarchy.enable {
     };
     extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
+
+  # Milestone 8 top-bar follow-up: stop nm-applet's tray icon from
+  # appearing in the Hyprland session's system tray -- the bar's own
+  # network popup (SUPER+N or the bar icon) already covers this, and the
+  # tray icon was confirmed real (not an artifact of this repo's own
+  # config): `programs.nm-applet` isn't enabled anywhere in this repo at
+  # all -- it's turned on by NixOS's own Budgie desktop-manager module
+  # (nixos/modules/services/desktop-managers/budgie.nix:
+  # `programs.nm-applet.enable = config.networking.networkmanager.enable;
+  # # Budgie has no Network applet.`), since Budgie genuinely needs it as
+  # its own network tray icon. Disabling the service outright would
+  # therefore remove Budgie's network icon too, not just Hyprland's --
+  # scoped instead via systemd's ConditionEnvironment (a real, standard
+  # unit directive, confirmed via `man systemd.unit`) so the unit simply
+  # refuses to start when XDG_CURRENT_DESKTOP is "Hyprland" (the exact
+  # value confirmed live via `echo $XDG_CURRENT_DESKTOP` in this
+  # session), leaving Budgie's own session (a different
+  # XDG_CURRENT_DESKTOP value) completely unaffected. This NixOS-level
+  # systemd.user.services.nm-applet definition merges additively with
+  # the one nm-applet.nix itself sets (same attrset, not a full
+  # override), so serviceConfig here only adds a condition rather than
+  # replacing nm-applet's own ExecStart/wantedBy.
+  # ConditionEnvironment belongs in the [Unit] section, not [Service] --
+  # confirmed live: an earlier attempt at serviceConfig.ConditionEnvironment
+  # rendered it under [Service], and systemd logged "Unknown key
+  # 'ConditionEnvironment' in section [Service], ignoring" (visible via
+  # `journalctl --user -u nm-applet.service`), so the condition was
+  # silently never applied. unitConfig is the correct NixOS option for
+  # [Unit]-section keys (confirmed against a real usage,
+  # nixos/modules/system/boot/kexec.nix: `unitConfig.DefaultDependencies
+  # = false;`).
+  systemd.user.services.nm-applet.unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=Hyprland";
 }

@@ -75,7 +75,12 @@ PanelWindow {
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-        spacing: Theme.gapsIn
+        // Was Theme.gapsIn (4px) -- that token is shared with Hyprland's
+        // actual window gaps (themes/*.nix), so bumping it here would
+        // have also widened window gaps, not just bar spacing. A
+        // dedicated, slightly larger local value instead, per request to
+        // increase spacing between bar elements specifically.
+        spacing: 10
 
         // Menu/launcher button. Left-click opens the same combi launcher
         // SUPER+SPACE does (home.nix's `menu` local var); right-click opens
@@ -136,14 +141,35 @@ PanelWindow {
             }
         }
 
-        // Focused window title
+        // Focused window title. NOT fillWidth -- true centering of the
+        // weather+clock cluster below needs exactly two competing
+        // fillWidth spacers (this section's leading edge and the
+        // dedicated spacer after clock); a third fillWidth item here
+        // would compete with the right-hand spacer for space instead of
+        // leaving it as a genuine, equal counterweight, which is why
+        // weather/clock rendered hugging the right side instead of
+        // centred (the title's variable-length text was winning most of
+        // the "shared" flexible space). Layout.maximumWidth bounds how
+        // much of the fixed left region this can take before eliding,
+        // so a long window title doesn't itself throw off centering.
         Text {
-            Layout.fillWidth: true
+            Layout.preferredWidth: implicitWidth
+            Layout.maximumWidth: 300
             Layout.alignment: Qt.AlignVCenter
             color: Theme.foreground
             font.family: Theme.fontFamily
             elide: Text.ElideRight
             text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : ""
+        }
+
+        // First of two flexible spacers bracketing the weather+clock
+        // cluster below -- paired with the second spacer (after clock,
+        // before the tray) to genuinely centre that cluster in the bar,
+        // rather than the previous single-spacer-after-title approach
+        // (which just pushed weather/clock to sit immediately before the
+        // tray, not centred).
+        Item {
+            Layout.fillWidth: true
         }
 
         // Weather. Ported from upstream Omarchy's own weather widget
@@ -766,8 +792,17 @@ PanelWindow {
             BarPopup {
                 id: bluetoothPopup
                 anchorItem: bluetoothIcon
-                popupWidth: 260
-                popupHeight: Math.max(120, 40 + (Bluetooth.devices ? Bluetooth.devices.values.length * 32 : 0))
+                // Fixed height + scrollable list (Flickable, same pattern
+                // as the network popup's Wi-Fi scan list) instead of
+                // growing to fit every device -- the previous
+                // count-based height estimate (40 + count*32) also
+                // assumed the old compact row size, which no longer
+                // matched once rows grew to show the connecting/
+                // disconnecting status line, so only ~2 devices fit
+                // before the popup ran out of room with no way to see
+                // the rest.
+                popupWidth: 280
+                popupHeight: 320
                 visible: false
 
                 ColumnLayout {
@@ -796,93 +831,108 @@ PanelWindow {
                         }
                     }
 
-                    Repeater {
-                        model: Bluetooth.devices
+                    Flickable {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        contentHeight: bluetoothDeviceList.implicitHeight
+                        clip: true
 
-                        Rectangle {
-                            id: btDelegate
-                            required property BluetoothDevice modelData
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: btRow.implicitHeight + 8
-                            radius: Theme.rounding / 2
-                            color: btHover.hovered ? Theme.overlay : "transparent"
+                        ColumnLayout {
+                            id: bluetoothDeviceList
+                            width: parent.width
+                            spacing: 4
 
-                            // BluetoothDeviceState (confirmed real:
-                            // Disconnected=0, Connected=1, Disconnecting=2,
-                            // Connecting=3 -- src/bluetooth/device.hpp) gives
-                            // a real in-progress state, unlike the plain
-                            // `connected` boolean this used before -- fixes
-                            // the reported "delay could be mistaken for
-                            // nothing happening": the whole row now shows a
-                            // spinner-style icon and a "Connecting…"/
-                            // "Disconnecting…" status line, not just a
-                            // subtly-dimmed small glyph, while a transition
-                            // is in flight.
-                            readonly property bool isTransitioning: modelData.state === BluetoothDeviceState.Connecting || modelData.state === BluetoothDeviceState.Disconnecting
-                            readonly property string statusText: {
-                                switch (modelData.state) {
-                                case BluetoothDeviceState.Connecting: return "Connecting…";
-                                case BluetoothDeviceState.Disconnecting: return "Disconnecting…";
-                                case BluetoothDeviceState.Connected: return "Connected";
-                                default: return "";
-                                }
-                            }
+                            Repeater {
+                                model: Bluetooth.devices
 
-                            HoverHandler {
-                                id: btHover
-                            }
+                                Rectangle {
+                                    id: btDelegate
+                                    required property BluetoothDevice modelData
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: btRow.implicitHeight + 8
+                                    radius: Theme.rounding / 2
+                                    color: btHover.hovered ? Theme.overlay : "transparent"
 
-                            // Whole row is now the click target (previously
-                            // only the small trailing icon was), matching
-                            // the user's request.
-                            TapHandler {
-                                enabled: !btDelegate.isTransitioning
-                                onTapped: {
-                                    if (btDelegate.modelData.connected) {
-                                        btDelegate.modelData.disconnect();
-                                    } else {
-                                        btDelegate.modelData.connect();
-                                    }
-                                }
-                            }
-
-                            RowLayout {
-                                id: btRow
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.margins: 4
-                                spacing: 8
-
-                                Text {
-                                    text: {
-                                        switch (btDelegate.modelData.state) {
-                                        case BluetoothDeviceState.Connecting: return "󰂰";
-                                        case BluetoothDeviceState.Disconnecting: return "󰂰";
-                                        case BluetoothDeviceState.Connected: return "󰂱";
-                                        default: return "󰂯";
+                                    // BluetoothDeviceState (confirmed real:
+                                    // Disconnected=0, Connected=1,
+                                    // Disconnecting=2, Connecting=3 --
+                                    // src/bluetooth/device.hpp) gives a real
+                                    // in-progress state, unlike the plain
+                                    // `connected` boolean this used before --
+                                    // fixes the reported "delay could be
+                                    // mistaken for nothing happening": the
+                                    // whole row now shows a spinner-style
+                                    // icon and a "Connecting…"/
+                                    // "Disconnecting…" status line, not just
+                                    // a subtly-dimmed small glyph, while a
+                                    // transition is in flight.
+                                    readonly property bool isTransitioning: modelData.state === BluetoothDeviceState.Connecting || modelData.state === BluetoothDeviceState.Disconnecting
+                                    readonly property string statusText: {
+                                        switch (modelData.state) {
+                                        case BluetoothDeviceState.Connecting: return "Connecting…";
+                                        case BluetoothDeviceState.Disconnecting: return "Disconnecting…";
+                                        case BluetoothDeviceState.Connected: return "Connected";
+                                        default: return "";
                                         }
                                     }
-                                    color: btDelegate.modelData.connected ? Theme.accent : Theme.muted
-                                    font.pixelSize: Theme.fontSizeLarge
-                                }
 
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 0
-
-                                    Text {
-                                        text: btDelegate.modelData.name
-                                        color: Theme.foreground
-                                        font.pixelSize: Theme.fontSize
-                                        Layout.fillWidth: true
-                                        elide: Text.ElideRight
+                                    HoverHandler {
+                                        id: btHover
                                     }
-                                    Text {
-                                        text: btDelegate.statusText
-                                        visible: text.length > 0
-                                        color: btDelegate.isTransitioning ? Theme.accent : Theme.muted
-                                        font.pixelSize: Theme.fontSize - 2
+
+                                    // Whole row is now the click target
+                                    // (previously only the small trailing
+                                    // icon was), matching the user's request.
+                                    TapHandler {
+                                        enabled: !btDelegate.isTransitioning
+                                        onTapped: {
+                                            if (btDelegate.modelData.connected) {
+                                                btDelegate.modelData.disconnect();
+                                            } else {
+                                                btDelegate.modelData.connect();
+                                            }
+                                        }
+                                    }
+
+                                    RowLayout {
+                                        id: btRow
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.margins: 4
+                                        spacing: 8
+
+                                        Text {
+                                            text: {
+                                                switch (btDelegate.modelData.state) {
+                                                case BluetoothDeviceState.Connecting: return "󰂰";
+                                                case BluetoothDeviceState.Disconnecting: return "󰂰";
+                                                case BluetoothDeviceState.Connected: return "󰂱";
+                                                default: return "󰂯";
+                                                }
+                                            }
+                                            color: btDelegate.modelData.connected ? Theme.accent : Theme.muted
+                                            font.pixelSize: Theme.fontSizeLarge
+                                        }
+
+                                        ColumnLayout {
+                                            Layout.fillWidth: true
+                                            spacing: 0
+
+                                            Text {
+                                                text: btDelegate.modelData.name
+                                                color: Theme.foreground
+                                                font.pixelSize: Theme.fontSize
+                                                Layout.fillWidth: true
+                                                elide: Text.ElideRight
+                                            }
+                                            Text {
+                                                text: btDelegate.statusText
+                                                visible: text.length > 0
+                                                color: btDelegate.isTransitioning ? Theme.accent : Theme.muted
+                                                font.pixelSize: Theme.fontSize - 2
+                                            }
+                                        }
                                     }
                                 }
                             }
