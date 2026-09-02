@@ -127,10 +127,15 @@ in
       local terminal = "alacritty"
       local browser = "google-chrome-stable"
       local fileManager = "dolphin"
-      local menu = "rofi -show drun" -- temporary placeholder launcher, see Milestone 2
+      -- Milestone 6: apps+commands combined mode (rofi's own combi mode,
+      -- configured in launcher.nix), not just drun. Still rofi, not a
+      -- native Quickshell launcher -- see launcher.nix for why.
+      local menu = "rofi -show combi"
+      local windowSwitcher = "rofi -show window"
 
       hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal))
       hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(menu))
+      hl.bind(mod .. " + W", hl.dsp.exec_cmd(windowSwitcher))
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.window.close())
       -- Ends the Hyprland session and returns to the greeter, so Plasma/
       -- Qtile/Budgie can be selected. A fuller power/session menu is

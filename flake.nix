@@ -52,6 +52,7 @@
                 ./shared/desktop/omarchy/osd-helpers.nix
                 ./shared/desktop/omarchy/applications.nix
                 ./shared/desktop/omarchy/window-rules.nix
+                ./shared/desktop/omarchy/launcher.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };
