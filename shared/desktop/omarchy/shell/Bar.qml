@@ -141,7 +141,13 @@ PanelWindow {
             text: {
                 const d = UPower.displayDevice;
                 if (!d) return "";
-                const pct = Math.round(d.percentage);
+                // UPowerDevice.percentage is a 0-1 fraction (energy /
+                // energyCapacity), not 0-100, despite the property name --
+                // confirmed against the pinned quickshell source's own doc
+                // comment (src/services/upower/device.hpp: "This would be
+                // equivalent to energy / energyCapacity"). Multiplying by
+                // 100 was missing, so a real 74% battery rounded to "1%".
+                const pct = Math.round(d.percentage * 100);
                 const charging = d.state === UPowerDeviceState.Charging;
                 return (charging ? "󰂄 " : "󰁹 ") + pct + "%";
             }
