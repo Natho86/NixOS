@@ -199,6 +199,12 @@ in
       -- run continuously in the background by shared/desktop/omarchy/clipboard.nix)
       hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
 
+      -- Milestone 6: emoji/symbol picker. Key name "period" confirmed
+      -- against the authoritative xkbcommon-keysyms.h header (XKB_KEY_period),
+      -- not just xmodmap, since punctuation keysyms aren't capitalised the
+      -- way named special keys ("Print", "Escape") are.
+      hl.bind(mod .. " + period", hl.dsp.exec_cmd("rofimoji --selector rofi --clipboarder wl-copy --action copy"))
+
       -- Audio mixer
       hl.bind(mod .. " + A", hl.dsp.exec_cmd("pavucontrol"))
 
@@ -224,5 +230,6 @@ in
     kdePackages.dolphin
     playerctl
     pavucontrol
+    rofimoji
   ];
 }
