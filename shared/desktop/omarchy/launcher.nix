@@ -17,7 +17,12 @@
     # below, rather than folded into combi, since mixing "switch to an
     # existing window" with "launch a new one" in the same result list
     # risks accidentally launching a duplicate of something already open.
-    modes = [ "combi" "window" ];
+    #
+    # clipboard is a script mode (omarchy-rofi-clipboard, clipboard.nix)
+    # registered as "clipboard:<script>" per `man rofi-script` -- kept as
+    # its own named mode (Ctrl+Tab to cycle to it from SUPER+SPACE) rather
+    # than folded into combi, matching the reasoning above for window.
+    modes = [ "combi" "window" "clipboard:omarchy-rofi-clipboard" ];
 
     extraConfig = {
       combi-modes = [ "drun" "run" ];
