@@ -4,10 +4,16 @@
 # interface -- introducing that now would be a bigger change than this
 # milestone calls for). Change `selected` below to switch themes; every
 # consumer imports `theme` from this file rather than hardcoding colours.
+#
+# Milestone 7 follow-up: narrowed from {tokyo-night, catppuccin} to the
+# two real upstream Omarchy themes the user asked to focus on getting
+# fully nailed down (rofi, Alacritty, Hyprland, Quickshell all
+# consistently themed) -- catppuccin.nix removed rather than kept
+# alongside, per explicit user request.
 let
   themes = {
     tokyo-night = import ./tokyo-night.nix;
-    catppuccin = import ./catppuccin.nix;
+    hackerman = import ./hackerman.nix;
   };
 
   selected = "tokyo-night";

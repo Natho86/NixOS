@@ -8,7 +8,7 @@ let
   # Milestone 4: shell/ + generated Theme.qml/qmldir combined into one
   # derivation -- see theme.nix for why this can't be two separate
   # Home Manager sources under the same ~/.config/quickshell/omarchy path.
-  omarchyShell = import ./theme.nix { inherit pkgs lib config; };
+  omarchyShell = import ./theme.nix { inherit pkgs lib; };
 
   omarchyTheme = (import ./themes/default.nix).theme;
 
@@ -230,10 +230,6 @@ in
       -- (hosts/redpill-x1-yoga/configuration.nix's security.sudo.extraRules),
       -- so no password prompt blocks inside the floating terminal.
       hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("alacritty --class alacritty-rebuild -e sudo nixos-rebuild switch --flake /home/nath/NixOS#redpill-x1-yoga"))
-
-      -- Milestone 7: live theme picker (theme-switch.nix). SUPER+T is
-      -- already the floating-toggle bind, so SHIFT+T here.
-      hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("omarchy-theme-picker"))
 
       -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard

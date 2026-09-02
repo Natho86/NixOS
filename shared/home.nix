@@ -1,5 +1,13 @@
 { config, pkgs, ... }:
 
+let
+  # Plain Nix import, not a Home Manager module dependency -- safe even
+  # though this file is shared with redpill-desktop, which never imports
+  # the omarchy Home Manager module itself. Alacritty's colours below
+  # follow shared/desktop/omarchy/themes/default.nix's `selected` theme
+  # the same way every other consumer (Hyprland, Quickshell) does.
+  omarchyTheme = (import ./desktop/omarchy/themes/default.nix).theme;
+in
 {
   home.username = "nath";
   home.homeDirectory = "/home/nath";
@@ -129,49 +137,50 @@
         size = 11.0;
       };
       
-      # Tokyo Night, matching shared/desktop/omarchy's theme (Milestone 4)
-      # -- ported from alacritty/alacritty-theme (Apache-2.0), the official
-      # Alacritty org's own community theme collection
-      # (themes/tokyo_night.toml, sourced there from
-      # github.com/zatchheems/tokyo-night-alacritty-theme). Confirmed
-      # against omarchy's own themes/tokyo-night/colors.toml that these are
-      # the same canonical Tokyo Night ANSI values (red/green/yellow/blue/
-      # background all match exactly), not a divergent variant.
-      # Applies to Alacritty in every session (Plasma/Qtile/Hyprland) on
-      # both hosts, since this file is shared -- a deliberate choice, not
-      # an accident of scope.
+      # Colours generated from shared/desktop/omarchy/themes/default.nix's
+      # selected theme, using the exact ANSI mapping upstream Omarchy's own
+      # alacritty.toml.tpl.sample template documents (color0=background,
+      # color7=foreground, color8=muted for the "bright black", etc.) --
+      # fetched directly from github.com/omacom/omarchy (MIT licensed,
+      # quattro branch), not invented. Applies to Alacritty in every
+      # session (Plasma/Qtile/Hyprland) on both hosts, since this file is
+      # shared -- a deliberate choice, not an accident of scope. Changing
+      # the selected theme and rebuilding updates Alacritty too, same as
+      # every other theme consumer; there is no separate live-switching
+      # path for the terminal (see theme.nix's comment for why that was
+      # tried and reverted).
       colors = {
         primary = {
-          foreground = "#a9b1d6";
-          background = "#1a1b26";
+          background = omarchyTheme.colors.background;
+          foreground = omarchyTheme.colors.foreground;
         };
         cursor = {
-          text = "#1a1b26";
-          cursor = "#a9b1d6";
+          text = omarchyTheme.colors.background;
+          cursor = omarchyTheme.colors.brightForeground;
         };
         selection = {
-          text = "#a9b1d6";
-          background = "#32344a";
+          text = omarchyTheme.colors.brightForeground;
+          background = omarchyTheme.colors.selection;
         };
         normal = {
-          black = "#32344a";
-          red = "#f7768e";
-          green = "#9ece6a";
-          yellow = "#e0af68";
-          blue = "#7aa2f7";
-          magenta = "#ad8ee6";
-          cyan = "#449dab";
-          white = "#787c99";
+          black = omarchyTheme.colors.background;
+          red = omarchyTheme.ansi.red;
+          green = omarchyTheme.ansi.green;
+          yellow = omarchyTheme.ansi.yellow;
+          blue = omarchyTheme.ansi.blue;
+          magenta = omarchyTheme.ansi.magenta;
+          cyan = omarchyTheme.ansi.cyan;
+          white = omarchyTheme.colors.foreground;
         };
         bright = {
-          black = "#444b6a";
-          red = "#ff7a93";
-          green = "#b9f27c";
-          yellow = "#ff9e64";
-          blue = "#7da6ff";
-          magenta = "#bb9af7";
-          cyan = "#0db9d7";
-          white = "#acb0d0";
+          black = omarchyTheme.colors.muted;
+          red = omarchyTheme.ansi.brightRed;
+          green = omarchyTheme.ansi.brightGreen;
+          yellow = omarchyTheme.ansi.brightYellow;
+          blue = omarchyTheme.ansi.brightBlue;
+          magenta = omarchyTheme.ansi.brightMagenta;
+          cyan = omarchyTheme.ansi.brightCyan;
+          white = omarchyTheme.colors.brightForeground;
         };
       };
       
