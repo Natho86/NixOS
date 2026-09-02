@@ -143,18 +143,27 @@ in
       hl.bind(mod .. " + T", hl.dsp.window.float({ action = "toggle" }))
       hl.bind(mod .. " + TAB", hl.dsp.window.cycle_next())
 
-      -- SUPER+HJKL moves focus (hl.dsp.focus); SUPER+SHIFT+HJKL moves the
-      -- window itself (hl.dsp.window.move). These are distinct dispatchers
-      -- in the Lua API -- easy to conflate since both take { direction = }.
-      hl.bind(mod .. " + H", hl.dsp.focus({ direction = "left" }))
-      hl.bind(mod .. " + L", hl.dsp.focus({ direction = "right" }))
-      hl.bind(mod .. " + J", hl.dsp.focus({ direction = "down" }))
-      hl.bind(mod .. " + K", hl.dsp.focus({ direction = "up" }))
+      -- SUPER+Arrow moves focus (hl.dsp.focus); SUPER+SHIFT+Arrow moves
+      -- the window itself (hl.dsp.window.move). These are distinct
+      -- dispatchers in the Lua API -- easy to conflate since both take
+      -- { direction = }. Moved off vim-style HJKL (used through Milestone
+      -- 3) to free SUPER+L for locking the screen -- key names ("Left",
+      -- "Right", "Up", "Down") confirmed via xmodmap -pke, same mixed-case
+      -- xkb keysym convention as "Print".
+      hl.bind(mod .. " + Left", hl.dsp.focus({ direction = "left" }))
+      hl.bind(mod .. " + Right", hl.dsp.focus({ direction = "right" }))
+      hl.bind(mod .. " + Down", hl.dsp.focus({ direction = "down" }))
+      hl.bind(mod .. " + Up", hl.dsp.focus({ direction = "up" }))
 
-      hl.bind(mod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
-      hl.bind(mod .. " + SHIFT + L", hl.dsp.window.move({ direction = "right" }))
-      hl.bind(mod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
-      hl.bind(mod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
+      hl.bind(mod .. " + SHIFT + Left", hl.dsp.window.move({ direction = "left" }))
+      hl.bind(mod .. " + SHIFT + Right", hl.dsp.window.move({ direction = "right" }))
+      hl.bind(mod .. " + SHIFT + Down", hl.dsp.window.move({ direction = "down" }))
+      hl.bind(mod .. " + SHIFT + Up", hl.dsp.window.move({ direction = "up" }))
+
+      -- Lock screen. Reuses hypridle's own lock_cmd pattern (pidof guard
+      -- avoids double-launching hyprlock if one instance is already
+      -- running, e.g. from an idle timeout race).
+      hl.bind(mod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || hyprlock"))
 
       -- SUPER+1..9: switch workspace. SUPER+SHIFT+1..9: move window to
       -- workspace and follow. Workspace focus is hl.dsp.focus({ workspace }),
