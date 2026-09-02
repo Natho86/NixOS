@@ -1,7 +1,12 @@
 # Milestone 1: Hyprland foundation (system-level).
 # Additive session alongside Plasma, Qtile and Budgie. See
 # omarchy-inspired-nixos-plan.md for the full milestone plan.
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # Hyprland compositor, launched through UWSM for systemd session

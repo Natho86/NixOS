@@ -6,7 +6,12 @@
 # security.pam.services.hyprlock and services.hypridle.enable, so no manual
 # PAM wiring is needed here -- confirmed by reading the NixOS module source
 # (nixos/modules/programs/wayland/hyprlock.nix).
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   omarchyTheme = (import ./themes/default.nix).theme;
@@ -19,14 +24,25 @@ let
   # hex-pair-to-decimal is done via an explicit digit lookup instead.
   hexDigits = lib.stringToCharacters "0123456789abcdef";
   hexDigitValue = d: lib.lists.findFirstIndex (x: x == lib.toLower d) null hexDigits;
-  hexByteToInt = pair:
+  hexByteToInt =
+    pair:
     let
       hi = hexDigitValue (builtins.substring 0 1 pair);
       lo = hexDigitValue (builtins.substring 1 1 pair);
-    in hi * 16 + lo;
-  hexToRgbDecimal = color:
-    let hex = lib.removePrefix "#" color;
-    in lib.concatStringsSep ", " (map (n: toString (hexByteToInt (builtins.substring n 2 hex))) [ 0 2 4 ]);
+    in
+    hi * 16 + lo;
+  hexToRgbDecimal =
+    color:
+    let
+      hex = lib.removePrefix "#" color;
+    in
+    lib.concatStringsSep ", " (
+      map (n: toString (hexByteToInt (builtins.substring n 2 hex))) [
+        0
+        2
+        4
+      ]
+    );
   hyprlockRgba = color: opacity: "rgba(${hexToRgbDecimal color}, ${toString opacity})";
 in
 {

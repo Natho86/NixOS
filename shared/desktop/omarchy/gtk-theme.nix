@@ -17,7 +17,12 @@
 # the installed package provides (catppuccin-mocha-blue-standard,
 # confirmed by building shared/home.nix's actual catppuccin-gtk.override
 # and inspecting share/themes/).
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   # First switch attempt refused with "Existing file ... would be

@@ -29,28 +29,28 @@ in
   home.packages = with pkgs; [
     # Browsers
     google-chrome
-    
+
     # Communication
     #signal-desktop
     whatsapp-electron
     discord
-    
+
     # Media
     #audacity.override { ffmpeg = pkgs.ffmpeg_6-full; }
     spotify
-    
+
     # Productivity
     obsidian
-    
+
     # Development
     # devenv
     docker-compose
     github-desktop
     vscode
     claude-code
-    nodejs_22  # Node.js LTS for npm-based tools
-    python3  # Python interpreter (includes venv by default)
-    python3Packages.pip  # Pip package manager
+    nodejs_22 # Node.js LTS for npm-based tools
+    python3 # Python interpreter (includes venv by default)
+    python3Packages.pip # Pip package manager
     #pipx       # Install Python apps in isolated environments
 
     # secrets
@@ -63,32 +63,32 @@ in
     tree
 
     # System utilities
-    jq              # JSON processor
-    yq-go           # YAML processor
-    tldr            # Simplified man pages
-    ncdu            # Disk usage analyzer (ncurses)
-    duf             # Modern df alternative
-    procs           # Modern ps alternative
-    dust            # Modern du alternative
-    bottom          # System monitor (btop alternative)
-    bandwhich       # Network utilization monitor
+    jq # JSON processor
+    yq-go # YAML processor
+    tldr # Simplified man pages
+    ncdu # Disk usage analyzer (ncurses)
+    duf # Modern df alternative
+    procs # Modern ps alternative
+    dust # Modern du alternative
+    bottom # System monitor (btop alternative)
+    bandwhich # Network utilization monitor
     remmina
     samba
     cifs-utils
 
     # Network utilities
     nmap
-    httpie          # User-friendly HTTP client
-    rsync           # File sync utility
-    rclone          # Cloud storage sync and mount utility
-    mtr             # Network diagnostic tool
-    iperf3          # Network performance testing
-    tcpdump         # Packet analyzer
+    httpie # User-friendly HTTP client
+    rsync # File sync utility
+    rclone # Cloud storage sync and mount utility
+    mtr # Network diagnostic tool
+    iperf3 # Network performance testing
+    tcpdump # Packet analyzer
 
     # System debugging
-    strace          # System call tracer
-    lsof            # List open files
-    pciutils        # PCI utilities (already in system packages, but useful here too)
+    strace # System call tracer
+    lsof # List open files
+    pciutils # PCI utilities (already in system packages, but useful here too)
 
     # Fonts
     nerd-fonts.jetbrains-mono
@@ -120,7 +120,7 @@ in
         };
         decorations = "full";
       };
-      
+
       font = {
         normal = {
           family = "JetBrainsMono Nerd Font";
@@ -136,7 +136,7 @@ in
         };
         size = 11.0;
       };
-      
+
       # Colours generated from shared/desktop/omarchy/themes/default.nix's
       # selected theme, using the exact ANSI mapping upstream Omarchy's own
       # alacritty.toml.tpl.sample template documents (color0=background,
@@ -183,7 +183,7 @@ in
           white = omarchyTheme.colors.brightForeground;
         };
       };
-      
+
       cursor = {
         style = "Block";
         unfocused_hollow = true;
@@ -199,11 +199,11 @@ in
     vimAlias = true;
     withRuby = false;
     withPython3 = false;
-    
+
     plugins = with pkgs.vimPlugins; [
       # Theme
       catppuccin-nvim
-      
+
       # Essential plugins
       telescope-nvim
       nvim-treesitter.withAllGrammars
@@ -213,25 +213,25 @@ in
       cmp-buffer
       cmp-path
       luasnip
-      
+
       # File explorer
       nvim-tree-lua
       nvim-web-devicons
-      
+
       # Status line
       lualine-nvim
-      
+
       # Git integration
       gitsigns-nvim
       vim-fugitive
-      
+
       # Utilities
       comment-nvim
       nvim-autopairs
       indent-blankline-nvim
       which-key-nvim
     ];
-    
+
     initLua = ''
       -- Basic settings
       vim.opt.number = true
@@ -251,17 +251,17 @@ in
       vim.opt.signcolumn = "yes"
       vim.opt.updatetime = 50
       vim.opt.colorcolumn = "80"
-      
+
       -- Leader key
       vim.g.mapleader = " "
-      
+
       -- Catppuccin theme
       require("catppuccin").setup({
         flavour = "mocha",
         transparent_background = false,
       })
       vim.cmd.colorscheme "catppuccin"
-      
+
       -- Lualine
       require('lualine').setup {
         options = {
@@ -269,17 +269,17 @@ in
           icons_enabled = true,
         }
       }
-      
+
       -- Nvim-tree
       require("nvim-tree").setup()
       vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true })
-      
+
       -- Telescope
       local builtin = require('telescope.builtin')
       vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
       vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
       vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-      
+
       -- Treesitter
       -- nvim-treesitter was rewritten and no longer provides
       -- require('nvim-treesitter.configs').  Highlighting is now provided
@@ -301,7 +301,7 @@ in
       -- LSP
       local lspconfig = require('lspconfig')
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      
+
       -- Setup completion
       local cmp = require('cmp')
       cmp.setup({
@@ -324,19 +324,19 @@ in
           { name = 'path' },
         })
       })
-      
+
       -- Gitsigns
       require('gitsigns').setup()
-      
+
       -- Comment
       require('Comment').setup()
-      
+
       -- Autopairs
       require('nvim-autopairs').setup()
-      
+
       -- Which-key
       require('which-key').setup()
-      
+
       -- Indent blankline
       require('ibl').setup()
     '';
@@ -402,18 +402,18 @@ in
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    
+
     shellAliases = {
       ll = "eza -l --icons=always";
       la = "eza -la --icons=always";
       ls = "eza --icons=always -l";
       cat = "bat";
-      
+
       # NixOS specific
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
       update = "nix flake update ~/nixos-config && sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
       clean = "sudo nix-collect-garbage -d";
-      
+
       # Git shortcuts
       gs = "git status";
       ga = "git add";
@@ -421,7 +421,7 @@ in
       gp = "git push";
       gl = "git log --oneline --graph";
     };
-    
+
     oh-my-zsh = {
       enable = true;
       theme = "robbyrussell";
@@ -434,11 +434,11 @@ in
         "colored-man-pages"
       ];
     };
-    
+
     initContent = ''
       # Starship prompt
       eval "$(starship init zsh)"
-      
+
       # FZF keybindings
       source ${pkgs.fzf}/share/fzf/key-bindings.zsh
       source ${pkgs.fzf}/share/fzf/completion.zsh

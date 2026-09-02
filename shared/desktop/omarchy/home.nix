@@ -2,7 +2,12 @@
 # Keybindings, input, monitor and initial appearance. Package ownership
 # stays with NixOS (programs.hyprland.enable in system.nix), so package
 # is set to null here per the Home Manager module's own guidance.
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   # Milestone 4: shell/ + generated Theme.qml/qmldir combined into one
@@ -22,7 +27,8 @@ let
   # returns uppercase -- confirmed live via `nix eval`. Both would produce
   # a malformed rgba() string or an inconsistent case versus the rest of
   # the hex literals already in this file, so pad and lowercase explicitly.
-  toAlphaHex = opacity:
+  toAlphaHex =
+    opacity:
     lib.toLower (lib.fixedWidthString 2 "0" (lib.toHexString (builtins.floor (opacity * 255))));
   hyprlandRgba = color: opacity: "rgba(${hexNoHash color}${toAlphaHex opacity})";
 in

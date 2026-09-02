@@ -5,7 +5,12 @@
 # Quickshell launcher. Milestone 2's own research found no first-party
 # Quickshell app-search module, so extending the already-working rofi
 # setup is lower-risk than building one from scratch.
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   omarchyTheme = (import ./themes/default.nix).theme;
@@ -26,10 +31,17 @@ in
     # registered as "clipboard:<script>" per `man rofi-script` -- kept as
     # its own named mode (Ctrl+Tab to cycle to it from SUPER+SPACE) rather
     # than folded into combi, matching the reasoning above for window.
-    modes = [ "combi" "window" "clipboard:omarchy-rofi-clipboard" ];
+    modes = [
+      "combi"
+      "window"
+      "clipboard:omarchy-rofi-clipboard"
+    ];
 
     extraConfig = {
-      combi-modes = [ "drun" "run" ];
+      combi-modes = [
+        "drun"
+        "run"
+      ];
       show-icons = true;
     };
 
@@ -79,7 +91,10 @@ in
           text-color = fg;
           border-radius = mkLiteral "${toString omarchyTheme.layout.rounding}px";
           padding = mkLiteral "8px 12px";
-          children = map mkLiteral [ "prompt" "entry" ];
+          children = map mkLiteral [
+            "prompt"
+            "entry"
+          ];
         };
 
         prompt.text-color = accent;

@@ -5,7 +5,12 @@
 # this session's manual testing) is what actually restarts it -- these
 # wrap it plus `qs log` (confirmed real via `qs log --help`) into
 # memorable commands instead of requiring the raw systemctl/qs incantation.
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   reload = pkgs.writeShellApplication {
@@ -33,5 +38,8 @@ let
   };
 in
 {
-  home.packages = [ reload shellLog ];
+  home.packages = [
+    reload
+    shellLog
+  ];
 }

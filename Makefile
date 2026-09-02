@@ -1,4 +1,4 @@
-.PHONY: help rebuild update clean test check format
+.PHONY: help rebuild update clean test check format format-check
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -23,8 +23,11 @@ clean: ## Remove old generations (older than 7 days)
 clean-all: ## Remove ALL old generations except current
 	sudo nix-collect-garbage -d
 
-format: ## Format Nix files with nixpkgs-fmt
-	nixpkgs-fmt *.nix
+format: ## Format all Nix files with nixfmt (the official Nix formatter)
+	find . -name "*.nix" -not -path "./.git/*" -exec nix run nixpkgs#nixfmt -- {} +
+
+format-check: ## Check formatting without modifying files (used before committing)
+	find . -name "*.nix" -not -path "./.git/*" -exec nix run nixpkgs#nixfmt -- --check {} +
 
 optimize: ## Optimize nix store
 	nix-store --optimise

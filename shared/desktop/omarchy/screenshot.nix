@@ -2,7 +2,12 @@
 # activewindow JSON shape verified live against the running Hyprland
 # session, not guessed (activewindow -j returns "at": [x,y], "size": [w,h],
 # combined into grim's "-g X,Y WxH" geometry format via jq).
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   screenshotDir = "$HOME/Pictures/Screenshots";
@@ -20,7 +25,11 @@ let
 
   screenshotFull = pkgs.writeShellApplication {
     name = "omarchy-screenshot-full";
-    runtimeInputs = [ pkgs.grim pkgs.wl-clipboard pkgs.libnotify ];
+    runtimeInputs = [
+      pkgs.grim
+      pkgs.wl-clipboard
+      pkgs.libnotify
+    ];
     text = ''
       grim - | ${saveAndNotify}
     '';
@@ -28,7 +37,13 @@ let
 
   screenshotOutput = pkgs.writeShellApplication {
     name = "omarchy-screenshot-output";
-    runtimeInputs = [ pkgs.grim pkgs.wl-clipboard pkgs.libnotify pkgs.hyprland pkgs.jq ];
+    runtimeInputs = [
+      pkgs.grim
+      pkgs.wl-clipboard
+      pkgs.libnotify
+      pkgs.hyprland
+      pkgs.jq
+    ];
     text = ''
       monitor_id=$(hyprctl activewindow -j | jq -r '.monitor')
       output=$(hyprctl monitors -j | jq -r --argjson id "$monitor_id" '.[] | select(.id == $id) | .name')
@@ -38,7 +53,13 @@ let
 
   screenshotWindow = pkgs.writeShellApplication {
     name = "omarchy-screenshot-window";
-    runtimeInputs = [ pkgs.grim pkgs.wl-clipboard pkgs.libnotify pkgs.hyprland pkgs.jq ];
+    runtimeInputs = [
+      pkgs.grim
+      pkgs.wl-clipboard
+      pkgs.libnotify
+      pkgs.hyprland
+      pkgs.jq
+    ];
     text = ''
       geometry=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
       grim -g "$geometry" - | ${saveAndNotify}
@@ -47,7 +68,12 @@ let
 
   screenshotRegion = pkgs.writeShellApplication {
     name = "omarchy-screenshot-region";
-    runtimeInputs = [ pkgs.grim pkgs.slurp pkgs.wl-clipboard pkgs.libnotify ];
+    runtimeInputs = [
+      pkgs.grim
+      pkgs.slurp
+      pkgs.wl-clipboard
+      pkgs.libnotify
+    ];
     text = ''
       geometry=$(slurp)
       grim -g "$geometry" - | ${saveAndNotify}

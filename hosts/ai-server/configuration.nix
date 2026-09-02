@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   imports = [
@@ -28,7 +33,7 @@
   networking.hostName = "ai-server";
   networking.networkmanager.enable = true;
 
- nix.settings = {
+  nix.settings = {
     experimental-features = [
       "nix-command"
       "flakes"
@@ -51,7 +56,6 @@
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
   };
-
 
   # Put memory pressure from nix-daemon and its build children under a cgroup
   # ceiling so rebuilds cannot consume all RAM and make SSH recovery impossible.
@@ -100,7 +104,7 @@
     eza
     bat
     ripgrep
-        
+
     # for running osintdb dev project /home/nath/dev
     nodejs
     docker-compose
@@ -116,7 +120,6 @@
     nerd-fonts.jetbrains-mono
     #nerd-fonts-color-emoji
     font-awesome
-
 
     # Temperature, fan, pump, and stress/thermal monitoring tools.
     lm_sensors
@@ -157,8 +160,6 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-
-
   # Tailscale-only remote access.
   services.tailscale.enable = true;
 
@@ -187,8 +188,7 @@
     environmentVariables = {
       CUDA_VISIBLE_DEVICES = "0";
       OLLAMA_FLASH_ATTENTION = "1";
-      OLLAMA_LLM_LIBRARY =
-        "cuda_v${lib.versions.major pkgs.cudaPackages.cuda_cudart.version}";
+      OLLAMA_LLM_LIBRARY = "cuda_v${lib.versions.major pkgs.cudaPackages.cuda_cudart.version}";
     };
 
     # Needed so VS Code / Continue on another Tailscale device can use it.
@@ -243,18 +243,18 @@
     enableCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-    
+
     shellAliases = {
       ll = "eza -l --icons=always";
       la = "eza -la --icons=always";
       ls = "eza --icons=always -l";
       cat = "bat";
-      
+
       # NixOS specific
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
       update = "nix flake update ~/nixos-config && sudo nixos-rebuild switch --flake ~/nixos-config#laptop";
       clean = "sudo nix-collect-garbage -d";
-      
+
       # Git shortcuts
       gs = "git status";
       ga = "git add";
@@ -262,7 +262,7 @@
       gp = "git push";
       gl = "git log --oneline --graph";
     };
-    
+
     ohMyZsh = {
       enable = true;
       theme = "robbyrussell";
@@ -275,11 +275,11 @@
         "colored-man-pages"
       ];
     };
-    
+
     #initContent = ''
     #  # Starship prompt
     #  eval "$(starship init zsh)"
-    #  
+    #
     #  # FZF keybindings
     #  source ${pkgs.fzf}/share/fzf/key-bindings.zsh
     #  source ${pkgs.fzf}/share/fzf/completion.zsh
@@ -299,8 +299,7 @@
     };
   };
 
- # Fonts
+  # Fonts
   fonts.fontconfig.enable = true;
-
 
 }

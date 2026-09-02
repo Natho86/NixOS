@@ -20,7 +20,10 @@
 let
   clipboardMode = pkgs.writeShellApplication {
     name = "omarchy-rofi-clipboard";
-    runtimeInputs = [ pkgs.cliphist pkgs.wl-clipboard ];
+    runtimeInputs = [
+      pkgs.cliphist
+      pkgs.wl-clipboard
+    ];
     text = ''
       if [ "$#" -eq 0 ]; then
         cliphist list
@@ -31,7 +34,11 @@ let
   };
 in
 {
-  home.packages = [ pkgs.cliphist pkgs.wl-clipboard clipboardMode ];
+  home.packages = [
+    pkgs.cliphist
+    pkgs.wl-clipboard
+    clipboardMode
+  ];
 
   systemd.user.services.cliphist = {
     Unit = {

@@ -13,7 +13,12 @@
 # acceptance criterion ("window rules do not unexpectedly capture
 # unrelated applications"). Add those once the real class/title is
 # captured via `hyprctl activewindow` while the dialog is open.
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   wayland.windowManager.hyprland.extraConfig = ''

@@ -1,5 +1,10 @@
 # Host-specific configuration for redpill-x1-yoga
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # Import hardware configuration
@@ -9,7 +14,6 @@
   networking.hostName = "redpill-x1-yoga";
   # Keep WireGuard available but disabled by default; toggle to true when needed.
   my.wireguard.enable = lib.mkDefault false;
-
 
   # sops-nix age key location for this host. Overrides shared/configuration.nix's
   # default of /home/nath/.config/sops/age/keys.txt: sops-nix's activation script
@@ -78,12 +82,9 @@
     enable = true;
     settings = {
       PermitRootLogin = "no";
-      PasswordAuthentication = true;  # Set to false after setting up SSH keys
+      PasswordAuthentication = true; # Set to false after setting up SSH keys
       X11Forwarding = false;
     };
   };
-
-
-
 
 }

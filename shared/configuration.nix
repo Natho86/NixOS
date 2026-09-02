@@ -1,5 +1,11 @@
 # Edit configuration.nix to add further configuration options.
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   imports = [
@@ -26,7 +32,7 @@
   # Time zone and locale
   time.timeZone = "Europe/London"; # Change to your timezone
   i18n.defaultLocale = "en_GB.UTF-8";
-  
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
@@ -44,7 +50,7 @@
   # Enable the X11 windowing system
   services.xserver.enable = true;
   services.xserver.xkb.layout = "gb";
-  
+
   # Enable Plasma 6
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
@@ -52,7 +58,7 @@
 
   # Enable Budgie
   services.desktopManager.budgie.enable = true;
-  
+
   # Enable Qtile
   services.xserver.windowManager.qtile = {
     enable = true;
@@ -87,7 +93,13 @@
   users.users.nath = {
     isNormalUser = true;
     description = "Nath";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "docker" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+      "audio"
+      "docker"
+    ];
     shell = pkgs.zsh;
   };
 
@@ -112,31 +124,34 @@
   fileSystems."/home/nath/Documents" = {
     device = "//unraid.taildbe21.ts.net/Documents/nath";
     fsType = "cifs";
-    options = let
-      # Avoid blocking boot/login when Tailscale or Unraid is unavailable.
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,x-systemd.requires=tailscaled.service,x-systemd.after=tailscaled.service,vers=3.1.1";
+    options =
+      let
+        # Avoid blocking boot/login when Tailscale or Unraid is unavailable.
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,x-systemd.requires=tailscaled.service,x-systemd.after=tailscaled.service,vers=3.1.1";
 
-    in [
-      "${automount_opts},credentials=/run/secrets/rendered/unraid-smb-credentials,uid=1000,gid=100,dir_mode=0700,file_mode=0600"
-      "nofail"
-    ];
+      in
+      [
+        "${automount_opts},credentials=/run/secrets/rendered/unraid-smb-credentials,uid=1000,gid=100,dir_mode=0700,file_mode=0600"
+        "nofail"
+      ];
   };
-
 
   # Allow unfree packages (needed for Chrome, 1Password, Obsidian, Spotify)
   nixpkgs.config.allowUnfree = true;
 
-  # Flox 
+  # Flox
   nix.settings.trusted-substituters = [ "https://cache.flox.dev" ];
-  nix.settings.trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
-  
+  nix.settings.trusted-public-keys = [
+    "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+  ];
+
   # https://flox.dev/docs/install-flox/install/#__codelineno-23-1
   # Install to user profile with:
   #  nix profile install \
   #    --experimental-features "nix-command flakes" \
   #    --accept-flake-config \
   #    'github:flox/flox/latest'
-  
+
   # System packages
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
@@ -149,6 +164,7 @@
     fd
     ripgrep
     code-cursor
+    gnumake # needed to run this repo's own Makefile (rebuild, format, ...)
 
     # Development
     codex
@@ -157,7 +173,7 @@
     openvpn
     wireguard-tools
     remmina
-    
+
     # CLI utilities
     fzf
     eza
@@ -179,9 +195,9 @@
     vlc
 
     # audacity + ffmpeg https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
-    ffmpeg_8 
+    ffmpeg_8
     audacity
-  
+
   ];
   # https://github.com/Seijji/nixos-config/blob/e1c6a2464320a0338be0778c7c5c74c3c76de6f5/configuration.nix#L206
   nixpkgs.config.audacity.ffmpeg = pkgs.ffmpeg;
@@ -202,7 +218,7 @@
     export TERM=xterm-256color
     export COLORTERM=truecolor
   '';
-  
+
   # Enable 1Password
   programs._1password.enable = true;
   programs._1password-gui = {
@@ -218,7 +234,6 @@
     age.keyFile = "/home/nath/.config/sops/age/keys.txt";
   };
 
-
   # Enable firmware updates
   services.fwupd.enable = true;
 
@@ -229,24 +244,27 @@
   hardware.bluetooth.powerOnBoot = true;
 
   # Enable flakes and nix-command
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   # Automatic garbage collection
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
-  
+
   # Optimize store automatically
   nix.optimise.automatic = true;
 
   # Automatic system updates
   system.autoUpgrade = {
     enable = true;
-    allowReboot = false;  # Don't automatically reboot (manual reboot required)
-    dates = "weekly";     # Check for updates weekly
-    flake = "github:Natho86/NixOS#${config.networking.hostName}";  # Update from GitHub repo
+    allowReboot = false; # Don't automatically reboot (manual reboot required)
+    dates = "weekly"; # Check for updates weekly
+    flake = "github:Natho86/NixOS#${config.networking.hostName}"; # Update from GitHub repo
     # Alternatively, use local flake for testing before deploying:
     # flake = "/home/nath/NixOS#${config.networking.hostName}";
   };
