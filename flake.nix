@@ -55,6 +55,7 @@
                 ./shared/desktop/omarchy/launcher.nix
                 ./shared/desktop/omarchy/power-menu.nix
                 ./shared/desktop/omarchy/shell-tools.nix
+                ./shared/desktop/omarchy/gtk-theme.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };
