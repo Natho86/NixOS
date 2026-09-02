@@ -68,5 +68,14 @@
       center = true,
       size = { 900, 600 },
     })
+
+    -- NixOS rebuild trigger overlay (SUPER+SHIFT+R, home.nix). Slightly
+    -- taller than the other overlays since rebuild output is verbose.
+    hl.window_rule({
+      match = { class = "alacritty-rebuild" },
+      float = true,
+      center = true,
+      size = { 1000, 700 },
+    })
   '';
 }

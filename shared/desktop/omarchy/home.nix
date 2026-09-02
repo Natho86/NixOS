@@ -221,6 +221,16 @@ in
       hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; impala'"))
       hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("alacritty --class alacritty-bluetui -e sh -c 'rfkill unblock bluetooth; bluetui'"))
 
+      -- NixOS rebuild trigger (Milestone 6). Terminal-visible by explicit
+      -- user choice over a silent background+notification variant: the
+      -- terminal stays open so the switch is watchable and Ctrl+C-able,
+      -- same as running it by hand. Absolute flake path (not the `.#laptop`
+      -- alias used interactively from ~/NixOS) since this can be launched
+      -- from any cwd. sudo is passwordless for nixos-rebuild specifically
+      -- (hosts/redpill-x1-yoga/configuration.nix's security.sudo.extraRules),
+      -- so no password prompt blocks inside the floating terminal.
+      hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("alacritty --class alacritty-rebuild -e sudo nixos-rebuild switch --flake /home/nath/NixOS#redpill-x1-yoga"))
+
       -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard
       -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
