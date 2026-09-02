@@ -129,38 +129,49 @@
         size = 11.0;
       };
       
+      # Tokyo Night, matching shared/desktop/omarchy's theme (Milestone 4)
+      # -- ported from alacritty/alacritty-theme (Apache-2.0), the official
+      # Alacritty org's own community theme collection
+      # (themes/tokyo_night.toml, sourced there from
+      # github.com/zatchheems/tokyo-night-alacritty-theme). Confirmed
+      # against omarchy's own themes/tokyo-night/colors.toml that these are
+      # the same canonical Tokyo Night ANSI values (red/green/yellow/blue/
+      # background all match exactly), not a divergent variant.
+      # Applies to Alacritty in every session (Plasma/Qtile/Hyprland) on
+      # both hosts, since this file is shared -- a deliberate choice, not
+      # an accident of scope.
       colors = {
         primary = {
-          foreground = "#e6edf3";
-          background = "#010409";
+          foreground = "#a9b1d6";
+          background = "#1a1b26";
         };
         cursor = {
-          text = "#010409";
-          cursor = "#e6edf3";
+          text = "#1a1b26";
+          cursor = "#a9b1d6";
         };
         selection = {
-          text = "#e6edf3";
-          background = "#264f78";
+          text = "#a9b1d6";
+          background = "#32344a";
         };
         normal = {
-          black = "#484f58";
-          red = "#ff7b72";
-          green = "#3fb950";
-          yellow = "#d29922";
-          blue = "#58a6ff";
-          magenta = "#bc8cff";
-          cyan = "#39c5cf";
-          white = "#b1bac4";
+          black = "#32344a";
+          red = "#f7768e";
+          green = "#9ece6a";
+          yellow = "#e0af68";
+          blue = "#7aa2f7";
+          magenta = "#ad8ee6";
+          cyan = "#449dab";
+          white = "#787c99";
         };
         bright = {
-          black = "#6e7681";
-          red = "#ffa198";
-          green = "#56d364";
-          yellow = "#e3b341";
-          blue = "#79c0ff";
-          magenta = "#d2a8ff";
-          cyan = "#56d4dd";
-          white = "#ffffff";
+          black = "#444b6a";
+          red = "#ff7a93";
+          green = "#b9f27c";
+          yellow = "#ff9e64";
+          blue = "#7da6ff";
+          magenta = "#bb9af7";
+          cyan = "#0db9d7";
+          white = "#acb0d0";
         };
       };
       
