@@ -53,6 +53,7 @@
                 ./shared/desktop/omarchy/applications.nix
                 ./shared/desktop/omarchy/window-rules.nix
                 ./shared/desktop/omarchy/launcher.nix
+                ./shared/desktop/omarchy/power-menu.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };

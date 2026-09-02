@@ -138,9 +138,12 @@ in
       hl.bind(mod .. " + W", hl.dsp.exec_cmd(windowSwitcher))
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.window.close())
       -- Ends the Hyprland session and returns to the greeter, so Plasma/
-      -- Qtile/Budgie can be selected. A fuller power/session menu is
-      -- Milestone 6 scope; this is the minimum needed to log out at all.
+      -- Qtile/Budgie can be selected.
       hl.bind(mod .. " + SHIFT + E", hl.dsp.exit())
+      -- Milestone 6: power/session menu (lock/logout/suspend/reboot/
+      -- shutdown), see power-menu.nix. Key name "Escape" confirmed via
+      -- xmodmap -pke, same xkb keysym convention as "Print".
+      hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("omarchy-power-menu"))
       hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser))
       hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager))
 
