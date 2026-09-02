@@ -219,12 +219,22 @@ in
       -- here, not to regular terminals.
       hl.bind(mod .. " + M", hl.dsp.exec_cmd("alacritty --class alacritty-btop -e btop"))
 
-      -- Wi-Fi/Bluetooth TUIs (impala/bluetui), matching upstream Omarchy's
-      -- own approach (bin/omarchy-launch-wifi, bin/omarchy-launch-bluetooth
-      -- in github.com/omacom/omarchy, MIT licensed) rather than a custom
-      -- nmcli/bluetoothctl script or a GUI applet. rfkill unblock included
-      -- since Omarchy's own scripts do this before launching.
-      hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; impala'"))
+      -- Wi-Fi/Bluetooth TUIs. Originally impala/bluetui, matching upstream
+      -- Omarchy's own approach (bin/omarchy-launch-wifi,
+      -- bin/omarchy-launch-bluetooth in github.com/omacom/omarchy, MIT
+      -- licensed). impala turned out to be iwd-only -- confirmed via
+      -- `strings $(which impala) | grep iwd`, it talks exclusively to
+      -- net.connman.iwd over D-Bus (the iwdrs crate), and fails instantly
+      -- with "No such device or address" against NetworkManager, which is
+      -- this repo's actual network backend (shared/configuration.nix:
+      -- networking.networkmanager.enable = true, a long-standing choice
+      -- predating this desktop project -- not something to swap for one
+      -- keybind). Replaced with `nmtui connect`, NetworkManager's own
+      -- first-party TUI, already on PATH via the system-wide
+      -- networkmanager package -- no new package needed. bluetui talks to
+      -- BlueZ directly (not iwd), so it's unaffected and kept as-is.
+      -- rfkill unblock kept before both, matching Omarchy's own scripts.
+      hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; nmtui connect'"))
       hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("alacritty --class alacritty-bluetui -e sh -c 'rfkill unblock bluetooth; bluetui'"))
 
       -- NixOS rebuild trigger (Milestone 6). Terminal-visible by explicit
@@ -255,7 +265,6 @@ in
     playerctl
     pavucontrol
     rofimoji
-    impala
     bluetui
   ];
 }
