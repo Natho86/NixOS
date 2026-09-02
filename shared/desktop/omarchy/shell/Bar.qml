@@ -71,15 +71,22 @@ PanelWindow {
         return null;
     }
 
+    // Three independent RowLayouts (left/center/right), each sized to its
+    // own content and anchored separately, instead of one RowLayout with
+    // fillWidth spacers -- the earlier spacer-based attempt at centering
+    // weather+clock only ever balanced the two spacers against each
+    // other, not against the bar's true midpoint, so the group still
+    // landed off-centre whenever the left and right content widths
+    // differed (they do: menu+workspaces+title is much narrower than
+    // tray-through-battery). Three anchored regions are unaffected by
+    // that asymmetry by construction: the centre region's position comes
+    // from anchors.centerIn, not from flexible-space arithmetic.
     RowLayout {
-        anchors.fill: parent
+        id: leftGroup
+        anchors.left: parent.left
         anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        // Was Theme.gapsIn (4px) -- that token is shared with Hyprland's
-        // actual window gaps (themes/*.nix), so bumping it here would
-        // have also widened window gaps, not just bar spacing. A
-        // dedicated, slightly larger local value instead, per request to
-        // increase spacing between bar elements specifically.
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         spacing: 10
 
         // Menu/launcher button. Left-click opens the same combi launcher
@@ -141,36 +148,32 @@ PanelWindow {
             }
         }
 
-        // Focused window title. NOT fillWidth -- true centering of the
-        // weather+clock cluster below needs exactly two competing
-        // fillWidth spacers (this section's leading edge and the
-        // dedicated spacer after clock); a third fillWidth item here
-        // would compete with the right-hand spacer for space instead of
-        // leaving it as a genuine, equal counterweight, which is why
-        // weather/clock rendered hugging the right side instead of
-        // centred (the title's variable-length text was winning most of
-        // the "shared" flexible space). Layout.maximumWidth bounds how
-        // much of the fixed left region this can take before eliding,
-        // so a long window title doesn't itself throw off centering.
+        // Focused window title. This RowLayout (leftGroup) is now
+        // content-sized, not fillWidth -- so this Text just takes its own
+        // natural width (capped so a very long title doesn't crowd
+        // workspaces/menu off the left edge) rather than trying to fill
+        // remaining bar space, which doesn't exist as a concept within a
+        // content-sized row. The weather+clock centring problem this
+        // used to be entangled with is solved structurally now (see
+        // centerGroup below), not by this Text's own width behaviour.
         Text {
-            Layout.preferredWidth: implicitWidth
-            Layout.maximumWidth: 300
+            Layout.preferredWidth: Math.min(implicitWidth, 260)
             Layout.alignment: Qt.AlignVCenter
             color: Theme.foreground
             font.family: Theme.fontFamily
             elide: Text.ElideRight
             text: Hyprland.activeToplevel ? Hyprland.activeToplevel.title : ""
         }
+    }
 
-        // First of two flexible spacers bracketing the weather+clock
-        // cluster below -- paired with the second spacer (after clock,
-        // before the tray) to genuinely centre that cluster in the bar,
-        // rather than the previous single-spacer-after-title approach
-        // (which just pushed weather/clock to sit immediately before the
-        // tray, not centred).
-        Item {
-            Layout.fillWidth: true
-        }
+    // Centre region: weather + clock/calendar, truly centred in the bar
+    // via anchors.centerIn on the whole PanelWindow, not via balancing
+    // flexible spacers against unequal left/right content (which is what
+    // produced the earlier off-centre result).
+    RowLayout {
+        id: centerGroup
+        anchors.centerIn: parent
+        spacing: 10
 
         // Weather. Ported from upstream Omarchy's own weather widget
         // (shell/plugins/panels/weather/{Panel.qml,Model.js},
@@ -335,37 +338,45 @@ PanelWindow {
             BarPopup {
                 id: weatherPopup
                 anchorItem: weatherIcon
-                popupWidth: 280
-                popupHeight: 200
+                // Bigger overall (was 280x200 -- cramped for a hero
+                // temperature line, a stats row, and a 3-day forecast) and
+                // the low-contrast Theme.muted swapped for Theme.foreground
+                // on real body text below (feels-like/humidity/wind, day
+                // names) -- muted is a genuinely low-contrast dark blue on
+                // dark blue in Hackerman (#2d3450 on #0B0C16), fine for
+                // borders/dividers but hard to read as text at these sizes.
+                popupWidth: 340
+                popupHeight: 260
                 visible: false
 
                 ColumnLayout {
                     anchors.fill: parent
-                    spacing: 8
+                    spacing: 12
 
                     RowLayout {
                         Layout.fillWidth: true
+                        spacing: 12
 
                         Text {
                             text: weatherData.current ? WeatherIcons.iconForOpenMeteoCode(weatherData.current.weatherCode, weatherData.current.isDay === 0) : ""
                             color: Theme.foreground
-                            font.pixelSize: Theme.fontSizeLarge
+                            font.pixelSize: Theme.fontSizeLarge * 1.4
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 0
+                            spacing: 2
 
                             Text {
                                 text: weatherData.current ? weatherData.current.temp + "°C" : "--"
                                 color: Theme.foreground
-                                font.pixelSize: Theme.fontSizeLarge
+                                font.pixelSize: Theme.fontSizeLarge * 1.2
                                 font.bold: true
                             }
                             Text {
                                 text: weatherData.current ? "Feels " + weatherData.current.feelsLike + "° · " + weatherData.current.humidity + "% · " + weatherData.current.windKmh + " km/h" : ""
-                                color: Theme.muted
-                                font.pixelSize: Theme.fontSize - 2
+                                color: Theme.foreground
+                                font.pixelSize: Theme.fontSize
                             }
                         }
                     }
@@ -378,7 +389,7 @@ PanelWindow {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: 12
 
                         Repeater {
                             model: weatherData.forecast
@@ -387,27 +398,27 @@ PanelWindow {
                                 id: forecastDay
                                 required property var modelData
                                 Layout.fillWidth: true
-                                spacing: 2
+                                spacing: 4
 
                                 Text {
                                     text: {
                                         const d = new Date(forecastDay.modelData.date + "T12:00:00");
                                         return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
                                     }
-                                    color: Theme.muted
-                                    font.pixelSize: Theme.fontSize - 2
-                                    Layout.alignment: Qt.AlignHCenter
-                                }
-                                Text {
-                                    text: WeatherIcons.iconForOpenMeteoCode(forecastDay.modelData.weatherCode, false)
                                     color: Theme.foreground
                                     font.pixelSize: Theme.fontSize
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                                 Text {
+                                    text: WeatherIcons.iconForOpenMeteoCode(forecastDay.modelData.weatherCode, false)
+                                    color: Theme.foreground
+                                    font.pixelSize: Theme.fontSizeLarge
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+                                Text {
                                     text: forecastDay.modelData.max + "° / " + forecastDay.modelData.min + "°"
                                     color: Theme.foreground
-                                    font.pixelSize: Theme.fontSize - 2
+                                    font.pixelSize: Theme.fontSize
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                             }
@@ -422,15 +433,9 @@ PanelWindow {
         // shell/plugins/panels/clock/Model.js (github.com/omacom/omarchy,
         // MIT licensed, quattro branch) at the user's request. Trimmed
         // from upstream: week-start toggle persistence, the memento-mori
-        // life-progress bar, the timezone picker, and format-cycling
-        // (kept the existing single yyyy-MM-dd HH:mm format) -- none of
-        // which the user asked for; only "date and time... opens a
-        // calendar popup" was requested. Placed right after weather and
-        // ahead of a second fillWidth spacer (below) so both sit as a
-        // center-ish cluster between the (also fillWidth) window title on
-        // the left and the status-icon cluster on the right -- the
-        // simple two-spacer 3-region bar pattern, per the user's request
-        // to move date/time and weather to the centre.
+        // life-progress bar, the timezone picker, and format-cycling.
+        // Lives in centerGroup (see above) for true bar-centre
+        // positioning, alongside weather.
         Text {
             id: clockText
             color: Theme.foreground
@@ -442,7 +447,14 @@ PanelWindow {
                 precision: SystemClock.Minutes
             }
 
-            text: Qt.formatDateTime(clock.date, "yyyy-MM-dd HH:mm")
+            // "Tuesday 2 September, 14:32" -- dddd (full weekday name),
+            // d (day of month, no leading zero), MMMM (full month name),
+            // per user request for a human-friendly date instead of
+            // yyyy-MM-dd. Time kept alongside it (not dropped entirely),
+            // matching upstream Omarchy's own default clock format shape
+            // ("dddd HH:mm", confirmed in the earlier top-bar research
+            // pass) of pairing a friendly weekday with a visible clock.
+            text: Qt.formatDateTime(clock.date, "dddd d MMMM, HH:mm")
 
             TapHandler {
                 onTapped: calendarPopup.visible = !calendarPopup.visible
@@ -451,8 +463,18 @@ PanelWindow {
             BarPopup {
                 id: calendarPopup
                 anchorItem: clockText
-                popupWidth: 280
-                popupHeight: 320
+                // Bigger (was 280x320 -- cramped for a 6-row month grid
+                // plus header/year-bar) and every genuinely-readable piece
+                // of text below swapped from Theme.muted to
+                // Theme.foreground -- muted is a real low-contrast colour
+                // (e.g. Hackerman's #2d3450 on #0B0C16), fine for the ISO
+                // week gutter (intentionally de-emphasised) but not for
+                // the day-of-week header or out-of-month day numbers,
+                // which still need to be legible even if visually
+                // secondary (handled via opacity instead, which stays
+                // legible at any theme's contrast ratio).
+                popupWidth: 320
+                popupHeight: 360
                 visible: false
 
                 // viewYear/viewMonth track which month is displayed;
@@ -559,7 +581,7 @@ PanelWindow {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    spacing: 8
+                    spacing: 12
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -567,7 +589,7 @@ PanelWindow {
                         Text {
                             text: "󰅁"
                             color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
+                            font.pixelSize: Theme.fontSizeLarge
                             TapHandler {
                                 onTapped: {
                                     if (calendarPopup.viewMonth === 0) {
@@ -583,7 +605,8 @@ PanelWindow {
                         Text {
                             text: calendarPopup.monthNames[calendarPopup.viewMonth] + " " + calendarPopup.viewYear
                             color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
+                            font.pixelSize: Theme.fontSizeLarge
+                            font.bold: true
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignHCenter
                         }
@@ -591,7 +614,7 @@ PanelWindow {
                         Text {
                             text: "󰅂"
                             color: Theme.foreground
-                            font.pixelSize: Theme.fontSize
+                            font.pixelSize: Theme.fontSizeLarge
                             TapHandler {
                                 onTapped: {
                                     if (calendarPopup.viewMonth === 11) {
@@ -624,17 +647,25 @@ PanelWindow {
                     GridLayout {
                         Layout.fillWidth: true
                         columns: 8
-                        columnSpacing: 2
-                        rowSpacing: 4
+                        columnSpacing: 4
+                        rowSpacing: 6
 
-                        Text { text: "W"; color: Theme.muted; font.pixelSize: Theme.fontSize - 2; Layout.alignment: Qt.AlignHCenter }
+                        // Day-of-week header and the "W" gutter label:
+                        // Theme.foreground at reduced opacity instead of
+                        // Theme.muted -- opacity de-emphasises legibly
+                        // against any theme's palette, whereas
+                        // Theme.muted can be low-contrast enough to be
+                        // hard to read outright (confirmed: Hackerman's
+                        // muted is #2d3450 on a #0B0C16 background).
+                        Text { text: "W"; color: Theme.foreground; opacity: 0.6; font.pixelSize: Theme.fontSize; Layout.alignment: Qt.AlignHCenter }
                         Repeater {
                             model: ["M", "T", "W", "T", "F", "S", "S"]
                             Text {
                                 required property string modelData
                                 text: modelData
-                                color: Theme.muted
-                                font.pixelSize: Theme.fontSize - 2
+                                color: Theme.foreground
+                                opacity: 0.6
+                                font.pixelSize: Theme.fontSize
                                 Layout.alignment: Qt.AlignHCenter
                             }
                         }
@@ -645,8 +676,9 @@ PanelWindow {
                             Text {
                                 required property var modelData
                                 text: modelData.week
-                                color: Theme.muted
-                                font.pixelSize: Theme.fontSize - 2
+                                color: Theme.foreground
+                                opacity: 0.6
+                                font.pixelSize: Theme.fontSize
                                 Layout.alignment: Qt.AlignHCenter
                             }
                         }
@@ -663,8 +695,8 @@ PanelWindow {
                             Rectangle {
                                 id: dayDelegate
                                 required property var modelData
-                                Layout.preferredWidth: 26
-                                Layout.preferredHeight: 26
+                                Layout.preferredWidth: 32
+                                Layout.preferredHeight: 32
                                 Layout.alignment: Qt.AlignHCenter
                                 radius: 4
                                 color: "transparent"
@@ -676,8 +708,14 @@ PanelWindow {
                                     text: dayDelegate.modelData.day
                                     font.pixelSize: Theme.fontSize
                                     font.bold: dayDelegate.modelData.isToday
-                                    color: dayDelegate.modelData.weekend ? Theme.muted : Theme.foreground
-                                    opacity: dayDelegate.modelData.inMonth ? 1.0 : 0.4
+                                    // Theme.foreground throughout --
+                                    // weekend de-emphasis is opacity-based
+                                    // (0.75 vs 1.0) rather than a colour
+                                    // swap to Theme.muted, which can be
+                                    // low-contrast enough to be hard to
+                                    // read at this size in some themes.
+                                    color: Theme.foreground
+                                    opacity: dayDelegate.modelData.inMonth ? (dayDelegate.modelData.weekend ? 0.75 : 1.0) : 0.4
                                 }
                             }
                         }
@@ -686,15 +724,18 @@ PanelWindow {
             }
         }
 
-        // Second flexible spacer: with the window title (also
-        // Layout.fillWidth) on the left of weather+clock, this pushes
-        // the remaining status-icon cluster (tray onward) to the far
-        // right, leaving weather+clock sitting as a centre-ish group
-        // between the two fill regions -- the standard two-spacer
-        // 3-region bar layout.
-        Item {
-            Layout.fillWidth: true
-        }
+    }
+
+    // Right region: system tray through battery, anchored to the bar's
+    // right edge and sized to its own content -- unaffected by whatever
+    // width the left/centre regions end up needing.
+    RowLayout {
+        id: rightGroup
+        anchors.right: parent.right
+        anchors.rightMargin: 10
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        spacing: 10
 
         // System tray. StatusNotifierItem API (icon/title/activate/
         // secondaryActivate/hasMenu/menu/display) confirmed against
