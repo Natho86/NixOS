@@ -1,6 +1,10 @@
 # Milestone 1: Hyprland foundation (system-level).
 # Additive session alongside Plasma, Qtile and Budgie. See
 # omarchy-inspired-nixos-plan.md for the full milestone plan.
+#
+# Milestone 8: gated behind desktop.omarchy.enable (default.nix) so this
+# file is safe to import unconditionally -- it does nothing unless a host
+# opts in.
 {
   config,
   lib,
@@ -8,7 +12,7 @@
   ...
 }:
 
-{
+lib.mkIf config.desktop.omarchy.enable {
   # Hyprland compositor, launched through UWSM for systemd session
   # integration (graphical-session.target, xdg-desktop-autostart.target).
   programs.hyprland = {
