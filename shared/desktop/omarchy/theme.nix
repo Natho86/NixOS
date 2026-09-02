@@ -77,6 +77,7 @@ let
     singleton Theme 1.0 Theme.qml
     Bar 1.0 Bar.qml
     BarPopup 1.0 BarPopup.qml
+    PanelSlider 1.0 PanelSlider.qml
     Notifications 1.0 Notifications.qml
     Osd 1.0 Osd.qml
   '';

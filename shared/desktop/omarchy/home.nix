@@ -267,4 +267,17 @@ in
     rofimoji
     bluetui
   ];
+
+  # Top-bar weather module (shell/Bar.qml) caches its resolved
+  # {name,latitude,longitude} to this path via FileView.setText(). Tested
+  # live: FileView.setText() does create missing parent directories on its
+  # own (confirmed by deleting ~/.local/state/omarchy entirely and
+  # launching the shell standalone -- the directory and cache file both
+  # appeared), so this activation block is a defensive belt-and-braces
+  # guarantee rather than a fix for an observed failure. Same
+  # `run mkdir -p $VERBOSE_ARG` idiom confirmed against Home Manager's
+  # own modules/misc/xdg/user-dirs.nix earlier this session (Milestone 7).
+  home.activation.omarchyStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    [[ -d "${config.xdg.stateHome}/omarchy" ]] || run mkdir -p $VERBOSE_ARG "${config.xdg.stateHome}/omarchy"
+  '';
 }

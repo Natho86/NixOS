@@ -39,5 +39,6 @@
     ./power-menu.nix
     ./shell-tools.nix
     ./gtk-theme.nix
+    ./network-tools.nix
   ];
 }
