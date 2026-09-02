@@ -213,6 +213,14 @@ in
       -- here, not to regular terminals.
       hl.bind(mod .. " + M", hl.dsp.exec_cmd("alacritty --class alacritty-btop -e btop"))
 
+      -- Wi-Fi/Bluetooth TUIs (impala/bluetui), matching upstream Omarchy's
+      -- own approach (bin/omarchy-launch-wifi, bin/omarchy-launch-bluetooth
+      -- in github.com/omacom/omarchy, MIT licensed) rather than a custom
+      -- nmcli/bluetoothctl script or a GUI applet. rfkill unblock included
+      -- since Omarchy's own scripts do this before launching.
+      hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; impala'"))
+      hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("alacritty --class alacritty-bluetui -e sh -c 'rfkill unblock bluetooth; bluetui'"))
+
       -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard
       -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
@@ -231,5 +239,7 @@ in
     playerctl
     pavucontrol
     rofimoji
+    impala
+    bluetui
   ];
 }

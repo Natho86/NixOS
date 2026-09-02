@@ -54,5 +54,19 @@
       center = true,
       size = { 900, 600 },
     })
+
+    -- Wi-Fi/Bluetooth TUI overlays (SUPER+N / SUPER+SHIFT+N, home.nix).
+    hl.window_rule({
+      match = { class = "alacritty-impala" },
+      float = true,
+      center = true,
+      size = { 900, 600 },
+    })
+    hl.window_rule({
+      match = { class = "alacritty-bluetui" },
+      float = true,
+      center = true,
+      size = { 900, 600 },
+    })
   '';
 }
