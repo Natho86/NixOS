@@ -108,6 +108,63 @@ in
     extraConfig = ''
       hl.curve("easeOutQuint", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
 
+      -- External-monitor follow-up: toggle the laptop's own panel
+      -- (eDP-1) on/off while an external monitor is connected, so it can
+      -- be used as the sole display instead of extending onto it.
+      --
+      -- True "mirror" (both screens showing the same image) was
+      -- deliberately left out: confirmed against the Hyprland wiki
+      -- (wiki.hypr.land/Configuring/Basics/Monitors, "Mirrored
+      -- displays") that `mirror` does not rescale -- the mirrored
+      -- output shows the source's native resolution un-fitted, so
+      -- mirroring the 1920x1200 laptop panel onto the 3840x1600
+      -- ultrawide (a different aspect ratio, 16:10 vs 24:10) would
+      -- squish/stretch rather than cleanly fit. User explicitly chose
+      -- to skip that mode given the real limitation, rather than ship
+      -- a visibly broken one.
+      --
+      -- Global function (not inlined at each call site) so both the
+      -- keybind below and the bar's own toggle button (Bar.qml) can
+      -- call the exact same logic via a single Hyprland.dispatch() /
+      -- hyprctl eval string, "omarchyToggleLaptopScreen()" -- confirmed
+      -- live that functions defined via one eval persist in Hyprland's
+      -- Lua state and are callable from a later, separate eval.
+      --
+      -- hl.get_monitors() only returns currently ACTIVE outputs -- a
+      -- disabled monitor is dropped from the list entirely, and the
+      -- returned monitor objects have no readable `.disabled` field at
+      -- all (confirmed live: it reads back as nil, since `disabled` is
+      -- a write-only field on the hl.monitor() spec, not a runtime
+      -- property) -- so "is the laptop screen currently on" is
+      -- determined by whether "eDP-1" appears in hl.get_monitors(), not
+      -- by reading a disabled flag. Re-enabling requires passing
+      -- disabled = false explicitly alongside mode/position/scale --
+      -- confirmed live that omitting `disabled` on the re-enable call
+      -- left the monitor off.
+      function omarchyToggleLaptopScreen()
+        local monitors = hl.get_monitors()
+        local laptopActive = false
+        local externalPresent = false
+        for _, mon in ipairs(monitors) do
+          if mon.name == "eDP-1" then
+            laptopActive = true
+          else
+            externalPresent = true
+          end
+        end
+        if not externalPresent then
+          hl.notification.create({ text = "No external monitor connected", timeout = 2500 })
+          return
+        end
+        if laptopActive then
+          hl.monitor({ output = "eDP-1", disabled = true })
+          hl.notification.create({ text = "Laptop screen disabled (external only)", timeout = 2500 })
+        else
+          hl.monitor({ output = "eDP-1", disabled = false, mode = "preferred", position = "auto", scale = 1 })
+          hl.notification.create({ text = "Laptop screen enabled (extended)", timeout = 2500 })
+        end
+      end
+
       -- 3-finger touchpad swipe to switch workspaces. Replaces the legacy
       -- hyprlang gestures.workspace_swipe boolean, which no longer exists
       -- as a config key under the new Lua gesture system.
@@ -236,6 +293,13 @@ in
       -- rfkill unblock kept before both, matching Omarchy's own scripts.
       hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; nmtui connect'"))
       hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("alacritty --class alacritty-bluetui -e sh -c 'rfkill unblock bluetooth; bluetui'"))
+
+      -- Toggle the laptop panel on/off when an external monitor is
+      -- connected (see omarchyToggleLaptopScreen above). hl.bind()'s
+      -- second argument accepts a plain Lua function directly (not just
+      -- an hl.dsp.* dispatcher), confirmed in the pinned Lua API stub
+      -- (hl.meta.lua: `bind fun(keys, dispatcher: HL.Dispatcher|function, ...)`).
+      hl.bind(mod .. " + P", omarchyToggleLaptopScreen)
 
       -- NixOS rebuild trigger (Milestone 6). Terminal-visible by explicit
       -- user choice over a silent background+notification variant: the

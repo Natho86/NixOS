@@ -1436,6 +1436,36 @@ PanelWindow {
             }
         }
 
+        // Laptop-screen toggle. Only relevant once an external monitor is
+        // actually connected -- Hyprland.monitors (Quickshell.Hyprland,
+        // confirmed reactive: qml.hpp's `monitors` property NOTIFYs via
+        // the underlying ObjectModel) only lists currently ACTIVE
+        // outputs, same semantics as the Lua side's hl.get_monitors(), so
+        // "any monitor whose name isn't eDP-1" is a reliable live check
+        // for "external connected" without a separate udev/hotplug watch.
+        // The actual toggle logic lives once in home.nix's Lua
+        // (omarchyToggleLaptopScreen, extraConfig) -- this button just
+        // calls it the same way the SUPER+P keybind does, via
+        // Hyprland.dispatch() sending Lua source over the IPC socket.
+        Text {
+            id: laptopScreenToggle
+
+            readonly property bool externalConnected: {
+                const monitors = Hyprland.monitors ? Hyprland.monitors.values : [];
+                return monitors.some(m => m.name !== "eDP-1");
+            }
+
+            visible: externalConnected
+            color: Theme.foreground
+            font.pixelSize: Theme.fontSize
+            font.family: Theme.fontMonoFamily
+            text: "󰍹"
+
+            TapHandler {
+                onTapped: Hyprland.dispatch("omarchyToggleLaptopScreen()")
+            }
+        }
+
         // Keyboard layout. No native Quickshell keyboard-layout type exists
         // (confirmed: no keyboard/layout source files in the pinned tree).
         // Only one layout ("gb", home.nix's kb_layout) is configured with
