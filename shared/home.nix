@@ -454,6 +454,7 @@ in
         success_symbol = "[➜](bold green)";
         error_symbol = "[➜](bold red)";
       };
+      aws.disabled = true;
       package.disabled = true;
     };
   };
