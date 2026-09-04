@@ -163,6 +163,11 @@ in
           hl.monitor({ output = "eDP-1", disabled = false, mode = "preferred", position = "auto", scale = 1 })
           hl.notification.create({ text = "Laptop screen enabled (extended)", timeout = 2500 })
         end
+
+        -- Recreate Quickshell's layer surfaces after the monitor layout
+        -- changes. The delay lets Hyprland finish applying the new output
+        -- state before the bar is restarted.
+        hl.dispatch(hl.dsp.exec_cmd("sleep 0.5; systemctl --user restart quickshell.service"))
       end
 
       -- 3-finger touchpad swipe to switch workspaces. Replaces the legacy
