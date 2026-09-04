@@ -98,7 +98,7 @@ in
     noto-fonts-color-emoji
     font-awesome
 
-    # GTK/Qt themes (managed by KDE, but packages installed declaratively)
+    # GTK/Qt themes and applications
     (catppuccin-gtk.override {
       accents = [ "blue" ];
       variant = "mocha";
@@ -143,7 +143,7 @@ in
       # color7=foreground, color8=muted for the "bright black", etc.) --
       # fetched directly from github.com/omacom/omarchy (MIT licensed,
       # quattro branch), not invented. Applies to Alacritty in every
-      # session (Plasma/Qtile/Hyprland) on both hosts, since this file is
+      # session on both Hyprland hosts, since this file is
       # shared -- a deliberate choice, not an accident of scope. Changing
       # the selected theme and rebuilding updates Alacritty too, same as
       # every other theme consumer; there is no separate live-switching
@@ -480,26 +480,12 @@ in
   # Fonts
   fonts.fontconfig.enable = true;
 
-  # Qtile configuration
-  xdg.configFile."qtile/config.py".source = ./qtile-config.py;
-
-  # GTK theme - managed by KDE System Settings
+  # GTK theme
   # Theme packages are installed in home.packages above
-  # Configure via: System Settings → Appearance → Application Style → Configure GNOME/GTK Application Style
+  # Configure via the generated GTK settings files.
   # Recommended themes:
   #   - GTK Theme: Catppuccin-Mocha-Standard-Blue-Dark
   #   - Icon Theme: Papirus-Dark
   #   - Cursor Theme: Catppuccin-Mocha-Dark-Cursors
 
-  # Qt theme
-  qt = {
-    enable = true;
-    platformTheme.name = "kde";
-    #style.name = "kvantum";
-  };
-
-  #home.file.".config/Kvantum/kvantum.kvconfig".text = ''
-  #  [General]
-  #  theme=Catppuccin-Mocha-Blue
-  #'';
 }

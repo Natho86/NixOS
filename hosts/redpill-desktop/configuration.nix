@@ -33,11 +33,6 @@
 
   services.displayManager.autoLogin.enable = lib.mkForce false;
 
-  systemd.services."getty@tty1".enable = lib.mkForce true;
-  systemd.services."autovt@tty1".enable = lib.mkForce true;
-
-  services.displayManager.defaultSession = lib.mkForce "plasmax11";
-
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;

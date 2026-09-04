@@ -40,7 +40,7 @@
     user = "nath";
   };
 
-  # Workaround for auto-login with SDDM
+  # Workaround for auto-login with the display manager
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 

@@ -28,8 +28,7 @@
     -- this only within the Hyprland session itself (confirmed via the
     -- upstream doc's own warning: "avoid putting Wayland-specific env vars
     -- in /etc/environment ... will cause all sessions, including Xorg
-    -- ones, to pick them up"), so this is safe even though Plasma/Qtile/
-    -- Budgie also run on this host and would break if this leaked globally.
+    -- ones, to pick them up"), so this stays scoped to Hyprland.
     hl.env("NIXOS_OZONE_WL", "1")
 
     -- Pinentry (GPG/SSH passphrase prompts) losing focus is a common

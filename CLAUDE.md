@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a NixOS flake-based configuration repository for a laptop running KDE Plasma 6 and Qtile window manager. The configuration uses:
+This is a NixOS flake-based configuration repository for Hyprland with an Omarchy-inspired desktop and Home Manager. The configuration uses:
 - **Flakes** for reproducible, declarative system configuration
 - **Home Manager** for user-level package and configuration management
 - **sops-nix** for secrets management
@@ -25,7 +25,7 @@ The configuration follows a host + shared pattern:
 - `shared/` - Shared configuration across all potential hosts
   - `configuration.nix` - System-level config (boot, networking, users, services)
   - `home.nix` - User-level packages and dotfiles (Home Manager)
-  - `qtile-config.py` - Qtile window manager configuration
+  - `desktop/omarchy/` - Hyprland, Quickshell, and desktop modules
 
 The flake composition in `flake.nix:18-41` combines host-specific config, shared config, and modules (sops-nix, home-manager) into the final system configuration.
 
@@ -135,13 +135,9 @@ Configured with oh-my-zsh, starship prompt, syntax highlighting, and auto-sugges
 ### Alacritty Terminal
 Configured with Catppuccin Mocha theme in `shared/home.nix:78-142`.
 
-### Qtile Window Manager
-Configuration in `shared/qtile-config.py`. Key bindings use Super (mod4) key:
-- `Super+Enter` - Launch terminal
-- `Super+b` - Launch browser
-- `Super+w` - Close window
-- `Super+r` - Rofi launcher
-- `Super+h/j/k/l` - Navigate windows (vim-style)
+### Hyprland / Omarchy Desktop
+The Hyprland configuration and Quickshell desktop are under
+`shared/desktop/omarchy/`. The laptop-screen toggle is bound to `Super+P`.
 
 ## Important System Features
 
@@ -180,7 +176,7 @@ When editing configuration:
 - System packages & services → `shared/configuration.nix`
 - User packages & dotfiles → `shared/home.nix`
 - Machine-specific settings → `hosts/redpill-x1-yoga/configuration.nix`
-- Qtile config → `shared/qtile-config.py`
+- Hyprland/Omarchy config → `shared/desktop/omarchy/`
 
 ## Testing Changes
 

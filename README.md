@@ -1,12 +1,11 @@
 # NixOS Flake Configuration
 
-Modern NixOS configuration with Plasma 6, Qtile, full disk encryption, and Home Manager.
+Modern NixOS configuration with Hyprland, an Omarchy-inspired desktop, full disk encryption, and Home Manager.
 
 ## What's Included
 
-**Desktop Environments:**
-- KDE Plasma 6 (Wayland) - default
-- Qtile tiling window manager
+**Desktop Environment:**
+- Hyprland with the Omarchy-inspired desktop profile
 
 **Applications:**
 - Google Chrome, 1Password, Audacity, Docker, GitHub Desktop, Obsidian
@@ -176,18 +175,10 @@ sudo nixos-rebuild switch --flake .#laptop  # or #desktop
 sudo nix-collect-garbage --delete-older-than 7d
 ```
 
-### Switch Desktop Environments
-At the SDDM login screen, click the session selector and choose:
-- **Plasma (Wayland)** - KDE Plasma 6
-- **Qtile** - Tiling window manager
-
-### Qtile Keybindings
-- `Super + Enter` - Terminal
-- `Super + r` - App launcher
-- `Super + b` - Browser
-- `Super + w` - Close window
-- `Super + 1-9` - Switch workspace
-- `Super + h/j/k/l` - Navigate windows
+### Hyprland Session
+Select **Hyprland (uwsm-managed)** in ReGreet. The Omarchy profile provides
+the Quickshell bar, launcher, lock screen, idle handling, screenshots, and
+power menu.
 
 ## Adding Applications
 
@@ -223,7 +214,6 @@ NixOS/
 ├── shared/                                # Shared configuration across all hosts
 │   ├── configuration.nix                 # System-level config (services, users, etc.)
 │   ├── home.nix                          # User environment (packages, dotfiles)
-│   └── qtile-config.py                   # Qtile window manager config
 ├── .gitignore                            # Protects secrets and hardware configs
 ├── Makefile                              # Shortcuts for common commands
 ├── README.md                             # This file
@@ -268,7 +258,6 @@ The `.gitignore` automatically protects:
 Safe to commit:
 - All `.nix` files (with placeholders)
 - Documentation
-- `qtile-config.py`
 - `.gitignore`, `Makefile`
 
 ## Avoiding PR Conflicts
@@ -301,7 +290,7 @@ services.tlp.settings = {
 };
 ```
 
-**Change theme:** Edit colors in `shared/home.nix` and `shared/qtile-config.py`
+**Change theme:** Edit the theme files under `shared/desktop/omarchy/themes/`
 
 ## Multiple Machines
 

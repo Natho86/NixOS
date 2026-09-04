@@ -47,29 +47,8 @@
 
   console.keyMap = "uk";
 
-  # Enable the X11 windowing system
-  services.xserver.enable = true;
-  services.xserver.xkb.layout = "gb";
-
-  # Enable Plasma 6
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
-  services.desktopManager.plasma6.enable = true;
-
-  # Enable Budgie
-  services.desktopManager.budgie.enable = true;
-
-  # Enable Qtile
-  services.xserver.windowManager.qtile = {
-    enable = true;
-    # Qtile currently installs qtile-generic.desktop, while its package
-    # metadata still advertises a session named qtile.
-    package = pkgs.python3Packages.qtile.overrideAttrs (old: {
-      passthru = old.passthru // {
-        providedSessions = [ "qtile-generic" ];
-      };
-    });
-  };
+  # The graphical session is provided by the Hyprland/Omarchy profile.
+  # Keyboard layout is configured by Hyprland's input settings.
 
   # Auto-login configuration is set per-host (see laptop config)
 

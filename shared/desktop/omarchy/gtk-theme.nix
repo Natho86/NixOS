@@ -6,7 +6,7 @@
 # Yaru-magenta since blue tonally matches this repo's Tokyo Night accent
 # (#7aa2f7) better than Omarchy's own pick.
 #
-# ~/.config/gtk-{3,4}.0/settings.ini already existed as real, KDE-written
+# ~/.config/gtk-{3,4}.0/settings.ini already existed as real desktop-written
 # files (confirmed via `cat` before writing this module) -- every setting
 # already present is carried forward explicitly so gtk.enable doesn't
 # silently drop them the way a bare `xdg.configFile` conflict would.
@@ -63,13 +63,9 @@
       package = pkgs.yaru-theme;
     };
 
-    # breeze cursors come from KDE Plasma's own breeze package, already
-    # present as a Plasma dependency -- not a separate Home Manager
-    # package, same reasoning as package = null elsewhere in this repo
-    # for NixOS/system-provided things.
     cursorTheme = {
-      name = "breeze_cursors";
-      package = null;
+      name = "catppuccin-mocha-dark-cursors";
+      package = pkgs.catppuccin-cursors.mochaDark;
       size = 24;
     };
 

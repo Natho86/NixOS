@@ -1,5 +1,5 @@
 {
-  description = "NixOS configurations with Plasma 6, Qtile, and AI server";
+  description = "NixOS configurations with Hyprland, Omarchy, and AI server";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -73,13 +73,9 @@
           # Shared configuration
           ./shared/configuration.nix
 
-          # Omarchy-inspired Hyprland desktop is importable here too
-          # (Milestone 8: reusable profile, not laptop-only) but NOT
-          # opted in -- no `desktop.omarchy.enable = true;` below, so this
-          # host stays Plasma/Qtile-only exactly as before. Proves the
-          # module is genuinely safe to import unconditionally, not just
-          # in theory: this host's own config is the live demonstration.
+          # Omarchy-inspired Hyprland desktop, shared with the laptop.
           ./shared/desktop/omarchy
+          { desktop.omarchy.enable = true; }
 
           # Modules
           sops-nix.nixosModules.sops

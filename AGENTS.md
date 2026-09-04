@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 - `flake.nix` defines inputs and the NixOS outputs. Host-specific entry points live under `hosts/`.
 - `hosts/redpill-x1-yoga/` and `hosts/redpill-desktop/` contain per-machine `configuration.nix` plus optional helpers (e.g., `gpu-packages.nix`).
-- `shared/` contains common modules: `configuration.nix` for system settings, `home.nix` for Home Manager, and `qtile-config.py` for Qtile.
+- `shared/` contains common modules: `configuration.nix` for system settings, `home.nix` for Home Manager, and `desktop/omarchy/` for the Hyprland desktop.
 - Secrets are managed via sops-nix; the example file is `secrets.yaml.example`, and real secrets live under `secrets/` (gitignored).
 
 ## Build, Test, and Development Commands

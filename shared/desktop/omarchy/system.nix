@@ -1,5 +1,5 @@
 # Milestone 1: Hyprland foundation (system-level).
-# Additive session alongside Plasma, Qtile and Budgie. See
+# Hyprland session with the Omarchy-inspired desktop profile. See
 # omarchy-inspired-nixos-plan.md for the full milestone plan.
 #
 # Milestone 8: gated behind desktop.omarchy.enable (default.nix) so this
@@ -38,11 +38,6 @@ lib.mkIf config.desktop.omarchy.enable {
   # entirely, causing slow terminal startup and a Hyprland warning that it
   # wasn't launched via hyprland-start.
 
-  # greetd + ReGreet replaces SDDM as the display manager. SDDM is
-  # disabled explicitly since services.displayManager.sddm.enable was
-  # previously set to true in shared/configuration.nix.
-  services.displayManager.sddm.enable = lib.mkForce false;
-
   services.displayManager.regreet = {
     enable = true;
     # ReGreet's own theme knobs (font/theme/cursor/extraCss) are left at
@@ -50,9 +45,7 @@ lib.mkIf config.desktop.omarchy.enable {
     # shared theme tokens exist.
   };
 
-  # Auto-login previously relied on services.displayManager.autoLogin,
-  # which SDDM's module read directly. greetd has its own mechanism:
-  # initial_session bypasses the greeter and execs a session command
+  # greetd's initial_session bypasses the greeter and execs a session command
   # directly on start. This preserves the "boot straight to a session
   # after LUKS unlock" behaviour from hosts/redpill-x1-yoga/configuration.nix.
   #
@@ -65,10 +58,8 @@ lib.mkIf config.desktop.omarchy.enable {
   # "not started with hyprland-start" warning and slow terminal startup,
   # even though this path was intended to be UWSM-managed all along.
   #
-  # NOTE: initial_session logs in to Hyprland by default now that this
-  # module is enabled. If Plasma should remain the auto-login target
-  # instead, override services.greetd.settings.initial_session.command
-  # in the host configuration.
+  # When auto-login is enabled on a host, initial_session logs in to
+  # Hyprland directly after the disk is unlocked.
   services.greetd.settings = lib.mkIf config.services.displayManager.autoLogin.enable {
     initial_session = {
       command = "${pkgs.uwsm}/bin/uwsm start -e -D Hyprland hyprland-uwsm.desktop";
@@ -83,10 +74,7 @@ lib.mkIf config.desktop.omarchy.enable {
   # setup needed, resolving the gap flagged in Milestone 0.
   programs.hyprlock.enable = true;
 
-  # Per-desktop XDG portal routing. Without this, xdg-desktop-portal-hyprland
-  # and Plasma's own KDE portal can contend for the same request when both
-  # are installed system-wide. Keyed by XDG_CURRENT_DESKTOP, which Hyprland
-  # and Plasma set to different values.
+  # XDG portal routing for the Hyprland session.
   xdg.portal = {
     enable = true;
     config = {
@@ -97,35 +85,4 @@ lib.mkIf config.desktop.omarchy.enable {
     extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
 
-  # Milestone 8 top-bar follow-up: stop nm-applet's tray icon from
-  # appearing in the Hyprland session's system tray -- the bar's own
-  # network popup (SUPER+N or the bar icon) already covers this, and the
-  # tray icon was confirmed real (not an artifact of this repo's own
-  # config): `programs.nm-applet` isn't enabled anywhere in this repo at
-  # all -- it's turned on by NixOS's own Budgie desktop-manager module
-  # (nixos/modules/services/desktop-managers/budgie.nix:
-  # `programs.nm-applet.enable = config.networking.networkmanager.enable;
-  # # Budgie has no Network applet.`), since Budgie genuinely needs it as
-  # its own network tray icon. Disabling the service outright would
-  # therefore remove Budgie's network icon too, not just Hyprland's --
-  # scoped instead via systemd's ConditionEnvironment (a real, standard
-  # unit directive, confirmed via `man systemd.unit`) so the unit simply
-  # refuses to start when XDG_CURRENT_DESKTOP is "Hyprland" (the exact
-  # value confirmed live via `echo $XDG_CURRENT_DESKTOP` in this
-  # session), leaving Budgie's own session (a different
-  # XDG_CURRENT_DESKTOP value) completely unaffected. This NixOS-level
-  # systemd.user.services.nm-applet definition merges additively with
-  # the one nm-applet.nix itself sets (same attrset, not a full
-  # override), so serviceConfig here only adds a condition rather than
-  # replacing nm-applet's own ExecStart/wantedBy.
-  # ConditionEnvironment belongs in the [Unit] section, not [Service] --
-  # confirmed live: an earlier attempt at serviceConfig.ConditionEnvironment
-  # rendered it under [Service], and systemd logged "Unknown key
-  # 'ConditionEnvironment' in section [Service], ignoring" (visible via
-  # `journalctl --user -u nm-applet.service`), so the condition was
-  # silently never applied. unitConfig is the correct NixOS option for
-  # [Unit]-section keys (confirmed against a real usage,
-  # nixos/modules/system/boot/kexec.nix: `unitConfig.DefaultDependencies
-  # = false;`).
-  systemd.user.services.nm-applet.unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=Hyprland";
 }

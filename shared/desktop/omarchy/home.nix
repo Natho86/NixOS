@@ -205,8 +205,7 @@ in
       hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(menu))
       hl.bind(mod .. " + W", hl.dsp.exec_cmd(windowSwitcher))
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.window.close())
-      -- Ends the Hyprland session and returns to the greeter, so Plasma/
-      -- Qtile/Budgie can be selected.
+      -- Ends the Hyprland session and returns to the greeter.
       hl.bind(mod .. " + SHIFT + E", hl.dsp.exit())
       -- Milestone 6: power/session menu (lock/logout/suspend/reboot/
       -- shutdown), see power-menu.nix. Key name "Escape" confirmed via
@@ -330,7 +329,7 @@ in
   home.packages = with pkgs; [
     rofi # temporary placeholder launcher, replaced by Quickshell in Milestone 2
     brightnessctl
-    kdePackages.dolphin
+    nautilus
     playerctl
     pavucontrol
     rofimoji

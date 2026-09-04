@@ -27,7 +27,7 @@
 { config, pkgs, ... }:
 
 {
-  home.packages = [ pkgs.kdePackages.gwenview ];
+  home.packages = [ pkgs.loupe ];
 
   xdg.configFile."mimeapps.list".force = true;
   xdg.dataFile."applications/mimeapps.list".force = true;
@@ -44,20 +44,19 @@
       "x-scheme-handler/signalcaptcha" = "signal.desktop";
       "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
 
-      "inode/directory" = "org.kde.dolphin.desktop";
+      "inode/directory" = "org.gnome.Nautilus.desktop";
 
-      # Images -- gwenview's own MimeType= list, verified against the
-      # built package.
-      "image/avif" = "org.kde.gwenview.desktop";
-      "image/gif" = "org.kde.gwenview.desktop";
-      "image/heif" = "org.kde.gwenview.desktop";
-      "image/jpeg" = "org.kde.gwenview.desktop";
-      "image/jxl" = "org.kde.gwenview.desktop";
-      "image/png" = "org.kde.gwenview.desktop";
-      "image/bmp" = "org.kde.gwenview.desktop";
-      "image/webp" = "org.kde.gwenview.desktop";
-      "image/tiff" = "org.kde.gwenview.desktop";
-      "image/svg+xml" = "org.kde.gwenview.desktop";
+      # Images -- Loupe's image viewer.
+      "image/avif" = "org.gnome.Loupe.desktop";
+      "image/gif" = "org.gnome.Loupe.desktop";
+      "image/heif" = "org.gnome.Loupe.desktop";
+      "image/jpeg" = "org.gnome.Loupe.desktop";
+      "image/jxl" = "org.gnome.Loupe.desktop";
+      "image/png" = "org.gnome.Loupe.desktop";
+      "image/bmp" = "org.gnome.Loupe.desktop";
+      "image/webp" = "org.gnome.Loupe.desktop";
+      "image/tiff" = "org.gnome.Loupe.desktop";
+      "image/svg+xml" = "org.gnome.Loupe.desktop";
 
       # Video/audio -- a subset of vlc's own MimeType= list.
       "video/mp4" = "vlc.desktop";
