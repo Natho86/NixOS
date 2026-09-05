@@ -80,6 +80,12 @@ in
           layout = "dwindle";
         };
 
+        # Keep split directions stable so the dwindle togglesplit layout
+        # message can change the focused container's orientation.
+        dwindle = {
+          preserve_split = true;
+        };
+
         decoration = {
           rounding = omarchyTheme.layout.rounding;
           blur = {
@@ -234,6 +240,16 @@ in
       hl.bind(mod .. " + SHIFT + Right", hl.dsp.window.move({ direction = "right" }))
       hl.bind(mod .. " + SHIFT + Down", hl.dsp.window.move({ direction = "down" }))
       hl.bind(mod .. " + SHIFT + Up", hl.dsp.window.move({ direction = "up" }))
+
+      -- Resize the focused tiled window in 50-pixel steps.
+      hl.bind(mod .. " + CTRL + Left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
+      hl.bind(mod .. " + CTRL + Right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
+      hl.bind(mod .. " + CTRL + Down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }))
+      hl.bind(mod .. " + CTRL + Up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }))
+
+      -- Toggle the focused dwindle container between horizontal and
+      -- vertical splits.
+      hl.bind(mod .. " + S", hl.dsp.layout("togglesplit"))
 
       -- Lock screen. Reuses hypridle's own lock_cmd pattern (pidof guard
       -- avoids double-launching hyprlock if one instance is already

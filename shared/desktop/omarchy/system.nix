@@ -74,6 +74,9 @@ lib.mkIf config.desktop.omarchy.enable {
   # setup needed, resolving the gap flagged in Milestone 0.
   programs.hyprlock.enable = true;
 
+  # Quickshell's battery widget reads the laptop battery through UPower.
+  services.upower.enable = true;
+
   # XDG portal routing for the Hyprland session.
   xdg.portal = {
     enable = true;
