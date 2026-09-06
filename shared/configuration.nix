@@ -148,6 +148,9 @@
     # Development
     codex
 
+    # design
+    freecad
+
     # ctfs/labs/courses
     openvpn
     wireguard-tools
