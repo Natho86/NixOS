@@ -210,6 +210,7 @@ in
       hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal))
       hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(menu))
       hl.bind(mod .. " + W", hl.dsp.exec_cmd(windowSwitcher))
+      hl.bind(mod .. " + Q", hl.dsp.window.close())
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.window.close())
       -- Ends the Hyprland session and returns to the greeter.
       hl.bind(mod .. " + SHIFT + E", hl.dsp.exit())
