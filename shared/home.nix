@@ -25,6 +25,7 @@ in
     nix-direnv.enable = true;
   };
 
+
   # Packages to install
   home.packages = with pkgs; [
     # Browsers
@@ -76,6 +77,8 @@ in
     remmina
     samba
     cifs-utils
+    usbutils
+    file
 
     # Network utilities
     nmap

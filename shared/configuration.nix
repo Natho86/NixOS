@@ -131,6 +131,10 @@
   #    --accept-flake-config \
   #    'github:flox/flox/latest'
 
+  # https://wiki.nixos.org/wiki/Nix-ld
+  # needed to run any executable that is not patched by nix
+  programs.nix-ld.enable = true;
+
   # System packages
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
