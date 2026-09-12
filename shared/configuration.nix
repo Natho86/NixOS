@@ -48,7 +48,7 @@
 
   console.keyMap = "uk";
 
-  # The graphical session is provided by the Hyprland/Omarchy profile.
+  # The graphical session is provided by the curated Hyprland profile.
   # Keyboard layout is configured by Hyprland's input settings.
 
   # Auto-login configuration is set per-host (see laptop config)

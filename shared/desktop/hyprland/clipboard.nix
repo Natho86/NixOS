@@ -19,7 +19,7 @@
 
 let
   clipboardMode = pkgs.writeShellApplication {
-    name = "omarchy-rofi-clipboard";
+    name = "desktop-rofi-clipboard";
     runtimeInputs = [
       pkgs.cliphist
       pkgs.wl-clipboard

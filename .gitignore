@@ -37,4 +37,5 @@ test-vm/
 # Machine-specific NixOS hardware configs
 hosts/*/hardware-configuration.nix
 
-omarchy-inspired-nixos-plan.md
+# Historical desktop implementation notes (kept local and ignored)
+*-inspired-nixos-plan.md

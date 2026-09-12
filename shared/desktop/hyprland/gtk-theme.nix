@@ -1,10 +1,10 @@
-# Milestone 4: GTK icon theme, scoped to match what upstream Omarchy
-# itself actually does -- confirmed by reading the real omarchy repo
-# (github.com/omacom/omarchy, MIT licensed): it ships no custom GTK CSS
+# Milestone 4: GTK icon theme, scoped to match what the reference implementation
+# itself actually does -- confirmed by reading the reference repository
+# (the upstream reference implementation, MIT licensed): it ships no custom GTK CSS
 # theme at all, only selects an existing icon theme per-theme (Yaru-magenta
 # for its own Tokyo Night theme). Yaru-blue-dark is used here instead of
 # Yaru-magenta since blue tonally matches this repo's Tokyo Night accent
-# (#7aa2f7) better than Omarchy's own pick.
+# (#7aa2f7) better than the reference implementation's pick.
 #
 # ~/.config/gtk-{3,4}.0/settings.ini already existed as real desktop-written
 # files (confirmed via `cat` before writing this module) -- every setting

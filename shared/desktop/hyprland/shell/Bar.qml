@@ -1,4 +1,4 @@
-// Milestone 2 base + top-bar Omarchy-parity pass. Workspaces, focused
+// Milestone 2 base + top-bar reference-inspired pass. Workspaces, focused
 // window title, menu/launcher, system tray, bluetooth, network, audio,
 // keyboard layout, battery, clock -- plus click-popups for
 // audio/network/bluetooth. QML API verified against pinned nixpkgs
@@ -16,12 +16,12 @@
 // upstream's own src/window/test/manual/panel.qml) and the id-qualification
 // hints addressed below.
 //
-// Module order (left to right) follows upstream Omarchy's own right-section
-// ordering (github.com/omacom/omarchy, config/omarchy/shell.json, MIT
+// Module order (left to right) follows the reference implementation's own right-section
+// ordering (the upstream reference implementation, config/desktop/shell.json, MIT
 // licensed) where our modules map to theirs: tray, bluetooth, network,
 // audio, keyboard-layout, battery. Weather/agents/AI-usage widgets and the
 // full plugin/popup system are out of scope -- see
-// omarchy-inspired-nixos-plan.md's top-bar pass notes.
+// curated-nixos-plan.md's top-bar pass notes.
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -91,7 +91,7 @@ PanelWindow {
 
         // Menu/launcher button. Left-click opens the same combi launcher
         // SUPER+SPACE does (home.nix's `menu` local var); right-click opens
-        // a new terminal -- matching upstream's omarchy.menu bar-widget
+        // a new terminal -- matching upstream's desktop.menu bar-widget
         // click behaviour (left = open menu, right = open terminal).
         Text {
             color: Theme.accent
@@ -175,9 +175,9 @@ PanelWindow {
         anchors.centerIn: parent
         spacing: 10
 
-        // Weather. Ported from upstream Omarchy's own weather widget
+        // Weather. Ported from the reference implementation's own weather widget
         // (shell/plugins/panels/weather/{Panel.qml,Model.js},
-        // github.com/omacom/omarchy, MIT licensed, quattro branch) at the
+        // the upstream reference implementation, MIT licensed, quattro branch) at the
         // user's explicit request, scoped down: current conditions + 3-day
         // forecast only, no live location-search-and-edit UI (upstream's
         // debounced geocoding search field) -- location is resolved once
@@ -204,10 +204,10 @@ PanelWindow {
             // (one wttr.in call + one Open-Meteo geocoding call) only
             // happens once, not on every shell restart -- same state-file
             // convention as the rest of this repo
-            // (~/.local/state/omarchy/...).
+            // (~/.local/state/desktop/...).
             FileView {
                 id: locationCache
-                path: Quickshell.env("HOME") + "/.local/state/omarchy/weather-location.json"
+                path: Quickshell.env("HOME") + "/.local/state/desktop/weather-location.json"
                 watchChanges: false
                 // preload defaults to true (confirmed in fileview.hpp),
                 // so the file starts loading as soon as `path` is set --
@@ -429,8 +429,8 @@ PanelWindow {
         }
 
         // Clock -> calendar popup. Month-grid/ISO-week/year-progress date
-        // math ported near-verbatim from upstream Omarchy's own
-        // shell/plugins/panels/clock/Model.js (github.com/omacom/omarchy,
+        // math ported near-verbatim from the reference implementation's own
+        // shell/plugins/panels/clock/Model.js (the upstream reference implementation,
         // MIT licensed, quattro branch) at the user's request. Trimmed
         // from upstream: week-start toggle persistence, the memento-mori
         // life-progress bar, the timezone picker, and format-cycling.
@@ -451,7 +451,7 @@ PanelWindow {
             // d (day of month, no leading zero), MMMM (full month name),
             // per user request for a human-friendly date instead of
             // yyyy-MM-dd. Time kept alongside it (not dropped entirely),
-            // matching upstream Omarchy's own default clock format shape
+            // matching the reference implementation's own default clock format shape
             // ("dddd HH:mm", confirmed in the earlier top-bar research
             // pass) of pairing a friendly weekday with a visible clock.
             text: Qt.formatDateTime(clock.date, "dddd d MMMM, HH:mm")
@@ -507,7 +507,7 @@ PanelWindow {
                 // Thursday of the same week, then count weeks from that
                 // Thursday's own year-start. Ported from Model.js's
                 // isoWeek(), which is itself the standard ISO week
-                // algorithm, not an Omarchy-specific invention.
+                // algorithm, not a profile-specific invention.
                 function isoWeek(year: int, month: int, day: int): int {
                     const date = new Date(Date.UTC(year, month, day));
                     const weekday = date.getUTCDay() || 7;
@@ -988,9 +988,9 @@ PanelWindow {
         // the same backend this repo actually uses, unlike impala's
         // iwd-only assumption found earlier). Popup content (ping,
         // throughput, IP/gateway, speed test) ported from upstream
-        // Omarchy's own network panel and its two backend scripts
-        // (bin-omarchy-network-{status,speedtest}, now
-        // network-tools.nix's omarchy-network-status/-speedtest) at the
+        // the reference implementation's network panel and its two backend scripts
+        // (bin-desktop-network-{status,speedtest}, now
+        // network-tools.nix's desktop-network-status/-speedtest) at the
         // user's explicit request. wifiDevice resolved once above.
         Text {
             id: networkIcon
@@ -1024,7 +1024,7 @@ PanelWindow {
                     }
                 }
 
-                // Polls `omarchy-network-status --verbose` every 1.5s while
+                // Polls `desktop-network-status --verbose` every 1.5s while
                 // open (matches upstream's own poll cadence) -- tab-
                 // separated key\tvalue lines, parsed the same way the
                 // script's own output is shaped. Ping/IP/gateway/
@@ -1064,7 +1064,7 @@ PanelWindow {
                     // expected QQuickItem".
                     Process {
                         id: statusProc
-                        command: ["omarchy-network-status", "--verbose"]
+                        command: ["desktop-network-status", "--verbose"]
                         stdout: StdioCollector {
                             onStreamFinished: {
                                 const data = {};
@@ -1110,7 +1110,7 @@ PanelWindow {
 
                     Process {
                         id: speedtestDownProc
-                        command: ["omarchy-network-speedtest", "down"]
+                        command: ["desktop-network-speedtest", "down"]
                         stdout: SplitParser {
                             onRead: (line) => {
                                 const v = parseFloat(line);
@@ -1125,7 +1125,7 @@ PanelWindow {
 
                     Process {
                         id: speedtestUpProc
-                        command: ["omarchy-network-speedtest", "up"]
+                        command: ["desktop-network-speedtest", "up"]
                         stdout: SplitParser {
                             onRead: (line) => {
                                 const v = parseFloat(line);
@@ -1259,7 +1259,7 @@ PanelWindow {
         }
 
         // Audio. Master volume + per-app mixer, ported from upstream
-        // Omarchy's own audio panel (shell/plugins/panels/audio/Panel.qml)
+        // the reference implementation's audio panel (shell/plugins/panels/audio/Panel.qml)
         // at the user's explicit request -- same Pipewire.defaultAudioSink
         // .audio.volume/.muted bindings this repo already used, now paired
         // with PanelSlider.qml (see that file) instead of a hand-rolled
@@ -1444,7 +1444,7 @@ PanelWindow {
         // "any monitor whose name isn't eDP-1" is a reliable live check
         // for "external connected" without a separate udev/hotplug watch.
         // The actual toggle logic lives once in home.nix's Lua
-        // (omarchyToggleLaptopScreen, extraConfig) -- this button just
+        // (desktopToggleLaptopScreen, extraConfig) -- this button just
         // calls it the same way the SUPER+P keybind does, via
         // Hyprland.dispatch() sending Lua source over the IPC socket.
         Text {
@@ -1462,7 +1462,7 @@ PanelWindow {
             text: "󰍹"
 
             TapHandler {
-                onTapped: Hyprland.dispatch("omarchyToggleLaptopScreen()")
+                onTapped: Hyprland.dispatch("desktopToggleLaptopScreen()")
             }
         }
 

@@ -17,7 +17,7 @@
 
 let
   powerMenu = pkgs.writeShellApplication {
-    name = "omarchy-power-menu";
+    name = "desktop-power-menu";
     runtimeInputs = [
       pkgs.rofi
       pkgs.systemd

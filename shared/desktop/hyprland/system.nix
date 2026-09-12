@@ -1,8 +1,8 @@
 # Milestone 1: Hyprland foundation (system-level).
-# Hyprland session with the Omarchy-inspired desktop profile. See
-# omarchy-inspired-nixos-plan.md for the full milestone plan.
+# Hyprland session with the curated desktop profile. See
+# curated-nixos-plan.md for the full milestone plan.
 #
-# Milestone 8: gated behind desktop.omarchy.enable (default.nix) so this
+# Milestone 8: gated behind desktop.hyprland.enable (default.nix) so this
 # file is safe to import unconditionally -- it does nothing unless a host
 # opts in.
 {
@@ -12,7 +12,7 @@
   ...
 }:
 
-lib.mkIf config.desktop.omarchy.enable {
+lib.mkIf config.desktop.hyprland.enable {
   # Hyprland compositor, launched through UWSM for systemd session
   # integration (graphical-session.target, xdg-desktop-autostart.target).
   programs.hyprland = {
@@ -49,7 +49,7 @@ lib.mkIf config.desktop.omarchy.enable {
   # directly on start. This preserves the "boot straight to a session
   # after LUKS unlock" behaviour from hosts/redpill-x1-yoga/configuration.nix.
   #
-  # The command MUST match hyprland-uwsm.desktop's own Exec= line
+  # The command MUST match hyprland-uwsm.the reference implementation's Exec= line
   # (`uwsm start -e -D Hyprland hyprland.desktop`) rather than invoking
   # Hyprland's binary by absolute path. `uwsm start` treats an absolute
   # path as "hardcode mode", a different code path from resolving a

@@ -14,26 +14,26 @@
 
 let
   reload = pkgs.writeShellApplication {
-    name = "omarchy-shell-reload";
+    name = "desktop-shell-reload";
     runtimeInputs = [ pkgs.systemd ];
     text = ''
       echo "Restarting Quickshell..."
       systemctl --user restart quickshell
-      echo "Done. Use omarchy-shell-log to check for errors."
+      echo "Done. Use desktop-shell-log to check for errors."
     '';
   };
 
   shellLog = pkgs.writeShellApplication {
-    name = "omarchy-shell-log";
+    name = "desktop-shell-log";
     runtimeInputs = [ pkgs.quickshell ];
     text = ''
-      # -c omarchy required: `qs log` defaults to a config named "default"
-      # if none is given, but activeConfig is "omarchy" (home.nix) --
+      # -c desktop required: `qs log` defaults to a config named "default"
+      # if none is given, but activeConfig is "desktop" (home.nix) --
       # confirmed live: without it, fails with "Could not find 'default'
       # config directory or shell.qml in any valid config path."
       # -f (follow) by default for interactive debugging; pass -t N to
-      # just tail N lines and exit instead, e.g. `omarchy-shell-log -t 50`.
-      qs -c omarchy log -f "$@"
+      # just tail N lines and exit instead, e.g. `desktop-shell-log -t 50`.
+      qs -c desktop log -f "$@"
     '';
   };
 in

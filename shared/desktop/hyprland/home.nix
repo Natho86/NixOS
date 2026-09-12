@@ -12,10 +12,10 @@
 let
   # Milestone 4: shell/ + generated Theme.qml/qmldir combined into one
   # derivation -- see theme.nix for why this can't be two separate
-  # Home Manager sources under the same ~/.config/quickshell/omarchy path.
-  omarchyShell = import ./theme.nix { inherit pkgs lib; };
+  # Home Manager sources under the same ~/.config/quickshell/desktop path.
+  desktopShell = import ./theme.nix { inherit pkgs lib; };
 
-  omarchyTheme = (import ./themes/default.nix).theme;
+  theme = (import ./themes/default.nix).theme;
 
   # Hyprland's config wants "rgba(RRGGBBAA)" (hex, no leading #, alpha as a
   # two-digit hex byte). themes/*.nix stores colours as "#RRGGBB" and
@@ -44,8 +44,8 @@ in
   # is false here (UWSM, not Home Manager, owns that integration).
   programs.quickshell = {
     enable = true;
-    configs.omarchy = omarchyShell.quickshellConfigDir;
-    activeConfig = "omarchy";
+    configs.desktop = desktopShell.quickshellConfigDir;
+    activeConfig = "desktop";
     systemd.enable = true;
   };
 
@@ -74,9 +74,9 @@ in
         };
 
         general = {
-          gaps_in = omarchyTheme.layout.gapsIn;
-          gaps_out = omarchyTheme.layout.gapsOut;
-          border_size = omarchyTheme.layout.borderSize;
+          gaps_in = theme.layout.gapsIn;
+          gaps_out = theme.layout.gapsOut;
+          border_size = theme.layout.borderSize;
           layout = "dwindle";
         };
 
@@ -87,7 +87,7 @@ in
         };
 
         decoration = {
-          rounding = omarchyTheme.layout.rounding;
+          rounding = theme.layout.rounding;
           blur = {
             enabled = true;
             size = 4;
@@ -132,7 +132,7 @@ in
       -- Global function (not inlined at each call site) so both the
       -- keybind below and the bar's own toggle button (Bar.qml) can
       -- call the exact same logic via a single Hyprland.dispatch() /
-      -- hyprctl eval string, "omarchyToggleLaptopScreen()" -- confirmed
+      -- hyprctl eval string, "desktopToggleLaptopScreen()" -- confirmed
       -- live that functions defined via one eval persist in Hyprland's
       -- Lua state and are callable from a later, separate eval.
       --
@@ -147,7 +147,7 @@ in
       -- disabled = false explicitly alongside mode/position/scale --
       -- confirmed live that omitting `disabled` on the re-enable call
       -- left the monitor off.
-      function omarchyToggleLaptopScreen()
+      function desktopToggleLaptopScreen()
         local monitors = hl.get_monitors()
         local laptopActive = false
         local externalPresent = false
@@ -186,14 +186,14 @@ in
       hl.animation({ leaf = "fade", enabled = true, speed = 3, bezier = "easeOutQuint" })
       hl.animation({ leaf = "workspaces", enabled = true, speed = 4, bezier = "easeOutQuint" })
 
-      -- Border colours from the Nix theme source (themes/${omarchyTheme.name}.nix),
+      -- Border colours from the Nix theme source (themes/${theme.name}.nix),
       -- not hardcoded -- Milestone 4 retrofit. Verified via `nix eval` to
       -- produce byte-identical rgba() values to the original hardcoded
       -- Milestone 1 config before this change.
       hl.config({
         general = {
-          ["col.active_border"] = "${hyprlandRgba omarchyTheme.colors.borderActive omarchyTheme.opacity.borderActive}",
-          ["col.inactive_border"] = "${hyprlandRgba omarchyTheme.colors.border omarchyTheme.opacity.borderInactive}",
+          ["col.active_border"] = "${hyprlandRgba theme.colors.borderActive theme.opacity.borderActive}",
+          ["col.inactive_border"] = "${hyprlandRgba theme.colors.border theme.opacity.borderInactive}",
         },
       })
 
@@ -217,7 +217,7 @@ in
       -- Milestone 6: power/session menu (lock/logout/suspend/reboot/
       -- shutdown), see power-menu.nix. Key name "Escape" confirmed via
       -- xmodmap -pke, same xkb keysym convention as "Print".
-      hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("omarchy-power-menu"))
+      hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("desktop-power-menu"))
       hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser))
       hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager))
 
@@ -266,13 +266,13 @@ in
         hl.bind(mod .. " + SHIFT + " .. ws, hl.dsp.window.move({ workspace = ws, follow = true }))
       end
 
-      -- omarchy-volume-*/omarchy-brightness-* (osd-helpers.nix) adjust the
+      -- desktop-volume-*/desktop-brightness-* (osd-helpers.nix) adjust the
       -- real value then trigger the Quickshell OSD via `qs ipc call`.
-      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("omarchy-volume-up"), { locked = true })
-      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("omarchy-volume-down"), { locked = true })
-      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("omarchy-volume-mute-toggle"), { locked = true })
-      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("omarchy-brightness-up"), { locked = true, repeating = true })
-      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("omarchy-brightness-down"), { locked = true, repeating = true })
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("desktop-volume-up"), { locked = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("desktop-volume-down"), { locked = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("desktop-volume-mute-toggle"), { locked = true })
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("desktop-brightness-up"), { locked = true, repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("desktop-brightness-down"), { locked = true, repeating = true })
 
       -- Media keys (playerctl, MPRIS)
       hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
@@ -280,7 +280,7 @@ in
       hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
       -- Clipboard history picker (cliphist + rofi -dmenu; cliphist store is
-      -- run continuously in the background by shared/desktop/omarchy/clipboard.nix)
+      -- run continuously in the background by shared/desktop/hyprland/clipboard.nix)
       hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
 
       -- Milestone 6: emoji/symbol picker. Key name "period" confirmed
@@ -298,8 +298,8 @@ in
       hl.bind(mod .. " + M", hl.dsp.exec_cmd("alacritty --class alacritty-btop -e btop"))
 
       -- Wi-Fi/Bluetooth TUIs. Originally impala/bluetui, matching upstream
-      -- Omarchy's own approach (bin/omarchy-launch-wifi,
-      -- bin/omarchy-launch-bluetooth in github.com/omacom/omarchy, MIT
+      -- the reference implementation's approach (bin/desktop-launch-wifi,
+      -- bin/desktop-launch-bluetooth in the upstream reference implementation, MIT
       -- licensed). impala turned out to be iwd-only -- confirmed via
       -- `strings $(which impala) | grep iwd`, it talks exclusively to
       -- net.connman.iwd over D-Bus (the iwdrs crate), and fails instantly
@@ -311,16 +311,16 @@ in
       -- first-party TUI, already on PATH via the system-wide
       -- networkmanager package -- no new package needed. bluetui talks to
       -- BlueZ directly (not iwd), so it's unaffected and kept as-is.
-      -- rfkill unblock kept before both, matching Omarchy's own scripts.
+      -- rfkill unblock kept before both, matching the reference implementation's scripts.
       hl.bind(mod .. " + N", hl.dsp.exec_cmd("alacritty --class alacritty-impala -e sh -c 'rfkill unblock wifi; nmtui connect'"))
       hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("alacritty --class alacritty-bluetui -e sh -c 'rfkill unblock bluetooth; bluetui'"))
 
       -- Toggle the laptop panel on/off when an external monitor is
-      -- connected (see omarchyToggleLaptopScreen above). hl.bind()'s
+      -- connected (see desktopToggleLaptopScreen above). hl.bind()'s
       -- second argument accepts a plain Lua function directly (not just
       -- an hl.dsp.* dispatcher), confirmed in the pinned Lua API stub
       -- (hl.meta.lua: `bind fun(keys, dispatcher: HL.Dispatcher|function, ...)`).
-      hl.bind(mod .. " + P", omarchyToggleLaptopScreen)
+      hl.bind(mod .. " + P", desktopToggleLaptopScreen)
 
       -- NixOS rebuild trigger (Milestone 6). Terminal-visible by explicit
       -- user choice over a silent background+notification variant: the
@@ -332,14 +332,14 @@ in
       -- so no password prompt blocks inside the floating terminal.
       hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("alacritty --class alacritty-rebuild -e sudo nixos-rebuild switch --flake /home/nath/NixOS#redpill-x1-yoga"))
 
-      -- Screenshots (omarchy-screenshot-* from shared/desktop/omarchy/screenshot.nix).
+      -- Screenshots (desktop-screenshot-* from shared/desktop/hyprland/screenshot.nix).
       -- Key name "Print" confirmed via xmodmap -pke against this keyboard
       -- (xkb keysym, mixed case -- not the all-caps XF86-style names used
       -- for media/brightness keys above).
-      hl.bind("Print", hl.dsp.exec_cmd("omarchy-screenshot-region"))
-      hl.bind("SHIFT + Print", hl.dsp.exec_cmd("omarchy-screenshot-full"))
-      hl.bind(mod .. " + Print", hl.dsp.exec_cmd("omarchy-screenshot-window"))
-      hl.bind(mod .. " + SHIFT + Print", hl.dsp.exec_cmd("omarchy-screenshot-output"))
+      hl.bind("Print", hl.dsp.exec_cmd("desktop-screenshot-region"))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd("desktop-screenshot-full"))
+      hl.bind(mod .. " + Print", hl.dsp.exec_cmd("desktop-screenshot-window"))
+      hl.bind(mod .. " + SHIFT + Print", hl.dsp.exec_cmd("desktop-screenshot-output"))
     '';
   };
 
@@ -356,13 +356,13 @@ in
   # Top-bar weather module (shell/Bar.qml) caches its resolved
   # {name,latitude,longitude} to this path via FileView.setText(). Tested
   # live: FileView.setText() does create missing parent directories on its
-  # own (confirmed by deleting ~/.local/state/omarchy entirely and
+  # own (confirmed by deleting ~/.local/state/desktop entirely and
   # launching the shell standalone -- the directory and cache file both
   # appeared), so this activation block is a defensive belt-and-braces
   # guarantee rather than a fix for an observed failure. Same
   # `run mkdir -p $VERBOSE_ARG` idiom confirmed against Home Manager's
   # own modules/misc/xdg/user-dirs.nix earlier this session (Milestone 7).
-  home.activation.omarchyStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    [[ -d "${config.xdg.stateHome}/omarchy" ]] || run mkdir -p $VERBOSE_ARG "${config.xdg.stateHome}/omarchy"
+  home.activation.desktopStateDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    [[ -d "${config.xdg.stateHome}/desktop" ]] || run mkdir -p $VERBOSE_ARG "${config.xdg.stateHome}/desktop"
   '';
 }

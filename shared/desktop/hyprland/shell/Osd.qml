@@ -1,5 +1,5 @@
 // Milestone 3: volume/brightness OSD. Triggered externally via
-// `qs -c omarchy ipc call osd showVolume <0-100>` / `showBrightness <0-100>`,
+// `qs -c desktop ipc call osd showVolume <0-100>` / `showBrightness <0-100>`,
 // called from Hyprland keybinds (see home.nix) after pactl/brightnessctl
 // change the real value -- Quickshell has no native brightness service to
 // bind reactively (confirmed: no Quickshell.Services.Brightness module

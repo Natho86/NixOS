@@ -1,6 +1,6 @@
 // Reusable slider for bar popups (audio master volume, per-app mixer).
-// Adapted from upstream Omarchy's own shell/Ui/PanelSlider.qml
-// (github.com/omacom/omarchy, MIT licensed, quattro branch), at the user's
+// Adapted from the reference implementation's own shell/Ui/PanelSlider.qml
+// (the upstream reference implementation, MIT licensed, quattro branch), at the user's
 // explicit request to port upstream's real audio-popup implementation
 // rather than build one from scratch. Interaction model kept identical
 // (drag anywhere on the track to set, right-click to mute, mouse wheel to

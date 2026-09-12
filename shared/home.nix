@@ -3,10 +3,10 @@
 let
   # Plain Nix import, not a Home Manager module dependency -- safe even
   # though this file is shared with redpill-desktop, which never imports
-  # the omarchy Home Manager module itself. Alacritty's colours below
-  # follow shared/desktop/omarchy/themes/default.nix's `selected` theme
+  # the Hyprland Home Manager module itself. Alacritty's colours below
+  # follow shared/desktop/hyprland/themes/default.nix's `selected` theme
   # the same way every other consumer (Hyprland, Quickshell) does.
-  omarchyTheme = (import ./desktop/omarchy/themes/default.nix).theme;
+  theme = (import ./desktop/hyprland/themes/default.nix).theme;
 in
 {
   home.username = "nath";
@@ -141,11 +141,11 @@ in
         size = 11.0;
       };
 
-      # Colours generated from shared/desktop/omarchy/themes/default.nix's
-      # selected theme, using the exact ANSI mapping upstream Omarchy's own
+      # Colours generated from shared/desktop/hyprland/themes/default.nix's
+      # selected theme, using the exact ANSI mapping the reference implementation's own
       # alacritty.toml.tpl.sample template documents (color0=background,
       # color7=foreground, color8=muted for the "bright black", etc.) --
-      # fetched directly from github.com/omacom/omarchy (MIT licensed,
+      # fetched directly from the upstream reference implementation (MIT licensed,
       # quattro branch), not invented. Applies to Alacritty in every
       # session on both Hyprland hosts, since this file is
       # shared -- a deliberate choice, not an accident of scope. Changing
@@ -155,36 +155,36 @@ in
       # tried and reverted).
       colors = {
         primary = {
-          background = omarchyTheme.colors.background;
-          foreground = omarchyTheme.colors.foreground;
+          background = theme.colors.background;
+          foreground = theme.colors.foreground;
         };
         cursor = {
-          text = omarchyTheme.colors.background;
-          cursor = omarchyTheme.colors.brightForeground;
+          text = theme.colors.background;
+          cursor = theme.colors.brightForeground;
         };
         selection = {
-          text = omarchyTheme.colors.brightForeground;
-          background = omarchyTheme.colors.selection;
+          text = theme.colors.brightForeground;
+          background = theme.colors.selection;
         };
         normal = {
-          black = omarchyTheme.colors.background;
-          red = omarchyTheme.ansi.red;
-          green = omarchyTheme.ansi.green;
-          yellow = omarchyTheme.ansi.yellow;
-          blue = omarchyTheme.ansi.blue;
-          magenta = omarchyTheme.ansi.magenta;
-          cyan = omarchyTheme.ansi.cyan;
-          white = omarchyTheme.colors.foreground;
+          black = theme.colors.background;
+          red = theme.ansi.red;
+          green = theme.ansi.green;
+          yellow = theme.ansi.yellow;
+          blue = theme.ansi.blue;
+          magenta = theme.ansi.magenta;
+          cyan = theme.ansi.cyan;
+          white = theme.colors.foreground;
         };
         bright = {
-          black = omarchyTheme.colors.muted;
-          red = omarchyTheme.ansi.brightRed;
-          green = omarchyTheme.ansi.brightGreen;
-          yellow = omarchyTheme.ansi.brightYellow;
-          blue = omarchyTheme.ansi.brightBlue;
-          magenta = omarchyTheme.ansi.brightMagenta;
-          cyan = omarchyTheme.ansi.brightCyan;
-          white = omarchyTheme.colors.brightForeground;
+          black = theme.colors.muted;
+          red = theme.ansi.brightRed;
+          green = theme.ansi.brightGreen;
+          yellow = theme.ansi.brightYellow;
+          blue = theme.ansi.brightBlue;
+          magenta = theme.ansi.brightMagenta;
+          cyan = theme.ansi.brightCyan;
+          white = theme.colors.brightForeground;
         };
       };
 

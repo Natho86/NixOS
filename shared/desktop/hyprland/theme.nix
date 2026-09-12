@@ -1,10 +1,10 @@
 # Milestone 4: generates shell/Theme.qml + qmldir from the Nix theme tokens
 # (themes/default.nix), then combines them with the hand-written shell/
-# directory into one derivation. programs.quickshell.configs.omarchy in
+# directory into one derivation. programs.quickshell.configs.desktop in
 # home.nix must point at this derivation's output (quickshellConfigDir),
 # not the bare ./shell path, since Home Manager's xdg.configFile symlinks
 # the ENTIRE configs.<name> value as a single unit -- writing separate
-# home.file entries under the same ~/.config/quickshell/omarchy path would
+# home.file entries under the same ~/.config/quickshell/desktop path would
 # conflict with that whole-directory symlink (confirmed by reading
 # modules/programs/quickshell.nix: xdg.configFile."quickshell/${name}".source
 # = path, one value per config name).
@@ -27,14 +27,14 @@
 { pkgs, lib, ... }:
 
 let
-  omarchyTheme = import ./themes/default.nix;
-  t = omarchyTheme.theme;
+  theme = import ./themes/default.nix;
+  t = theme.theme;
 
   themeQml = ''
     pragma Singleton
     import QtQuick
 
-    // Generated from shared/desktop/omarchy/themes/${t.name}.nix -- do not
+    // Generated from shared/desktop/hyprland/themes/${t.name}.nix -- do not
     // edit directly, edit the Nix theme file and rebuild instead.
     QtObject {
       readonly property color background: "${t.colors.background}"
@@ -82,7 +82,7 @@ let
     Osd 1.0 Osd.qml
   '';
 
-  quickshellConfigDir = pkgs.runCommand "omarchy-quickshell-config" { } ''
+  quickshellConfigDir = pkgs.runCommand "desktop-quickshell-config" { } ''
     mkdir -p "$out"
     cp -r ${./shell}/* "$out/"
     cp ${pkgs.writeText "Theme.qml" themeQml} "$out/Theme.qml"

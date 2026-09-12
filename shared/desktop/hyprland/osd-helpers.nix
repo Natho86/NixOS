@@ -1,6 +1,6 @@
 # Milestone 3: helper scripts that adjust volume/brightness then trigger the
 # Quickshell OSD via `qs ipc call` (IpcHandler target "osd", see
-# shared/desktop/omarchy/shell/Osd.qml). One atomic script per action avoids
+# shared/desktop/hyprland/shell/Osd.qml). One atomic script per action avoids
 # a race between adjusting the value and querying it back for the OSD.
 {
   config,
@@ -11,7 +11,7 @@
 
 let
   volumeUp = pkgs.writeShellApplication {
-    name = "omarchy-volume-up";
+    name = "desktop-volume-up";
     runtimeInputs = [
       pkgs.pulseaudio
       pkgs.quickshell
@@ -20,12 +20,12 @@ let
       pactl set-sink-volume @DEFAULT_SINK@ +5%
       pactl set-sink-mute @DEFAULT_SINK@ 0
       pct=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\d+(?=%)' | head -1)
-      qs -c omarchy ipc call osd showVolume "$pct"
+      qs -c desktop ipc call osd showVolume "$pct"
     '';
   };
 
   volumeDown = pkgs.writeShellApplication {
-    name = "omarchy-volume-down";
+    name = "desktop-volume-down";
     runtimeInputs = [
       pkgs.pulseaudio
       pkgs.quickshell
@@ -34,12 +34,12 @@ let
       pactl set-sink-volume @DEFAULT_SINK@ -5%
       pct=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\d+(?=%)' | head -1)
       muted=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -q yes && echo 0 || echo "$pct")
-      qs -c omarchy ipc call osd showVolume "$muted"
+      qs -c desktop ipc call osd showVolume "$muted"
     '';
   };
 
   volumeMuteToggle = pkgs.writeShellApplication {
-    name = "omarchy-volume-mute-toggle";
+    name = "desktop-volume-mute-toggle";
     runtimeInputs = [
       pkgs.pulseaudio
       pkgs.quickshell
@@ -47,16 +47,16 @@ let
     text = ''
       pactl set-sink-mute @DEFAULT_SINK@ toggle
       if pactl get-sink-mute @DEFAULT_SINK@ | grep -q yes; then
-        qs -c omarchy ipc call osd showVolume "0"
+        qs -c desktop ipc call osd showVolume "0"
       else
         pct=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\d+(?=%)' | head -1)
-        qs -c omarchy ipc call osd showVolume "$pct"
+        qs -c desktop ipc call osd showVolume "$pct"
       fi
     '';
   };
 
   brightnessUp = pkgs.writeShellApplication {
-    name = "omarchy-brightness-up";
+    name = "desktop-brightness-up";
     runtimeInputs = [
       pkgs.brightnessctl
       pkgs.quickshell
@@ -65,12 +65,12 @@ let
     text = ''
       brightnessctl set +10%
       pct=$(brightnessctl -m | cut -d, -f4 | tr -d '%')
-      qs -c omarchy ipc call osd showBrightness "$pct"
+      qs -c desktop ipc call osd showBrightness "$pct"
     '';
   };
 
   brightnessDown = pkgs.writeShellApplication {
-    name = "omarchy-brightness-down";
+    name = "desktop-brightness-down";
     runtimeInputs = [
       pkgs.brightnessctl
       pkgs.quickshell
@@ -79,7 +79,7 @@ let
     text = ''
       brightnessctl set 10%-
       pct=$(brightnessctl -m | cut -d, -f4 | tr -d '%')
-      qs -c omarchy ipc call osd showBrightness "$pct"
+      qs -c desktop ipc call osd showBrightness "$pct"
     '';
   };
 in

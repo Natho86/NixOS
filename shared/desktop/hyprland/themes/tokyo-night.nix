@@ -1,6 +1,6 @@
 # Milestone 4/7: Tokyo Night theme tokens. Values are ported verbatim from
-# upstream Omarchy's own themes/tokyo-night/colors.toml (github.com/omacom/
-# omarchy, MIT licensed, quattro branch), fetched directly via `gh api`, not
+# the reference implementation's own themes/tokyo-night/colors.toml (MIT
+# licensed), fetched directly via `gh api`, not
 # re-derived or guessed -- confirmed byte-for-byte against that file.
 #
 # This replaces an earlier version of this file whose `colors.foreground`
@@ -82,7 +82,7 @@
   };
 
   # Hyprland/Quickshell layout tokens, currently hardcoded in
-  # shared/desktop/omarchy/home.nix's settings.config.general/decoration
+  # shared/desktop/hyprland/home.nix's settings.config.general/decoration
   # and shell/*.qml radii -- theme-level defaults, overridable per-theme.
   layout = {
     gapsIn = 4;

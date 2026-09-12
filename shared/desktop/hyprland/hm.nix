@@ -1,10 +1,10 @@
-# Milestone 8: Home Manager umbrella for the Omarchy-inspired desktop.
+# Milestone 8: Home Manager umbrella for the curated desktop.
 # One entry point for flake.nix to import per host, instead of listing
 # every sibling module file there directly -- makes "opt a host into the
 # desktop" a single line (this file) rather than a list that has to be
-# kept in sync with what shared/desktop/omarchy/ actually contains.
+# kept in sync with what shared/desktop/hyprland/ actually contains.
 #
-# Gated on osConfig.desktop.omarchy.enable (the NixOS-level option
+# Gated on osConfig.desktop.hyprland.enable (the NixOS-level option
 # defined in default.nix) rather than a separate Home Manager-level
 # option: osConfig is a real, always-available Home Manager special arg
 # when Home Manager runs as a NixOS module (confirmed against the pinned
@@ -25,7 +25,7 @@
 { osConfig, lib, ... }:
 
 {
-  imports = lib.optionals osConfig.desktop.omarchy.enable [
+  imports = lib.optionals osConfig.desktop.hyprland.enable [
     ./home.nix
     ./lock-idle.nix
     ./screenshot.nix

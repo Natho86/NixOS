@@ -1,12 +1,12 @@
 # Top-bar network popup follow-up: ping/throughput/IP/gateway status and a
 # manual speed test. Both scripts are ported near-verbatim from upstream
-# Omarchy's own bin/omarchy-network-status and bin/omarchy-network-speedtest
-# (github.com/omacom/omarchy, MIT licensed, quattro branch) at the user's
+# the reference implementation's bin/desktop-network-status and bin/desktop-network-speedtest
+# (the upstream reference implementation, MIT licensed, quattro branch) at the user's
 # explicit request to reuse upstream's real implementation rather than
 # invent one -- self-contained, depend only on standard tools already used
 # elsewhere in this repo (ip, jq, awk, nmcli, curl) plus `iw` and `dd`
 # (added here). The only change from upstream is dropping the
-# `omarchy-cmd-present <tool>` existence checks (an Omarchy-specific helper
+# `desktop-cmd-present <tool>` existence checks (a profile-specific helper
 # that doesn't exist in this repo) -- they only gated an early return when a
 # tool was missing, which `runtimeInputs` already guarantees is never the
 # case here.
@@ -14,7 +14,7 @@
 
 let
   networkStatus = pkgs.writeShellApplication {
-    name = "omarchy-network-status";
+    name = "desktop-network-status";
     runtimeInputs = [
       pkgs.iproute2
       pkgs.iw
@@ -34,7 +34,7 @@ let
           verbose=true
           ;;
         *)
-          echo "Usage: omarchy-network-status [--verbose]" >&2
+          echo "Usage: desktop-network-status [--verbose]" >&2
           exit 2
           ;;
       esac
@@ -156,7 +156,7 @@ let
   };
 
   networkSpeedtest = pkgs.writeShellApplication {
-    name = "omarchy-network-speedtest";
+    name = "desktop-network-speedtest";
     runtimeInputs = [
       pkgs.iproute2
       pkgs.curl
@@ -172,7 +172,7 @@ let
     # `traffic_worker "$@"` inside the function (each URL a distinct
     # $1, $2, ... entry it round-robins across). Quoting it would pass
     # the whole multi-line blob as a single argument instead, breaking
-    # the round-robin. Confirmed against upstream Omarchy's own script
+    # the round-robin. Confirmed against the reference implementation's own script
     # (the source this was ported from) -- same construct there too.
     excludeShellChecks = [ "SC2086" ];
     text = ''
@@ -185,7 +185,7 @@ let
         down | up)
           ;;
         *)
-          echo "Usage: omarchy-network-speedtest [down|up]" >&2
+          echo "Usage: desktop-network-speedtest [down|up]" >&2
           exit 2
           ;;
       esac

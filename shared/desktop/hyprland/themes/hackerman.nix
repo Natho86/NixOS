@@ -1,9 +1,9 @@
 # Milestone 7: Hackerman theme tokens, ported verbatim from upstream
-# Omarchy's own themes/hackerman/colors.toml (github.com/omacom/omarchy,
+# the reference implementation's themes/hackerman/colors.toml (the upstream reference implementation,
 # MIT licensed, quattro branch), fetched directly via `gh api`, not
 # invented -- confirmed byte-for-byte against that file. Replaces the
 # earlier Catppuccin second theme per explicit user request, to focus on
-# the two real upstream Omarchy themes the user actually wants nailed
+# the two real the reference implementation themes the user actually wants nailed
 # down: Tokyo Night and Hackerman.
 {
   name = "hackerman";
@@ -55,7 +55,7 @@
   # Upstream's hyprland_active_border for Hackerman is a genuine two-stop
   # gradient ("rgba(26a269ee) rgba(2ec27eee) 45deg"), unlike Tokyo Night's
   # flat colour -- not replicated here since this repo's Hyprland/theme
-  # pipeline (hyprlandRgba in home.nix, omarchy-theme-reload-hyprland in
+  # pipeline (hyprlandRgba in home.nix, desktop-theme-reload-hyprland in
   # theme-switch.nix) only handles a single active/inactive border colour
   # each, not gradients. Using accent as a flat colour instead is a
   # deliberate simplification, not a missed value.

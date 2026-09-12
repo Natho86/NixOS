@@ -1,7 +1,7 @@
 .pragma library
 // Weather condition -> Nerd Font glyph mapping, ported verbatim from
-// upstream Omarchy's own shell/plugins/panels/weather/Model.js
-// (github.com/omacom/omarchy, MIT licensed, quattro branch) at the user's
+// the reference implementation's own shell/plugins/panels/weather/Model.js
+// (the upstream reference implementation, MIT licensed, quattro branch) at the user's
 // explicit request. iconForCode() maps wttr.in-style numeric condition
 // codes to glyphs; iconForOpenMeteoCode() maps Open-Meteo's WMO weather
 // codes onto the same table by translating to the nearest wttr.in code

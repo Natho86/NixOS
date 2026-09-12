@@ -14,7 +14,7 @@ let
 
   # Shared: save to $screenshotDir with a timestamped name, copy to
   # clipboard, notify. Takes the already-captured PNG bytes on stdin.
-  saveAndNotify = pkgs.writeShellScript "omarchy-screenshot-save" ''
+  saveAndNotify = pkgs.writeShellScript "desktop-screenshot-save" ''
     set -euo pipefail
     mkdir -p "${screenshotDir}"
     file="${screenshotDir}/$(date +%Y-%m-%d_%H-%M-%S).png"
@@ -24,7 +24,7 @@ let
   '';
 
   screenshotFull = pkgs.writeShellApplication {
-    name = "omarchy-screenshot-full";
+    name = "desktop-screenshot-full";
     runtimeInputs = [
       pkgs.grim
       pkgs.wl-clipboard
@@ -36,7 +36,7 @@ let
   };
 
   screenshotOutput = pkgs.writeShellApplication {
-    name = "omarchy-screenshot-output";
+    name = "desktop-screenshot-output";
     runtimeInputs = [
       pkgs.grim
       pkgs.wl-clipboard
@@ -52,7 +52,7 @@ let
   };
 
   screenshotWindow = pkgs.writeShellApplication {
-    name = "omarchy-screenshot-window";
+    name = "desktop-screenshot-window";
     runtimeInputs = [
       pkgs.grim
       pkgs.wl-clipboard
@@ -67,7 +67,7 @@ let
   };
 
   screenshotRegion = pkgs.writeShellApplication {
-    name = "omarchy-screenshot-region";
+    name = "desktop-screenshot-region";
     runtimeInputs = [
       pkgs.grim
       pkgs.slurp

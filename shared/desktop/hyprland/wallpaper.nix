@@ -9,7 +9,7 @@
 { config, pkgs, ... }:
 
 let
-  placeholderWallpaper = pkgs.runCommand "omarchy-placeholder-wallpaper.png" { } ''
+  placeholderWallpaper = pkgs.runCommand "desktop-placeholder-wallpaper.png" { } ''
     ${pkgs.imagemagick}/bin/magick -size 1920x1200 xc:'#1a1b26' "$out"
   '';
 in

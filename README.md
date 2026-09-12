@@ -1,11 +1,11 @@
 # NixOS Flake Configuration
 
-Modern NixOS configuration with Hyprland, an Omarchy-inspired desktop, full disk encryption, and Home Manager.
+Modern NixOS configuration with Hyprland, a curated desktop environment, full disk encryption, and Home Manager.
 
 ## What's Included
 
 **Desktop Environment:**
-- Hyprland with the Omarchy-inspired desktop profile
+- Hyprland with a curated, themeable desktop profile
 
 **Applications:**
 - Google Chrome, 1Password, Audacity, Docker, GitHub Desktop, Obsidian
@@ -176,7 +176,7 @@ sudo nix-collect-garbage --delete-older-than 7d
 ```
 
 ### Hyprland Session
-Select **Hyprland (uwsm-managed)** in ReGreet. The Omarchy profile provides
+Select **Hyprland (uwsm-managed)** in ReGreet. The desktop profile provides
 the Quickshell bar, launcher, lock screen, idle handling, screenshots, and
 power menu.
 
@@ -290,7 +290,7 @@ services.tlp.settings = {
 };
 ```
 
-**Change theme:** Edit the theme files under `shared/desktop/omarchy/themes/`
+**Change theme:** Edit the theme files under `shared/desktop/hyprland/themes/`
 
 ## Multiple Machines
 

@@ -13,7 +13,7 @@
 }:
 
 let
-  omarchyTheme = (import ./themes/default.nix).theme;
+  theme = (import ./themes/default.nix).theme;
   inherit (config.lib.formats.rasi) mkLiteral;
 in
 {
@@ -27,14 +27,14 @@ in
     # existing window" with "launch a new one" in the same result list
     # risks accidentally launching a duplicate of something already open.
     #
-    # clipboard is a script mode (omarchy-rofi-clipboard, clipboard.nix)
+    # clipboard is a script mode (desktop-rofi-clipboard, clipboard.nix)
     # registered as "clipboard:<script>" per `man rofi-script` -- kept as
     # its own named mode (Ctrl+Tab to cycle to it from SUPER+SPACE) rather
     # than folded into combi, matching the reasoning above for window.
     modes = [
       "combi"
       "window"
-      "clipboard:omarchy-rofi-clipboard"
+      "clipboard:desktop-rofi-clipboard"
     ];
 
     extraConfig = {
@@ -51,45 +51,45 @@ in
     # built-in default look -- reported by the user as "no noticible
     # difference" when switching themes, alongside Alacritty (fixed
     # separately in shared/home.nix). This theme block is this repo's own
-    # construction (upstream Omarchy doesn't use rofi at all -- Milestone
+    # construction (the reference implementation doesn't use rofi at all -- Milestone
     # 2 found no first-party Quickshell launcher, so this repo substitutes
-    # rofi where Omarchy has nothing to port from), built from the same
+    # rofi where desktop has nothing to port from), built from the same
     # themes/default.nix tokens every other consumer reads, using
     # Home Manager's own documented mkLiteral pattern (see this option's
     # own doc example in modules/programs/rofi.nix) for unquoted rasi
     # values like colours and literal identifiers.
     theme =
       let
-        bg = mkLiteral omarchyTheme.colors.background;
-        bgAlt = mkLiteral omarchyTheme.colors.surface;
-        fg = mkLiteral omarchyTheme.colors.foreground;
-        accent = mkLiteral omarchyTheme.colors.accent;
-        border = mkLiteral omarchyTheme.colors.border;
+        bg = mkLiteral theme.colors.background;
+        bgAlt = mkLiteral theme.colors.surface;
+        fg = mkLiteral theme.colors.foreground;
+        accent = mkLiteral theme.colors.accent;
+        border = mkLiteral theme.colors.border;
       in
       {
         "*" = {
           background-color = mkLiteral "transparent";
           text-color = fg;
-          font = mkLiteral "\"${omarchyTheme.font.monoFamily} ${toString omarchyTheme.font.size}\"";
+          font = mkLiteral "\"${theme.font.monoFamily} ${toString theme.font.size}\"";
         };
 
         window = {
           background-color = bg;
-          border = mkLiteral "${toString omarchyTheme.layout.borderSize}px";
+          border = mkLiteral "${toString theme.layout.borderSize}px";
           border-color = accent;
-          border-radius = mkLiteral "${toString omarchyTheme.layout.rounding}px";
+          border-radius = mkLiteral "${toString theme.layout.rounding}px";
           width = mkLiteral "40%";
         };
 
         mainbox = {
           background-color = mkLiteral "transparent";
-          padding = mkLiteral "${toString omarchyTheme.layout.gapsIn}px";
+          padding = mkLiteral "${toString theme.layout.gapsIn}px";
         };
 
         inputbar = {
           background-color = bgAlt;
           text-color = fg;
-          border-radius = mkLiteral "${toString omarchyTheme.layout.rounding}px";
+          border-radius = mkLiteral "${toString theme.layout.rounding}px";
           padding = mkLiteral "8px 12px";
           children = map mkLiteral [
             "prompt"
@@ -108,7 +108,7 @@ in
 
         element = {
           padding = mkLiteral "6px 10px";
-          border-radius = mkLiteral "${toString omarchyTheme.layout.rounding}px";
+          border-radius = mkLiteral "${toString theme.layout.rounding}px";
         };
 
         "element normal.normal" = {

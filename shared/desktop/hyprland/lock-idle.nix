@@ -14,7 +14,7 @@
 }:
 
 let
-  omarchyTheme = (import ./themes/default.nix).theme;
+  theme = (import ./themes/default.nix).theme;
 
   # hyprlock/hyprlang wants "rgba(R, G, B, A)" with A as a 0-1 float, unlike
   # Hyprland's own "rgba(RRGGBBAA)" hex form (see home.nix's hyprlandRgba)
@@ -73,9 +73,9 @@ in
           # transcription typo -- the theme's actual foreground hex
           # (#c0caf5) is rgb(192, 202, 245). Fixed here rather than
           # preserved, since it was never an intentional value.
-          inner_color = hyprlockRgba omarchyTheme.colors.background 0.8;
-          outer_color = "${hyprlockRgba omarchyTheme.colors.accent 0.8} ${hyprlockRgba omarchyTheme.colors.accent 0.2} 45deg";
-          font_color = "rgb(${hexToRgbDecimal omarchyTheme.colors.foreground})";
+          inner_color = hyprlockRgba theme.colors.background 0.8;
+          outer_color = "${hyprlockRgba theme.colors.accent 0.8} ${hyprlockRgba theme.colors.accent 0.2} 45deg";
+          font_color = "rgb(${hexToRgbDecimal theme.colors.foreground})";
           fade_on_empty = true;
           placeholder_text = "<i>Password...</i>";
           fail_text = "<i>$FAIL ($ATTEMPTS)</i>";
@@ -89,12 +89,12 @@ in
         {
           monitor = "";
           text = "cmd[update:1000] echo \"$TIME\"";
-          color = hyprlockRgba omarchyTheme.colors.foreground 1.0;
+          color = hyprlockRgba theme.colors.foreground 1.0;
           # 64 does not derive cleanly from any existing theme token
           # (sizeLarge is 20, not the clock's actual size) -- kept as the
           # original literal rather than forcing a wrong formula.
           font_size = 64;
-          font_family = omarchyTheme.font.family;
+          font_family = theme.font.family;
           position = "0, 160";
           halign = "center";
           valign = "center";

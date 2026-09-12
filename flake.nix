@@ -1,5 +1,5 @@
 {
-  description = "NixOS configurations with Hyprland, Omarchy, and AI server";
+  description = "NixOS configurations with a curated Hyprland desktop and AI server";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -39,11 +39,10 @@
           # Shared configuration
           ./shared/configuration.nix
 
-          # Omarchy-inspired Hyprland desktop -- always imported (see
-          # omarchy-inspired-nixos-plan.md), but inert unless
-          # desktop.omarchy.enable is set. This host opts in below.
-          ./shared/desktop/omarchy
-          { desktop.omarchy.enable = true; }
+          # Curated Hyprland desktop -- always imported, but inert unless
+          # desktop.hyprland.enable is set. This host opts in below.
+          ./shared/desktop/hyprland
+          { desktop.hyprland.enable = true; }
 
           # Modules
           sops-nix.nixosModules.sops
@@ -54,7 +53,7 @@
             home-manager.users.nath = {
               imports = [
                 ./shared/home.nix
-                ./shared/desktop/omarchy/hm.nix
+                ./shared/desktop/hyprland/hm.nix
               ];
             };
             home-manager.extraSpecialArgs = { inherit inputs; };
@@ -73,9 +72,9 @@
           # Shared configuration
           ./shared/configuration.nix
 
-          # Omarchy-inspired Hyprland desktop, shared with the laptop.
-          ./shared/desktop/omarchy
-          { desktop.omarchy.enable = true; }
+          # Curated Hyprland desktop, shared with the laptop.
+          ./shared/desktop/hyprland
+          { desktop.hyprland.enable = true; }
 
           # Modules
           sops-nix.nixosModules.sops
@@ -85,7 +84,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.nath.imports = [
               ./shared/home.nix
-              ./shared/desktop/omarchy/hm.nix
+              ./shared/desktop/hyprland/hm.nix
             ];
             home-manager.extraSpecialArgs = { inherit inputs; };
           }
