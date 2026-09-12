@@ -17,6 +17,7 @@
 
   # Bootloader with LUKS support
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # LUKS encryption setup moved to host-specific configuration
