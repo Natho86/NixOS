@@ -16,9 +16,9 @@
 
     accent = "#82FB9C";
     muted = "#2d3450";
-    urgent = "#50f872"; # red (Hackerman's "red" is green-tinted by design)
+    urgent = "#ff5555"; # red
     success = "#4fe88f"; # green
-    warning = "#50f7d4"; # yellow
+    warning = "#ffff55"; # yellow
 
     border = "#2d3450"; # muted
     borderActive = "#82FB9C"; # accent
@@ -31,12 +31,12 @@
     brightForeground = "#ddf7ff";
   };
 
-  # Full 16-colour ANSI terminal palette, straight from upstream's
-  # colors.toml -- same field shape as themes/tokyo-night.nix (see that
-  # file's comment for why).
+  # Full 16-colour ANSI terminal palette. The red/yellow slots are kept as
+  # actual warning colours so Rich's "bold red on yellow" markup remains
+  # readable in Alacritty.
   ansi = {
-    red = "#50f872";
-    yellow = "#50f7d4";
+    red = "#ff5555";
+    yellow = "#ffff55";
     orange = "#50f7a3";
     green = "#4fe88f";
     cyan = "#7cf8f7";
@@ -44,8 +44,8 @@
     magenta = "#86a7df";
     brown = "#287b51";
 
-    brightRed = "#85ff9d";
-    brightYellow = "#a4ffec";
+    brightRed = "#ff5555";
+    brightYellow = "#ffff55";
     brightGreen = "#9cf7c2";
     brightCyan = "#d1fffe";
     brightBlue = "#c4d2ed";

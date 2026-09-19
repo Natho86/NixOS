@@ -116,6 +116,26 @@
       ];
   };
 
+  # Unraid Paperless share on the local network.
+  fileSystems."/home/nath/Paperless" = {
+    device = "//192.168.50.4/Paperless";
+    fsType = "cifs";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=60"
+      "x-systemd.device-timeout=5s"
+      "x-systemd.mount-timeout=5s"
+      "credentials=/run/secrets/rendered/unraid-smb-credentials"
+      "uid=1000"
+      "gid=100"
+      "dir_mode=0700"
+      "file_mode=0600"
+      "vers=3.1.1"
+      "nofail"
+    ];
+  };
+
   # Allow unfree packages (needed for Chrome, 1Password, Obsidian, Spotify)
   nixpkgs.config.allowUnfree = true;
 
