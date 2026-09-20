@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 let
   # Plain Nix import, not a Home Manager module dependency -- safe even
@@ -49,6 +49,7 @@ in
     github-desktop
     vscode
     claude-code
+    inputs.hermes-agent.packages.${pkgs.system}.default
     nodejs_22 # Node.js LTS for npm-based tools
     python3 # Python interpreter (includes venv by default)
     python3Packages.pip # Pip package manager
