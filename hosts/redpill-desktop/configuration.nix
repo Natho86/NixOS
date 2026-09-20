@@ -11,6 +11,7 @@
   imports = [
     ./hardware-configuration.nix
     ./gpu-packages.nix
+    ../../shared/ai-server.nix
   ];
 
   # Hostname

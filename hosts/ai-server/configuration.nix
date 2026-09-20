@@ -7,9 +7,13 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
-    ./automatic1111.nix
+    # This is a second role for the same physical machine as redpill-desktop.
+    # Keep the machine's disk, boot, and hardware declarations in one place.
+    ../redpill-desktop/hardware-configuration.nix
+    ../../shared/ai-server.nix
   ];
+
+  my.aiServer.enable = true;
 
   system.stateVersion = "25.11";
 
@@ -69,7 +73,7 @@
   # Required for the proprietary NVIDIA driver and CUDA-enabled packages.
   nixpkgs.config = {
     allowUnfree = true;
-    #cudaSupport = true;
+    cudaSupport = true;
   };
 
   time.timeZone = "Europe/London";
@@ -150,7 +154,7 @@
   hardware.nvidia = {
     modesetting.enable = true;
 
-    # Keep the GPU initialized for headless inference services such as Ollama.
+    # Keep the GPU initialized for the headless llama.cpp inference service.
     nvidiaPersistenced = true;
 
     # For RTX 3080, use the proprietary NVIDIA kernel module.
@@ -171,62 +175,12 @@
     allowedUDPPorts = [ config.services.tailscale.port ];
 
     allowedTCPPorts = [
-      #11434 # Ollama API
       3003 # immich ML
     ];
 
     # Services bound to 0.0.0.0 are reachable only via tailscale0,
     # not your normal LAN interface.
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
-  };
-
-  # Local model server.
-  services.ollama = {
-    enable = true;
-    package = pkgs.ollama-cuda;
-
-    # Force Ollama to load the CUDA runner instead of silently falling back to CPU.
-    environmentVariables = {
-      CUDA_VISIBLE_DEVICES = "0";
-      OLLAMA_FLASH_ATTENTION = "1";
-      OLLAMA_LLM_LIBRARY = "cuda_v${lib.versions.major pkgs.cudaPackages.cuda_cudart.version}";
-    };
-
-    # Needed so VS Code / Continue on another Tailscale device can use it.
-    host = "0.0.0.0";
-    port = 11434;
-    openFirewall = true;
-
-    loadModels = [
-      "qwen2.5-coder:7b"
-      "llama3.1:8b"
-      "mistral:7b"
-    ];
-  };
-
-  # Ensure the headless Ollama service starts only after NVIDIA device nodes exist.
-  systemd.services.ollama = {
-    after = [ "nvidia-persistenced.service" ];
-    requires = [ "nvidia-persistenced.service" ];
-    serviceConfig.ExecStartPre = [
-      "/bin/sh -lc 'for device in /dev/nvidiactl /dev/nvidia0 /dev/nvidia-uvm; do for i in $(seq 1 50); do [ -e $device ] && break; sleep 0.1; done; [ -e $device ] || { echo $device not found; exit 1; }; done'"
-    ];
-  };
-
-  # ChatGPT-like web UI.
-  services.open-webui = {
-    enable = true;
-    host = "0.0.0.0";
-    port = 8080;
-    openFirewall = true;
-
-    environment = {
-      OLLAMA_BASE_URL = "http://127.0.0.1:11434";
-      WEBUI_AUTH = "True";
-      ANONYMIZED_TELEMETRY = "False";
-      DO_NOT_TRACK = "True";
-      SCARF_NO_ANALYTICS = "True";
-    };
   };
 
   services.openssh = {
