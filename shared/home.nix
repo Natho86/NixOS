@@ -89,6 +89,7 @@ in
     mtr # Network diagnostic tool
     iperf3 # Network performance testing
     tcpdump # Packet analyzer
+    mullvad
 
     # System debugging
     strace # System call tracer

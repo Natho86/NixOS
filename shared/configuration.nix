@@ -250,6 +250,9 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
+  services.mullvad-vpn.enable = true;
+  services.mullvad-vpn.gui.enable = true;
+
   # Enable flakes and nix-command
   nix.settings.experimental-features = [
     "nix-command"
