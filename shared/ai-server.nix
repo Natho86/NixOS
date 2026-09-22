@@ -21,6 +21,8 @@ in
         model = "/var/lib/llama-cpp/models/qwen2.5-coder-7b-instruct-q4_k_m.gguf";
         # Hermes Agent requires at least 64K context for tool use.
         ctx-size = 65536;
+        model = "/var/lib/llama-cpp/models/Qwen3-8B-Q4_K_M.gguf";
+        ctx-size = 65536;
         n-gpu-layers = 999;
         flash-attn = "on";
         parallel = 2;
