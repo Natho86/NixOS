@@ -7,9 +7,8 @@
 
 {
   imports = [
-    # This is a second role for the same physical machine as redpill-desktop.
-    # Keep the machine's disk, boot, and hardware declarations in one place.
-    ../redpill-desktop/hardware-configuration.nix
+    # This host has its own unencrypted disk layout.
+    ./hardware-configuration.nix
     ../../shared/ai-server.nix
   ];
 
