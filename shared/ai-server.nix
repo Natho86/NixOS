@@ -18,14 +18,13 @@ in
       settings = {
         host = "0.0.0.0";
         port = 8081;
-        model = "/var/lib/llama-cpp/models/qwen2.5-coder-7b-instruct-q4_k_m.gguf";
-        # Hermes Agent requires at least 64K context for tool use.
+        model = "/var/lib/llama-cpp/models/Qwen3.5-9B-Q4_K_M.gguf";
         ctx-size = 65536;
-        model = "/var/lib/llama-cpp/models/Qwen3-8B-Q4_K_M.gguf";
-        ctx-size = 65536;
+        parallel = 1;
+        cache-type-k = "q4_0";
+        cache-type-v = "q4_0";
         n-gpu-layers = 999;
         flash-attn = "on";
-        parallel = 2;
       };
     };
 
