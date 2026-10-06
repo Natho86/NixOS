@@ -12,6 +12,36 @@
 
   # Hostname
   networking.hostName = "redpill-x1-yoga";
+
+  # Prefer the dock's Ethernet connection and disable Wi-Fi while it is up.
+  # Re-enable Wi-Fi automatically when the last Ethernet connection goes down.
+  networking.networkmanager.dispatcherScripts = [
+    {
+      source = pkgs.writeShellScript "ethernet-wifi-priority" ''
+        iface="$1"
+        action="$2"
+        nmcli="${pkgs.networkmanager}/bin/nmcli"
+
+        case "$action" in
+          up)
+            # Ethernet interfaces do not expose a wireless sysfs directory.
+            if [ ! -d "/sys/class/net/$iface/wireless" ]; then
+              "$nmcli" radio wifi off
+            fi
+            ;;
+
+          down)
+            # Re-enable Wi-Fi only when no Ethernet connection remains.
+            if ! "$nmcli" -t -f TYPE,STATE device | \
+                ${pkgs.gnugrep}/bin/grep -q '^ethernet:connected$'; then
+              "$nmcli" radio wifi on
+            fi
+            ;;
+        esac
+      '';
+    }
+  ];
+
   # Keep WireGuard available but disabled by default; toggle to true when needed.
   my.wireguard.enable = lib.mkDefault false;
 
