@@ -131,6 +131,8 @@
     s-tui
     stress-ng
     smartmontools
+    # Built with CUDA support via nixpkgs.config.cudaSupport above.
+    hashcat
     nvtopPackages.nvidia
   ];
 
