@@ -43,8 +43,10 @@
       "flakes"
     ];
 
-    max-jobs = 1;
-    cores = 4;
+    # Allow two derivations to build concurrently, with up to twelve cores
+    # available to each build on the 24-core server.
+    max-jobs = 2;
+    cores = 12;
   };
 
   # Persistent swap for large local builds.
