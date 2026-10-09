@@ -123,16 +123,16 @@ in
 
       listener = [
         {
-          timeout = 300; # 5 min: dim via brightness
+          timeout = 600; # 10 min: dim via brightness
           on-timeout = "brightnessctl -s set 10";
           on-resume = "brightnessctl -r";
         }
         {
-          timeout = 600; # 10 min: lock
+          timeout = 1200; # 20 min: lock
           on-timeout = "loginctl lock-session";
         }
         {
-          timeout = 630; # 10.5 min: screen off
+          timeout = 1500; # 25 min: screen off
           on-timeout = ''hyprctl dispatch 'hl.dsp.dpms({ action = "disable" })' '';
           on-resume = ''hyprctl dispatch 'hl.dsp.dpms({ action = "enable" })' '';
         }
