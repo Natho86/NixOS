@@ -13,6 +13,10 @@
   # Hostname
   networking.hostName = "redpill-x1-yoga";
 
+  # KDE Plasma 6 desktop session. Hyprland remains available alongside it
+  # in the ReGreet session selector.
+  services.desktopManager.plasma6.enable = true;
+
   # Keep WireGuard available but disabled by default; toggle to true when needed.
   my.wireguard.enable = lib.mkDefault false;
 
@@ -35,15 +39,8 @@
     allowDiscards = true; # Improves SSD performance
   };
 
-  # Auto-login after disk unlock (laptop-specific for convenience)
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "nath";
-  };
-
-  # Workaround for auto-login with the display manager
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
+  # Use ReGreet after disk unlock and whenever a desktop session exits, so
+  # Hyprland and KDE Plasma can be selected from the session menu.
 
   # Power management for laptop (TLP)
   services.power-profiles-daemon.enable = false; # Conflicts with TLP
