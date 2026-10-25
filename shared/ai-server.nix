@@ -19,7 +19,7 @@ in
         host = "0.0.0.0";
         port = 8081;
         model = "/var/lib/llama-cpp/models/Qwen3.5-9B-Q4_K_M.gguf";
-        ctx-size = 65536;
+        ctx-size = 16384;
         parallel = 1;
         cache-type-k = "q4_0";
         cache-type-v = "q4_0";
