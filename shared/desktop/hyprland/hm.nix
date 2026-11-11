@@ -41,4 +41,17 @@
     ./gtk-theme.nix
     ./network-tools.nix
   ];
+
+  # These services are enabled by the Hyprland profile, but their default
+  # graphical-session.target is also started by KDE Plasma.  Require the
+  # Hyprland IPC marker so Plasma does not start the Quickshell bar or
+  # Hyprland-only daemons such as hyprpaper, hypridle, and hyprsunset.
+  # UWSM exports HYPRLAND_INSTANCE_SIGNATURE into the Hyprland user session.
+  systemd.user.services = {
+    quickshell.Unit.ConditionEnvironment = lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+    hyprpaper.Unit.ConditionEnvironment = lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+    hypridle.Unit.ConditionEnvironment = lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+    hyprsunset.Unit.ConditionEnvironment = lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+    cliphist.Unit.ConditionEnvironment = lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+  };
 }
