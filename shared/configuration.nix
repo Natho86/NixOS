@@ -81,7 +81,8 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    jack.enable = true;
+    # JACK-compatible applications should be launched with `pw-jack` rather
+    # than enabling the legacy global LD_LIBRARY_PATH integration.
   };
 
   # Enable Docker

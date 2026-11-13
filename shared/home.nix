@@ -49,7 +49,7 @@ in
     github-desktop
     vscode
     claude-code
-    inputs.hermes-agent.packages.${pkgs.system}.default
+    inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
     nodejs_22 # Node.js LTS for npm-based tools
     python3 # Python interpreter (includes venv by default)
     python3Packages.pip # Pip package manager
