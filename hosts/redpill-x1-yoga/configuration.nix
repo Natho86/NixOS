@@ -13,9 +13,39 @@
   # Hostname
   networking.hostName = "redpill-x1-yoga";
 
-  # KDE Plasma 6 desktop session. Hyprland remains available alongside it
-  # in the ReGreet session selector.
+  # Keep all three desktop sessions available from ReGreet while trying GNOME.
+  # GNOME follows nixpkgs-unstable because this flake tracks that channel.
+  services.desktopManager.gnome.enable = true;
   services.desktopManager.plasma6.enable = true;
+
+  # ReGreet provides the session chooser for GNOME, Plasma, and Hyprland.
+  # Use GNOME's dark Adwaita styling so the chooser feels at home with the
+  # desktop being tested, with a little extra spacing and softer controls.
+  services.displayManager.regreet = {
+    theme.name = "Adwaita-dark";
+    iconTheme.name = "Adwaita";
+    extraCss = ''
+      window {
+        background: linear-gradient(135deg, #171a21 0%, #242938 100%);
+      }
+
+      # Keep the login card readable without making the background feel heavy.
+      box#login {
+        background: alpha(#111318, 0.82);
+        border: 1px solid alpha(#ffffff, 0.10);
+        border-radius: 18px;
+        padding: 28px;
+      }
+
+      button, entry, dropdown {
+        border-radius: 10px;
+      }
+
+      button.suggested-action {
+        min-height: 42px;
+      }
+    '';
+  };
 
   # Keep WireGuard available but disabled by default; toggle to true when needed.
   my.wireguard.enable = lib.mkDefault false;
@@ -38,8 +68,8 @@
     allowDiscards = true; # Improves SSD performance
   };
 
-  # Use ReGreet after disk unlock and whenever a desktop session exits, so
-  # Hyprland and KDE Plasma can be selected from the session menu.
+  # ReGreet is configured above and appears after disk unlock and whenever a
+  # desktop session exits, so all installed sessions remain selectable.
 
   # Power management for laptop (TLP)
   services.power-profiles-daemon.enable = false; # Conflicts with TLP
