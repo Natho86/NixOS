@@ -15,7 +15,9 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent";
+      # The 2026-11-11 revision currently evaluates a missing store path.
+      # Keep the last known-good revision until that upstream flake is fixed.
+      url = "github:NousResearch/hermes-agent/c1418f98fcd5c137aab125c1feee62bcfb227d41";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

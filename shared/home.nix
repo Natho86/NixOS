@@ -38,7 +38,7 @@ in
 
     # Media
     #audacity.override { ffmpeg = pkgs.ffmpeg_6-full; }
-    spotify
+    # spotify # Temporarily disabled while the Snapcraft source is unavailable.
 
     # Productivity
     obsidian

@@ -12,6 +12,27 @@
     ./wireguard.nix
   ];
 
+  # Nixpkgs' current Codex package enables AWS-LC system-library detection,
+  # but the OpenSSL development package in this closure is not an AWS-LC
+  # install. Force aws-lc-sys to use its bundled source so Codex can build.
+  nixpkgs.overlays = [
+    (final: prev: {
+      codex = prev.codex.overrideAttrs (old: {
+        env = (old.env or { }) // {
+          AWS_LC_SYS_USE_SYSTEM = "0";
+        };
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          prev.zstd
+          prev.oniguruma
+          prev.sqlite
+        ];
+        preBuild = (old.preBuild or "") + ''
+          export AWS_LC_SYS_USE_SYSTEM=0
+        '';
+      });
+    })
+  ];
+
   # Enable GPU
   hardware.graphics.enable = true;
 
