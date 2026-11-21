@@ -6,9 +6,37 @@
   ...
 }:
 
+let
+  hackermanTheme = pkgs.runCommand "plymouth-theme-hackerman" { } ''
+    theme_dir="$out/share/plymouth/themes/hackerman"
+    mkdir -p "$theme_dir"
+    cp -r ${pkgs.plymouth}/share/plymouth/themes/script/. "$theme_dir/"
+    cp "$theme_dir/script.script" "$theme_dir/hackerman.script"
+    cp ${pkgs.writeText "hackerman.plymouth" "[Plymouth Theme]\nName=Hackerman\nDescription=Minimal green terminal boot theme\nModuleName=script\n\n[script]\nImageDir=@THEME_DIR@\nScriptFile=@THEME_DIR@/hackerman.script\nConsoleLogBackgroundColor=0x020604\n"} "$theme_dir/hackerman.plymouth"
+    substituteInPlace "$theme_dir/hackerman.plymouth" \
+      --replace-fail @THEME_DIR@ "$theme_dir"
+    substituteInPlace "$theme_dir/hackerman.script" \
+      --replace-fail \
+        'Window.SetBackgroundTopColor(0.234, 0.43, 0.705);' \
+        'Window.SetBackgroundTopColor(0.015, 0.055, 0.03);' \
+      --replace-fail \
+        'Window.SetBackgroundBottomColor(0.16, 0.25, 0.44);' \
+        'Window.SetBackgroundBottomColor(0.002, 0.008, 0.004);'
+  '';
+in
 {
   # Import hardware configuration
   imports = [ ./hardware-configuration.nix ];
+
+  # A quiet, terminal-like Plymouth screen for the encrypted-disk prompt.
+  # The theme reuses Plymouth's maintained script assets and only changes the
+  # colours/name, so the password dialog remains compatible with the initrd.
+  boot.plymouth = {
+    enable = true;
+    theme = "hackerman";
+    themePackages = [ hackermanTheme ];
+  };
+  boot.kernelParams = [ "quiet" "splash" ];
 
   # Hostname
   networking.hostName = "redpill-x1-yoga";
@@ -17,6 +45,26 @@
   # GNOME follows nixpkgs-unstable because this flake tracks that channel.
   services.desktopManager.gnome.enable = true;
   services.desktopManager.plasma6.enable = true;
+
+  # ReGreet/greetd launches the selected session directly and does not always
+  # propagate the DesktopNames=GNOME value from gnome.desktop into the session
+  # environment. GNOME Control Center checks XDG_CURRENT_DESKTOP and exits if
+  # it is unset. Put a GNOME-specific session entry first so this does not make
+  # the variable global (which would misidentify Plasma or Hyprland sessions).
+  services.displayManager.sessionPackages = lib.mkBefore [
+    ((pkgs.writeTextFile {
+      name = "gnome-session-regreet";
+      destination = "/share/wayland-sessions/gnome.desktop";
+      text = ''
+        [Desktop Entry]
+        Name=GNOME
+        Type=Application
+        Exec=${pkgs.coreutils}/bin/env XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=gnome ${pkgs.gnome-session}/bin/gnome-session
+        DesktopNames=GNOME
+      '';
+    })
+    // { providedSessions = [ "gnome" ]; })
+  ];
 
   # ReGreet provides the session chooser for GNOME, Plasma, and Hyprland.
   # Use GNOME's dark Adwaita styling so the chooser feels at home with the
