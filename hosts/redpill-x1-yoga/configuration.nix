@@ -41,34 +41,26 @@ in
   # Hostname
   networking.hostName = "redpill-x1-yoga";
 
-  # Keep all three desktop sessions available from ReGreet while trying GNOME.
+  # Keep GNOME and Plasma available alongside the curated Hyprland session.
   # GNOME follows nixpkgs-unstable because this flake tracks that channel.
   services.desktopManager.gnome.enable = true;
   services.desktopManager.plasma6.enable = true;
 
-  # ReGreet/greetd launches the selected session directly and does not always
-  # propagate the DesktopNames=GNOME value from gnome.desktop into the session
-  # environment. GNOME Control Center checks XDG_CURRENT_DESKTOP and exits if
-  # it is unset. Put a GNOME-specific session entry first so this does not make
-  # the variable global (which would misidentify Plasma or Hyprland sessions).
-  services.displayManager.sessionPackages = lib.mkBefore [
-    ((pkgs.writeTextFile {
-      name = "gnome-session-regreet";
-      destination = "/share/wayland-sessions/gnome.desktop";
-      text = ''
-        [Desktop Entry]
-        Name=GNOME
-        Type=Application
-        Exec=${pkgs.coreutils}/bin/env XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=gnome ${pkgs.gnome-session}/bin/gnome-session
-        DesktopNames=GNOME
-      '';
-    })
-    // { providedSessions = [ "gnome" ]; })
-  ];
+  # GNOME's lock screen expects the display-manager session registration that
+  # GDM provides. ReGreet/greetd can launch GNOME, but the resulting session
+  # cannot service GNOME Shell's lock request (Super+L and loginctl both fail).
+  # GDM still discovers the GNOME, Plasma, and Hyprland session entries.
+  services.displayManager.gdm.enable = true;
+  services.displayManager.regreet.enable = lib.mkForce false;
+  services.greetd.enable = lib.mkForce false;
+  services.displayManager.defaultSession = "gnome";
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "nath";
+  };
 
-  # ReGreet provides the session chooser for GNOME, Plasma, and Hyprland.
-  # Use GNOME's dark Adwaita styling so the chooser feels at home with the
-  # desktop being tested, with a little extra spacing and softer controls.
+  # Keep the existing ReGreet styling available if the host is later switched
+  # back to greetd, without enabling ReGreet alongside GDM.
   services.displayManager.regreet = {
     theme.name = "Adwaita-dark";
     iconTheme.name = "Adwaita";
