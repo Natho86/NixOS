@@ -86,6 +86,7 @@
       "networkmanager"
       "i2c"
       "docker"
+      "libvirtd"
     ];
     shell = pkgs.zsh;
   };
@@ -136,7 +137,19 @@
     # Built with CUDA support via nixpkgs.config.cudaSupport above.
     hashcat
     nvtopPackages.nvidia
+
+    # Windows VM installation, remote console, and guest driver media.
+    virt-manager
+    virt-viewer
+    virtio-win
   ];
+
+  # Headless KVM host; manage locally with virsh/virt-install or over SSH.
+  security.polkit.enable = true;
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu.swtpm.enable = true;
+  };
 
   virtualisation.docker = {
     enable = true;
