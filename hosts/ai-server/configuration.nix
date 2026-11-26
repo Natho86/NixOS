@@ -181,7 +181,6 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  # Tailscale-only remote access.
   services.tailscale.enable = true;
 
   networking.firewall = {
@@ -194,8 +193,12 @@
       3003 # immich ML
     ];
 
-    # Services bound to 0.0.0.0 are reachable only via tailscale0,
-    # not your normal LAN interface.
+    # Allow the sermon-transcribe container's bridged traffic from Unraid.
+    extraCommands = ''
+      iptables -w -A nixos-fw -i enp37s0f1 -s 192.168.50.4/32 \
+        -p tcp --dport ${toString config.services.llama-cpp.settings.port} -j nixos-fw-accept
+    '';
+
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
   };
 

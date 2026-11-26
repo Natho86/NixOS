@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.my.aiServer;
@@ -32,9 +37,11 @@ in
       "d /var/lib/llama-cpp/models 0755 root root -"
     ];
 
-    # The API is reachable remotely over Tailscale, but not through ordinary
-    # LAN interfaces. Open WebUI accesses it locally on 127.0.0.1.
-    networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [ 8081 ];
+    # Enable remote API access over Tailscale. Hosts can allow specific LAN clients.
+    # Open WebUI accesses the API locally on 127.0.0.1.
+    networking.firewall.interfaces.${config.services.tailscale.interfaceName}.allowedTCPPorts = [
+      8081
+    ];
 
     systemd.services.llama-cpp = {
       after = [ "nvidia-persistenced.service" ];
